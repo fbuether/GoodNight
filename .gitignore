@@ -9,3 +9,8 @@
 
 /common/.js/target/
 /common/.jvm/target/
+
+/node_modules/
+
+# for transforming from spa template, remove again later on.
+/prev-*

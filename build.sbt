@@ -6,7 +6,8 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 def setProject(projName: String) = Seq(
   name := "GoodNight " + projName,
-  version := "0.0.4"
+  version := "0.0.4",
+  maintainer := "fbuether@jasminefields.net",
 )
 
 

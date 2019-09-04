@@ -9,12 +9,9 @@ run:
 	cat /dev/null | sbt run || (echo "" && false)
 
 
-deploy:
+release:
 	cat /dev/null | sbt release || (echo "" && false)
 
-
-view: build
-	firefox src/main/html/index.html
 
 
 clean:
