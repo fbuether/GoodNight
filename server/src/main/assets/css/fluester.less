@@ -1,0 +1,477 @@
+
+//
+// GoodNight Theme Fluester.
+// Specially suited for the Fluesterlande.
+//
+
+// Fonts
+
+// font-family: 'droid_sansregular';
+@import url("../fonts/droid-sans/regular/stylesheet.css");
+// font-family: 'droid_sansbold';
+@import url("../fonts/droid-sans/bold/stylesheet.css");
+
+// font-family: 'kingthings_exeterregular';
+@import url("../fonts/Kingthings-Exeter-fontfacekit/web fonts/kingthingsexeter_regular_macroman/stylesheet.css");
+
+//--------------------------------------
+// Configuration
+// Colors
+
+
+@menu-background: hsv(0, 0, 0.4);
+@menu-foreground: hsv(0, 0, 0.7);
+@menu-hover: hsv(0, 0, 0.4);
+
+@back-background: hsv(0, 0, 0.2);
+
+@body-background: hsv(0, 0, 0.9);
+@body-foreground: hsv(120, 0.5, 0.6);
+
+
+
+@grey: hsv(0, 0, 0.71);
+@grey-noise: url("../images/noise-0-0-71.png");
+@grey-dark: hsv(0, 0, 0.33);
+@grey-light: hsv(0, 0, 0.80);
+
+@green: hsv(127, 0.83, 0.68);
+@green-foreground: hsv(127, 0.77, 0.85);
+@green-light: @green-foreground;
+
+@white: hsv(0, 0, 1);
+@white-dark: hsv(0, 0, 0.91);
+
+@black: hsv(0, 0, 0);
+
+
+// Sizes
+
+@font-size: 0.92rem;
+@line-height: 1.24;
+
+
+@max-page-width: 1200px;
+
+@button-line-height: @font-size * 2;
+
+@image-large: 8rem;
+@image-medium: 4rem;
+@image-small: 2rem;
+
+@border-width: 0.6rem;
+
+
+// Margins
+
+@margin-base: 0.6rem;
+
+@body-padding: 3%;
+@body-margin: 2rem;
+
+@margin-inner: @margin-base;
+
+@margin-side: @margin-base * 0.7;
+
+@button-horizontal-padding: 2 * @margin-base;
+@button-vertical-padding: 1 * @margin-base;
+
+
+
+//--------------------------------------
+// Overall Values
+
+
+html {
+  font-size: @font-size;
+  line-height: @font-size * @line-height;
+  overflow-y: scroll;
+}
+
+
+body {
+  font-family: "droid_sansregular", sans-serif;
+
+  padding: 0;
+  margin: 0;
+
+  background: @back-background;
+
+  line-height: 0;
+  font-size: 0;
+}
+
+
+div.central {
+  margin: 0;
+  padding: 0;
+}
+
+
+a {
+  color: @green-foreground;
+}
+
+
+ul {
+  list-style-type: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+
+
+h1, h2, h3, h4, h5,
+strong {
+  font-family: "droid_sansregular";
+  font-weight: normal;
+}
+
+
+
+
+//--------------------------------------
+// Top Menu
+
+
+body > div.central > div.menu {
+  display: inline-block;
+  background: @menu-background;
+
+  padding: 0;
+  margin: 0;
+
+  width: 100%;
+  max-width: none;
+
+  text-align: center;
+
+  div {
+    max-width: @max-page-width;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+
+    .left, .right {
+      display: inline-block;
+    }
+
+    .item {
+      display: inline-block;
+
+      a {
+        border: 0;
+        padding: @button-vertical-padding @button-horizontal-padding;
+        margin: 0;
+
+        font-size: @font-size;
+        line-height: @line-height * @font-size;
+
+        display: inline-block;
+
+        color: @menu-foreground;
+        text-decoration: none;
+      }
+
+      a:hover {
+        background-color: @menu-hover;
+      }
+    }
+  }
+}
+
+
+//--------------------------------------
+// First Caption
+
+
+h1 {
+  background: @body-background;
+
+  font-size: 3 * @font-size;
+  line-height: 3 * @font-size * @line-height;
+
+  font-family: 'kingthings_exeterregular', serif;
+  text-shadow: 0px 0px 4px fade(@black, 50);
+  color: @white;
+
+  margin: 0;
+  padding: (@margin-inner) @body-padding;
+
+  max-width: @max-page-width;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* border-bottom: @border-width solid @grey-dark; */
+
+  img {
+    max-width: @image-medium;
+    max-height: @image-medium;
+
+    vertical-align: bottom;
+    display: inline-block;
+  }
+}
+
+
+
+//--------------------------------------
+// Side Menu
+
+div#side {
+  max-width: @max-page-width;
+  margin: 0 auto;
+  padding: 0;
+
+  background: @body-background;
+  color: @body-foreground;
+
+
+  /* border: 1px solid pink; */
+
+  /* float: right; */
+  /* position: absolute; */
+  /* top: 0; */
+  /* right: 0; */
+
+  display: block;
+
+  text-align: right;
+
+  ul.menu {
+    list-style-type: none;
+    background: transparent;
+
+    li.item {
+      display: inline-block;
+
+      a {
+        display: inline-block;
+        padding: (0.1 * @margin-inner) (1.6 * @margin-inner);
+
+        color: @grey-dark;
+        text-decoration: none;
+        font-size: @font-size;
+        line-height: @button-line-height;
+      }
+
+      a:hover {
+        background: @grey;
+      }
+
+      button#minimiseMenu {
+        display: none;
+      }
+
+    }
+  }
+
+  h4,
+  .quality {
+    display: none;
+  }
+}
+
+//--------------------------------------
+// Content
+
+
+
+h2 {
+  font-size: 1.7 * @font-size;
+  line-height: 1.7 * @font-size * @line-height;
+}
+
+
+h3 {
+  font-size: 1.4 * @font-size;
+  line-height: 1.4 * @font-size * @line-height;
+
+  margin: 0;
+  padding: 0.3 * @margin-inner;
+}
+
+
+h4 {
+  font-size: 1.3 * @font-size;
+  line-height: 1.3 * @font-size * @line-height;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+p {
+  font-size: @font-size;
+  line-height: @font-size * @line-height;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+
+div#centre {
+  max-width: @max-page-width;
+  margin: 0 auto;
+  padding: 0;
+  padding-top: 0.3rem;
+
+  background: @body-background;
+  color: @body-foreground;
+
+
+
+  //
+  // Layout of basic elements.
+
+  h2 {
+    margin: @margin-inner @margin-side;
+  }
+
+  p {
+    margin: (0.4 * @margin-inner) @margin-inner;
+  }
+
+
+
+  //
+  // Scene lists.
+
+  ul.scenes {
+    margin: 0 @margin-inner;
+
+    li {
+      position: relative;
+      clear: both;
+
+      border: 1px solid @grey-dark;
+      background: @grey;
+
+      padding: 0.3rem 0.7rem;
+
+      /* border-left: @border-width solid @grey-dark; */
+
+      font-size: @font-size;
+      line-height: @font-size * @line-height;
+
+      img {
+        width: @image-medium;
+        height: @image-medium;
+        float: left;
+        margin-right: 0.8rem;
+        margin-bottom: 0.4rem;
+      }
+
+      p {
+        margin: 0.4 * @margin-inner;
+      }
+
+      h4 {
+        clear: both;
+      }
+
+      ul.requirements {
+        li {
+          display: block;
+          padding: 0;
+          margin: 0;
+          border: 0 solid transparent;
+
+          img {
+            width: @image-small;
+            height: @image-small;
+
+            display: inline-block;
+            vertical-align: middle;
+            float: none;
+            margin: 0;
+            padding: 0;
+          }
+
+          small {
+            display: none;
+          }
+        }
+      }
+
+      a.button {
+        /* float: right; */
+        /* width: 400px; */
+        width: auto;
+        display: inline-block;
+
+        /* position: absolute; */
+        /* bottom: 1rem; */
+        /* right: 1rem; */
+      }
+    }
+  }
+}
+
+
+button,
+a.button {
+  border: 1px solid @black;
+  background: @grey-light;
+  border-radius: 0.3rem;
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height;
+
+
+  padding: 4px 6px;
+  margin: 2px 0px;
+  width: 100%;
+  outline: 0;
+  min-width: 120px;
+
+  display: inline-block;
+
+  cursor: pointer;
+
+
+
+}
+
+
+button:hover,
+a.button:hover {
+
+  border: 1px solid @green;
+
+  -webkit-box-shadow: inset 0 0 4px @green-light;
+  -moz-box-shadow: inset 0 0 4px @green-light;
+  box-shadow: inset 0 0 4px @green-light;
+
+}
+
+
+
+//--------------------------------------
+// schlussvermerk.
+
+
+.schlussvermerk {
+  background: @body-background;
+  /* background: @grey-light; */
+  color: fade(@grey-dark, 60);
+  font-size: 0.7rem;
+
+  border-top: 0;
+  border-bottom: @border-width solid @grey-dark;
+  margin-top: 0;
+  padding-top: 3rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 4rem;
+
+  max-width: @max-page-width;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.schlussvermerk a {
+  color: fade(@grey-dark, 60);
+}
+

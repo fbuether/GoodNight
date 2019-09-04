@@ -1,0 +1,1425 @@
+
+// Fonts
+@import url("../fonts/droid-serif/regular/stylesheet.css");
+@import url("../fonts/droid-serif/italic/stylesheet.css");
+@import url("../fonts/droid-serif/bold/stylesheet.css");
+@import url("../fonts/droid-serif/bolditalic/stylesheet.css");
+
+
+//--------------------------------------
+// overall values
+
+
+
+@font-size: 1rem;
+@line-height-factor: 1.24;
+
+
+@h1scale: 1.6;
+@h2scale: 1.45;
+@h3scale: 1.3;
+@h4scale: 1.2;
+
+
+@outer-left-border: 0.9rem;
+@outer-right-border: 0.9rem;
+
+
+
+//--------------------------------------
+// colors
+
+
+@default-hue: 51;
+
+@light-hue: 90;
+
+@font: hsv(350, 0.25, 0.32);
+@font-warning: hsv(31, 0.81, 0.76);
+@font-error: hsv(0, 0.61, 0.76);
+@font-less: hsv(350, 0.18, 0.61);
+
+@link: hsv(30, 0.55, 0.55);
+@link-hover: hsv(350, 0.7, 0.7);
+@link-hover-background: hsv(30, 0.12, 0.92);
+
+@locked: hsv(0, 0.55, 0.55);
+
+@horizontal-line: hsv(350, 0.12, 0.72);
+@horizontal-line-light: hsv(350, 0.06, 0.76);
+@vertical-line: hsv(350, 0.10, 0.78);
+
+@focus: hsv(350, 0.42, 0.88);
+@focus-inner: hsva(350, 0.42, 0.88, 0.4);
+
+@error: hsv(0, 0.42, 0.88);
+@error-inner: hsva(0, 0.42, 0.88, 0.4);
+
+
+
+//--------------------------------------
+// shell
+
+
+html {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+  overflow-y: scroll;
+}
+
+
+* {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+}
+
+
+body {
+  font-family: "Droid Serif", "droid_serifregular", Cambria, Georgia, serif;
+
+  margin: 0;
+  padding: 0;
+
+  background: hsv(350, 0.30, 0.12);
+
+  font-size: 0;
+  line-height: 0;
+}
+
+
+
+div.central {
+  background: hsv(0, 0, 0.94);
+  color: @font;
+
+  max-width: 800px;
+  margin: (@font-size * 2) auto (@font-size * 6) auto;
+  border-radius: 0.8rem;
+
+  font-size: 0;
+  line-height: 0;
+
+  @media (max-width: (@font-size * 48)) {
+    margin-top: 0;
+    border-radius: 0;
+  }
+}
+
+
+.schlussvermerk {
+  border-color: @horizontal-line;
+  color: hsv(350, 0.15, 0.62);
+}
+
+.schlussvermerk a {
+  color: hsv(350, 0.15, 0.62);
+}
+
+//--------------------------------------
+// overall
+
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 6px @outer-right-border 6px @outer-left-border;
+}
+
+li, a {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+}
+
+a {
+  color: @link;
+}
+
+a:hover,
+button:hover {
+  color: @link-hover;
+  text-decoration: underline;
+}
+
+
+@h1FontSizeScale: @font-size * @h1scale;
+
+h1,
+h1 * {
+  @s: @h1FontSizeScale;
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+}
+
+h2 {
+  @s: @font-size * @h2scale;
+
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+
+  border-bottom: 1px solid @horizontal-line;
+  margin: (@s * 0.8) @outer-right-border (@s * 0.6) @outer-left-border;
+}
+
+h3 {
+  @s: @font-size * @h3scale;
+
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+
+  margin: (@s * 0.6) (@s * 1) (@s * 0.4) (@s * 0.6);
+}
+
+h4 {
+  @s: @font-size * @h4scale;
+
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+  font-weight: normal;
+
+  margin: (@s * 0.7) (@s * 1.5) (@s * 0.3) (@s * 0.6);
+}
+
+h2 a,
+h3 a {
+  font-weight: normal;
+  margin-left: auto;
+  margin-right: 0;
+  display: block;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+}
+
+h2 a.button,
+h3 a.button {
+  margin: auto;
+  width: auto;
+  min-width: 220px;
+}
+
+h2 span.inline,
+h3 span.inline,
+h4 span.inline {
+  font-size: @font-size;
+  margin-left: 6px;
+  font-weight: normal;
+}
+
+h2 span.inline a,
+h3 span.inline a,
+h4 span.inline a {
+  float: none;
+  display: inline;
+  text-decoration: underline;
+}
+
+h2 a {
+  margin-top: @font-size * @line-height-factor * 0.4;
+}
+
+h2 a.button {
+  margin-top: @font-size * @line-height-factor * 0.2;
+}
+
+h3 a {
+  margin-top: @font-size * @line-height-factor * 0.25;
+}
+
+h3 a.button {
+  margin-top: @font-size * @line-height-factor * 0.125;
+}
+
+
+
+p {
+  padding: 0;
+  margin: (@font-size * 0.6) @outer-right-border
+  (@font-size * 0.4) @outer-left-border;
+  text-indent: @font-size * 0.7;
+
+  line-height: @font-size * @line-height-factor;
+
+  * {
+    text-indent: 0;
+  }
+}
+
+div.margin {
+  margin: 16px @outer-right-border 16px @outer-left-border;
+}
+
+p.plain {
+  text-indent: 0;
+  margin: (@font-size * 0.6) (@outer-right-border * 0.5)
+  (@font-size * 0.6) (@outer-left-border * 0.5);
+}
+
+small {
+  font-size: @font-size * 0.9;
+  font-style: italic;
+
+  &.regular {
+    font-style: normal;
+  }
+
+  a {
+    font-size: @font-size * 0.9;
+  }
+}
+
+img {
+  margin: 0 12px;
+}
+
+img.left {
+  margin: (@font-size * 0.2) (@font-size * 0.4);
+}
+
+img.right {
+  margin-left: 24px;
+}
+
+img.small {
+  width: 64px;
+  height: 64px;
+}
+
+img.little {
+  width: 48px;
+  height: 48px;
+}
+
+img.tiny {
+  width: 32px;
+  height: 32px;
+}
+
+img.inline {
+  display: inline;
+  vertical-align: middle;
+  margin: 0;
+}
+
+.warning {
+  color: @font-warning;
+}
+
+
+.error {
+  color: @font-error;
+}
+
+blockquote {
+  margin: 6px (@outer-right-border * 2) 6px (@outer-left-border * 4);
+  padding: 6px 3px;
+
+  background: hsv(0, 0, 0.88);
+}
+
+i,
+span.ref {
+  font-style: italic;
+}
+
+strong,
+b {
+  font-weight: bold;
+}
+
+.indent {
+  margin-left: @outer-left-border * 2;
+}
+
+.indent .indent {
+  margin-left: @outer-left-border * 1;
+}
+
+
+hr {
+  margin: 0 (@outer-right-border + 2.5rem) 0 (@outer-left-border + 2.5rem);
+  padding: 0;
+  border: 0;
+  border-top: 1px dashed @horizontal-line;
+  width: auto;
+
+  margin-top: @font-size * 0.6;
+  margin-bottom: @font-size * 0.4;
+
+
+  &.spaced {
+    margin-top: @font-size * 1.0;
+    margin-bottom: @font-size * 1.0;
+  }
+}
+
+
+//--------------------------------------
+// banner, sections, etc.
+
+
+.banner {
+  @scale: @h1FontSizeScale;
+  @imageScale: @h1FontSizeScale * 3.4;
+  @imageUnpos: @font-size * -1.5;
+
+  margin: 0;
+  padding: (@scale * 0.7) (@outer-right-border * 1.5)
+  (@scale * 0.6) (@outer-left-border * 0.5);
+
+  background: linear-gradient(to bottom,
+                              hsv(350, 0.16, 0.77) 0%,
+                              hsv(350, 0.16, 0.82) 17%,
+                              hsv(350, 0.16, 0.82) 100%);
+
+  img {
+    display: block;
+    position: absolute;
+    margin: @imageUnpos (@font-size * 0.8);
+    width: @imageScale;
+    height: @imageScale;
+  }
+
+  span {
+    margin: 0 0 0 (@imageScale + (@scale * 1.0));
+    display: block;
+    vertical-align: center;
+    text-shadow: 1px 1px 2px hsv(0, 0, 0.65);
+  }
+}
+
+
+
+.nyan {
+  width: 160px;
+  height: 160px;
+  display: block;
+}
+
+
+.text {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+}
+
+
+table {
+  width: 100%;
+
+  border-collapse: separate;
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+
+  border-radius: 0.3rem;
+  border: 1px solid @horizontal-line;
+}
+
+
+table th {
+  text-align: left;
+  background: hsv(0, 0, 0.90);
+
+}
+
+
+table th,
+table td {
+  border-bottom: 1px solid @horizontal-line;
+  padding: 4px 8px;
+}
+
+table tr:first-child th:first-child,
+table tr:first-child td:first-child {
+  border-top-left-radius: 0.3rem;
+}
+
+table tr:first-child th:last-child,
+table tr:first-child td:last-child {
+  border-top-right-radius: 0.3rem;
+}
+
+table tr th:first-child,
+table tr td:first-child {
+  border-left: 0;
+}
+
+table tr:last-child th:first-child,
+table tr:last-child td:first-child {
+  border-bottom-left-radius: 0.3rem;
+}
+
+table tr:last-child th,
+table tr:last-child td {
+  border-bottom: 0;
+}
+
+table tr:last-child th:last-child,
+table tr:last-child td:last-child {
+  border-bottom-right-radius: 0.3rem;
+}
+
+table td.indent {
+  width: 4rem;
+  margin: 0;
+  padding: 0;
+}
+
+
+div#centre > img.left {
+  margin: 0 @outer-right-border (@font-size) @outer-left-border;
+}
+
+
+
+
+//--------------------------------------
+// menu
+
+.menu {
+  display: inline-block;
+
+  div ul {
+    font-size: 0;
+    line-height: 0;
+  }
+
+  padding: 0;
+  margin: 0;
+
+  width: 100%;
+
+  border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+
+
+  background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
+
+
+  .item,
+  ul {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+
+  .item {
+    display: inline-block;
+
+    a,
+    button {
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      border-radius: 0;
+      padding: 0.45em 1.3em;
+      box-sizing: border-box;
+      transition: background 0.15s ease;
+      vertical-align: middle;
+      margin: 0;
+      text-align: left;
+
+      font-size: @font-size;
+      line-height: @font-size * @line-height-factor * 1.2;
+      text-decoration: none;
+
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+
+      -moz-user-select: none;
+      display: inline-block;
+      position: relative;
+
+      color: @font;
+    }
+
+    .item.expander {
+      display: none;
+    }
+
+
+    a:hover,
+    button:hover {
+      background: hsv(30, 0.32, 0.92);
+      color: hsv(40, 0.1, 0.49);
+    }
+  }
+
+
+  .item.header a {
+    font-size: @font-size * 1.2;
+    line-height: @font-size * @line-height-factor;
+  }
+
+
+
+  @media (min-width: (@font-size * 48)) {
+    .left .item:first-child a {
+      border-top-left-radius: 0.8rem;
+    }
+
+    .right .item:last-child a {
+      border-top-right-radius: 0.8rem;
+    }
+
+    .left .item a {
+      border-right: 1px dashed hsv(30, 0.37, 0.7);
+    }
+
+    .right .item a {
+      border-left: 1px dashed hsv(30, 0.37, 0.7);
+    }
+
+    .expander {
+      display: none;
+    }
+  }
+
+
+  @media (max-width: (@font-size * 48)) {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+
+    .item {
+      display: none;
+    }
+
+    .item.header,
+    .item.expander {
+      display: inline-block;
+    }
+  }
+
+  &.overlay {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+
+    .item {
+      display: block;
+    }
+
+    .right .item {
+      text-align: right;
+    }
+  }
+
+  & > .spacer {
+    display: none;
+  }
+
+  &.overlay > .spacer {
+    display: block;
+
+    padding: 0.45em 1.3em;
+    font-size: @font-size;
+    line-height: @font-size * @line-height-factor * 1.2;
+  }
+}
+
+
+//--------------------------------------
+// columns
+
+
+.withColumns {
+  padding-left: @outer-left-border;
+  padding-right: @outer-right-border;
+}
+
+.column.oftwo {
+  width: 48.5%;
+}
+
+@media (max-width: (@font-size * 48)) {
+  .column.oftwo {
+    width: 100%;
+  }
+}
+
+ul.listed li {
+  display: flex;
+  margin-bottom: 0.3rem;
+
+  & > * {
+    flex-shrink: 0;
+  }
+
+  img {
+    margin-right: 0.3rem;
+  }
+
+  a {
+    align-self: flex-start;
+    margin-right: 0.3rem;
+  }
+
+  span.level {
+    align-self: center;
+    flex-shrink: 1;
+    text-align: right;
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+
+//--------------------------------------
+// forms
+
+
+form {
+  display: block;
+  margin: 12px 0 16px 0;
+}
+
+form.centered {
+  max-width: 300px;
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"],
+select,
+textarea,
+button,
+a.button,
+div.a.button {
+  border: 1px solid hsv(0, 0, 0.8);
+  background: hsv(0, 0, 0.98);
+  border-radius: 0.3rem;
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+
+  padding: 4px 6px;
+  margin: 2px 0;
+  width: 100%;
+  outline: 0;
+  min-width: 120px;
+
+  display: block;
+}
+
+textarea {
+  resize: vertical;
+}
+
+td button,
+td a.button,
+td div.a.button {
+  margin-right: auto;
+}
+
+
+button,
+input[type="submit"],
+a.button,
+div.a.button {
+  cursor: pointer;
+}
+
+div.a.button.locked,
+a.button.locked {
+  cursor: default;
+}
+
+
+textarea {
+  height: 90px;
+}
+
+
+input:focus,
+button:focus,
+textarea:focus,
+select:focus,
+button:hover,
+a.button:hover,
+div.a.button:hover {
+  border: 1px solid @focus;
+
+  -webkit-box-shadow: inset 0 0 4px @focus-inner;
+  -moz-box-shadow: inset 0 0 4px @focus-inner;
+  box-shadow: inset 0 0 4px @focus-inner;
+}
+
+
+form.fit {
+  margin: 0;
+}
+
+input[type="checkbox"] {
+  vertical-align: middle;
+  border: 1px solid hsv(0, 0, 0.8);
+  background: hsv(0, 0, 0.98);
+  border-radius: 0.3rem;
+}
+
+
+label,
+button {
+  display: inline-block;
+  width: 55%;
+
+  margin: 8px @outer-right-border 4px @outer-left-border;
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+}
+
+.inset {
+  padding: 12px @outer-right-border 12px @outer-left-border;
+  margin-bottom: 1.4rem;
+
+  border: 1px solid @horizontal-line;
+  border-radius: 0.3rem;
+  background: hsv(350, 0.03, 0.94);
+
+  h2:first-child {
+    margin: -12px (@outer-right-border * -1) 12px (@outer-left-border * -1);
+    border-top-right-radius: 0.3rem;
+    border-top-left-radius: 0.3rem;
+    background: hsv(0, 0, 0.96);
+    border-bottom: 1px solid @horizontal-line;
+    padding: 12px @outer-right-border 8px @outer-left-border;
+  }
+
+  h3:first-child {
+    margin: -12px (@outer-right-border * -1) 12px (@outer-left-border * -1);
+    border-top-right-radius: 0.3rem;
+    border-top-left-radius: 0.3rem;
+    background: hsv(0, 0, 0.96);
+    border-bottom: 1px solid @horizontal-line;
+    padding: 8px @outer-right-border 4px @outer-left-border;
+  }
+
+  h4 {
+    border-bottom: 1px solid @horizontal-line;
+    padding-left: 0.2rem;
+  }
+
+  label,
+  button,
+  a.button,
+  div.a.button,
+  ul {
+    width: 100%;
+  }
+
+  label,
+  h4,
+  ul {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
+label.captioned,
+label.checkbox {
+  display: block;
+}
+
+label.checkbox {
+  margin-top: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+
+label.alternative,
+a.button.alternative,
+button.alternative {
+  display: inline-block;
+  margin-left: 0;
+}
+
+
+a.button,
+button,
+div.a.button {
+  border: 1px solid hsv(0, 0, 0.65);
+  margin-top: 6px;
+  margin-bottom: 4px;
+
+  width: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: 25%;
+  text-align: center;
+  text-decoration: none;
+  color: @font;
+}
+
+a.button.atLeft,
+button.atLeft,
+div.a.button.atLeft {
+  margin-left: 5%;
+  margin-right: auto;
+}
+
+label.full,
+label.checkbox {
+  width: auto;
+}
+
+label.small,
+a.button.small,
+button.small,
+select.small {
+  width: 35%;
+}
+
+form a.option {
+  display: block;
+  margin: 8px 0 4px 0;
+}
+
+
+label.inline,
+label.inline input[type="text"],
+input[type="text"].inline,
+a.button.inline,
+select.inline,
+button.inline {
+  display: inline-block;
+  width: auto;
+  max-width: 200px;
+  margin: auto;
+}
+
+label.inline {
+  padding: 0;
+}
+
+input.small[type="text"] {
+  min-width: 60px;
+  width: 60px;
+}
+
+
+
+.subform {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 1rem;
+
+  & > .caption {
+    flex-shrink: 0;
+    border-right: 4px solid @vertical-line;
+
+    margin-left: @outer-left-border;
+    padding-right: 0.6rem;
+
+    h3 {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  & > * {
+    flex-shrink: 1;
+    margin-top: 0;
+  }
+}
+
+
+
+
+//--------------------------------------
+// sidebar
+
+
+@sidebar-width: 10rem;
+@sidebar-minimised: 2.5rem;
+
+
+
+div#matter {
+  display: flex;
+  flex-direction: row-reverse;
+
+  div#side {
+    flex-grow: 0;
+  }
+
+  div#centre {
+    flex-grow: 1;
+  }
+}
+
+
+
+
+
+div#side {
+  width: @sidebar-width;
+  min-width: @sidebar-width;
+  border-left: 1/10rem dashed @horizontal-line;
+  border-bottom: 1/10rem dashed @horizontal-line;
+
+  background: hsv(0, 0, 0.92);
+  margin-bottom: 0.6rem;
+
+  .menu {
+    background: transparent;
+    margin: (@font-size * 0.5) 0;
+
+    .item,
+    .item a,
+    .item button {
+      width: 100%;
+      display: block;
+      color: @link;
+    }
+  }
+
+  h4 {
+    border-bottom: 1px solid @horizontal-line;
+    margin-left: @font-size * 0.4;
+    margin-right: @font-size * 0.4;
+  }
+
+
+  .quality {
+    margin: (@font-size * 0.8) (@font-size * 0.4);
+
+    li {
+      width: 100%;
+    }
+  }
+
+  .quality.big {
+    a {
+      font-size: @font-size;
+      line-height: @font-size * @line-height-factor;
+
+      background: hsv(0, 0, 0.9);
+      border-radius: 0.3rem;
+      border: 1px solid @horizontal-line;
+
+      display: block;
+      padding: (@font-size * 0.3);
+
+      text-decoration: none;
+      color: @font;
+      text-align: center;
+
+      &:hover {
+        background: hsv(30, 0.32, 0.85, 0.1)
+        url("../images/menu-background.png");
+        color: @link;
+        border: 1px solid @link;
+      }
+
+      img {
+        display: block;
+        width: @font-size * 6;
+        height: auto;
+        horizontal-align: center;
+        margin: 0 auto;
+      }
+    }
+
+    .level:before {
+      content: ' ';
+    }
+  }
+
+
+  .quality.small {
+    li {
+      @imageSize: 3;
+
+      border-bottom: 1px solid @horizontal-line-light;
+
+      display: flex;
+      height: @font-size * @imageSize;
+
+      a {
+        flex-grow: 1;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        span {
+          height: @font-size * @imageSize;
+          padding-left: @font-size * @imageSize;
+
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        img {
+          display: block;
+          position: absolute;
+
+          width: auto;
+          height: @font-size * @imageSize;
+
+          padding: @font-size * 0.2;
+          border-radius: 0.3em;
+          border: 1px solid transparent;
+        }
+      }
+
+      span {
+        margin-left: @font-size * 0.2;
+        align-self: center;
+        flex-grow: 0;
+      }
+    }
+  }
+
+  .quality.tiny {
+
+    li {
+      margin: (@font-size * 0.3) 0;
+
+      display: flex;
+
+      a {
+        flex-grow: 1;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+
+
+  &.minimised {
+    width: @sidebar-minimised;
+    min-width: @sidebar-minimised;
+
+    .menu .item {
+      button,
+      a {
+        display: block;
+        margin: 0;
+        min-width: 0;
+        text-align: center;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      span {
+        display: none;
+      }
+
+      span.fa {
+        display: inline;
+      }
+    }
+
+    h4 {
+      font-size: 0;
+      line-height: 0;
+      color: transparent;
+      margin: 0;
+    }
+
+    .quality.big {
+      border-bottom: 1px solid @horizontal-line-light;
+      margin: 0;
+
+      li {
+        margin: 0;
+        margin-top: 0.3rem;
+        border-bottom: none;
+      }
+
+      a {
+        width: 100%;
+        padding: 0;
+        margin-top: 0.3rem;
+        margin-bottom: 0.3rem;
+
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+
+        text-align: center;
+        display: block;
+
+        img {
+          opacity: 0.8;
+
+          margin-left: auto;
+          margin-right: auto;
+          padding: 0;
+          width: 90%;
+          height: auto;
+          position: static;
+        }
+
+        span {
+          display: none;
+        }
+
+        .level {
+          white-space: nowrap;
+        }
+
+        .level:before {
+          content: '';
+        }
+      }
+
+      span.level {
+        margin: 0;
+        font-size: @font-size * 0.8;
+        display: block;
+        float: none;
+        text-align: center;
+      }
+    }
+
+    ul.quality.small {
+      margin: 0;
+
+      .level {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        font-size: @font-size * 0.9;
+      }
+
+      li {
+        display: block;
+        height: auto;
+
+        margin: 0;
+        margin-top: 0.3rem;
+        border-bottom: none;
+
+        a {
+          width: 100%;
+          padding: 0;
+          text-align: center;
+          display: block;
+
+          span {
+            display: none;
+          }
+        }
+
+        a img {
+          opacity: 0.6;
+
+          margin-left: auto;
+          margin-right: auto;
+          padding: 0;
+          width: 90%;
+          height: auto;
+          position: static;
+        }
+
+        a:hover{
+          background: transparent;
+
+          img {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    ul.quality.tiny {
+      display: none;
+    }
+  }
+}
+
+
+
+//--------------------------------------
+// world list
+
+
+ul.worldList {
+  list-style-type: none;
+  margin: @outer-right-border 8px @outer-left-border 8px;
+  padding: 0;
+
+  line-height: 0;
+  font-size: 0;
+}
+
+ul.worldList li {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+ul.worldList li a {
+  display: inline-block;
+  vertical-align: top;
+  width: 252px;
+  margin: 4px;
+
+  border-radius: 0.3rem;
+  border: 1px solid @horizontal-line;
+
+  padding: 8px 6px;
+
+  background: hsv(0, 0, 0.9);
+
+  text-decoration: none;
+  color: @font;
+}
+
+ul.worldList li a:hover {
+  background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
+  color: @link;
+  border: 1px solid @link;
+}
+
+ul.worldList li a img {
+  width: 60px;
+  height: 60px;
+  float: left;
+}
+
+
+//--------------------------------------
+// scene list
+
+.choices,
+.scenes {
+  padding: 0;
+  margin: (@font-size * 0.8) (@outer-right-border * 1.2)
+  (@font-size * 0.6) (@outer-left-border * 1.2);
+
+  & > li {
+
+    padding: @font-size * 0.15;
+    margin: (@font-size * 0.8) 0 (@font-size * 0.6) 0;
+    border-radius: 0.3rem;
+
+    border: 1px solid @horizontal-line;
+    background: hsv(0, 0, 0.9);
+    overflow: auto;
+
+    & > img {
+      margin: 6px;
+      width: 96px;
+      height: 96px;
+    }
+
+    & > img + div {
+      // Dies funktioniert leider nur, wenn 1rem == 15px.
+      margin-left: 96px + (6px * 2);
+    }
+  }
+
+  .requirements, .tests {
+    margin-left: @font-size * 1;
+
+    li {
+      border: 0;
+      margin-top: @font-size * 0.3;
+      display: flex;
+      align-items: center;
+
+      img {
+        flex-grow: 0;
+      }
+
+      p {
+        margin: 0;
+        margin-left: @font-size * 0.4;
+        flex-grow: 1;
+        text-indent: 0;
+      }
+    }
+  }
+}
+
+a.action,
+div.a.action {
+  margin: 4px 6px 6px auto;
+}
+
+
+.effects li {
+  display: flex;
+  margin-bottom: 0.3rem;
+
+  & > * {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  div {
+    flex-shrink: 1;
+  }
+
+  img {
+    margin-right: 0.8rem;
+  }
+}
+
+
+.choices .locked {
+  color: @font-less;
+
+  strong,
+  b {
+    font-weight: normal;
+    color: @font-error;
+  }
+
+  img {
+    opacity: 0.5;
+  }
+}
+
+
+div.a.button.locked {
+  color: @font-less;
+  border: 1px solid hsv(0, 0, 0.8);
+
+  &:hover {
+    border: 1px solid hsv(0, 0, 0.8);
+
+    -webkit-box-shadow: inset 0 0 0 @focus-inner;
+    -moz-box-shadow:    inset 0 0 0 @focus-inner;
+    box-shadow:         inset 0 0 0 @focus-inner;
+  }
+}
+
+
+//--------------------------------------
+// editing qualities by category
+
+
+ul.qualityCategories > li > ul,
+ul.sceneLocations > li > ul {
+  border-left: 2px solid hsv(0, 0, 0.7);
+  margin-left: @outer-left-border * 2;
+  display: block;
+}
+
+
+
+ul.qualityCategories > li > ul > li > ul {
+  border-left: 2px solid hsv(0, 0, 0.78);
+  margin-left: @outer-left-border * 2;
+  display: block;
+}
+
+ul.qualityCategories li ul li ul li,
+ul.sceneLocations li ul li {
+  margin-left: @outer-left-border * 0.5;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+

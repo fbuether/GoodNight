@@ -151,7 +151,7 @@ lazy val server = project.in(file("server")).
     // less assets.
     includeFilter in (Assets, LessKeys.less) := "*.less",
     excludeFilter in (Assets, LessKeys.less) := "*.include.less",
-    LessKeys.compress in Assets := true,
+    // LessKeys.compress in Assets := true,
 
     // new command to build a release version, also runs tests.
     commands += Command.command("release") { state =>

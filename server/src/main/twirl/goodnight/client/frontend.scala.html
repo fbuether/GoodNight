@@ -6,14 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A GoodNight Story, for you to sleep steady">
     <meta name="author" content="goodnight.jasminefields.net">
-    <link rel="shortcut icon" href="@routes.Assets.versioned("images/favicon.png")">
+    <link rel="shortcut icon"
+      href="@routes.Assets.versioned("images/favicon.png")">
     <title>GoodNight - Have a Good Night</title>
 
-    <link rel="stylesheet" href="@routes.Assets.versioned("css/normalize.min.css")">
-    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/external.css")"> -->
-    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/font-awesome.min.css")"> -->
-    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/goodnight.css")"> -->
-    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/default.css")"> -->
+    <link rel="stylesheet"
+      href="@routes.Assets.versioned("css/normalize.min.css")">
+    <link rel="stylesheet"
+      href="@routes.Assets.versioned("css/external.css")">
+    <link rel="stylesheet"
+      href="@routes.Assets.versioned("css/font-awesome.min.css")">
+    <link rel="stylesheet"
+      href="@routes.Assets.versioned("css/goodnight.css")">
+    <link rel="stylesheet"
+      href="@routes.Assets.versioned("css/default.css")">
   </head>
   <body>
     <div id="goodnight-client"></div>
@@ -24,8 +30,10 @@
     <!-- <script src="@routes.Assets.versioned("js/jquery.caret.min.js")"></script> -->
     <!-- <script src="@routes.Assets.versioned("js/jquery.tag-editor-1.0.18.min.js")"></script> -->
     <!-- <script src="@routes.Assets.versioned("js/jquery-ui-1.11.4.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/goodnight-static.js")"></script> -->
 
-    <script src="@routes.Assets.versioned("js/goodnight-client.js")"></script>
+    <script src="@routes.Assets.versioned("goodnight-client-jsdeps.js")"></script>
+    <script src="@routes.Assets.versioned("goodnight-client-fastopt.js")"></script>
     <!-- Matomo -->
     <script type="text/javascript">
       var _paq = window._paq || [];

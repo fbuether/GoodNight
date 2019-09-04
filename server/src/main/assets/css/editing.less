@@ -1,0 +1,692 @@
+
+// Fonts
+@import url("../fonts/droid-sans/regular/stylesheet.css");
+@import url("../fonts/droid-sans/bold/stylesheet.css");
+
+
+//--------------------------------------
+// overall values
+
+
+
+
+@font-size: 0.92rem;
+@line-height-factor: 1.24;
+
+@h1scale: 1.6;
+@h2scale: 1.45;
+@h3scale: 1.3;
+@h4scale: 1.2;
+
+
+@outer-left-border: 0.9rem;
+@outer-right-border: 0.9rem;
+
+
+
+//--------------------------------------
+// colors
+
+
+@default-hue: 51;
+
+@light-hue: 90;
+
+@font: hsv(209, 0.25, 0.32);
+@font-warning: hsv(31, 0.81, 0.76);
+@font-error: hsv(0, 0.61, 0.76);
+@font-less: hsv(209, 0.18, 0.61);
+
+@link: hsv(30, 0.55, 0.55);
+@link-hover: hsv(209, 0.7, 0.7);
+@link-hover-background: hsv(30, 0.12, 0.92);
+
+@locked: hsv(0, 0.55, 0.55);
+
+@horizontal-line: hsv(209, 0.12, 0.72);
+@horizontal-line-light: hsv(209, 0.06, 0.76);
+@vertical-line: hsv(209, 0.10, 0.78);
+
+@focus: hsv(209, 0.42, 0.88);
+@focus-inner: hsva(209, 0.42, 0.88, 0.4);
+
+@error: hsv(0, 0.42, 0.88);
+@error-inner: hsva(0, 0.42, 0.88, 0.4);
+
+@tag: hsv(209, 0.11, 0.93);
+
+
+
+//--------------------------------------
+// shell
+
+
+html {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+  overflow-y: scroll;
+}
+
+
+* {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+}
+
+
+body {
+  font-family: "droid_sansregular", Cambria, Georgia, serif;
+  background: hsv(209, 0.34, 0.38) url("../images/background.png");
+  color: @font;
+
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  line-height: 0;
+}
+
+
+
+div.central {
+  background: hsv(0, 0, 0.94);
+  max-width: 72rem;
+  font-size: 0;
+  line-height: 0;
+  margin: auto;
+}
+
+
+.schlussvermerk {
+  border-color: @horizontal-line;
+  color: hsv(209, 0.15, 0.62);
+}
+
+.schlussvermerk a {
+  color: hsv(209, 0.15, 0.62);
+}
+
+
+
+//--------------------------------------
+// menu
+
+
+.menu {
+  font-family: "Droid Serif", "droid_serifregular", Cambria, Georgia, serif;
+  display: inline-block;
+
+  div ul {
+    font-size: 0;
+    line-height: 0;
+  }
+
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
+
+  .item,
+  ul {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .item {
+    display: inline-block;
+
+    a,
+    button {
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      border-radius: 0;
+      padding: 0.45em 1.3em;
+      box-sizing: border-box;
+      transition: background 0.15s ease;
+      vertical-align: middle;
+      margin: 0;
+      text-align: left;
+
+      font-size: @font-size;
+      line-height: @font-size * @line-height-factor * 1.2;
+      text-decoration: none;
+
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+
+      -moz-user-select: none;
+      display: inline-block;
+      position: relative;
+
+      color: @font;
+    }
+
+    .item.expander {
+      display: none;
+    }
+
+    a:hover,
+    button:hover {
+      background: hsv(30, 0.32, 0.92);
+      color: hsv(40, 0.1, 0.49);
+    }
+  }
+
+
+  .item.header a {
+    font-size: @font-size * 1.2;
+    line-height: @font-size * @line-height-factor;
+  }
+
+
+  .left .item a {
+    border-right: 1px dashed hsv(30, 0.37, 0.7);
+  }
+
+  .right .item a {
+    border-left: 1px dashed hsv(30, 0.37, 0.7);
+  }
+}
+
+
+//--------------------------------------
+// overall
+
+
+
+@h1FontSizeScale: @font-size * @h1scale;
+
+h1,
+h1 * {
+  font-family: "Droid Serif", "droid_serifregular", Cambria, Georgia, serif;
+  @s: @h1FontSizeScale;
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+}
+
+.banner {
+  @scale: @h1FontSizeScale;
+  @imageScale: @h1FontSizeScale * 3.4;
+  @imageUnpos: @font-size * -1.5;
+
+  margin: 0;
+  padding: (@scale * 0.7) (@outer-right-border * 1.5)
+  (@scale * 0.6) (@outer-left-border * 0.5);
+
+  background: linear-gradient(to bottom,
+                              hsv(209, 0.16, 0.77) 0%,
+                              hsv(209, 0.16, 0.82) 17%,
+                              hsv(209, 0.16, 0.82) 100%);
+
+  img {
+    display: block;
+    position: absolute;
+    margin: @imageUnpos (@font-size * 0.8);
+    width: @imageScale;
+    height: @imageScale;
+  }
+
+  span {
+    margin: 0 0 0 (@imageScale + (@scale * 1.0));
+    display: block;
+    vertical-align: center;
+    text-shadow: 1px 1px 2px hsv(0, 0, 0.65);
+  }
+}
+
+
+h2 {
+  @s: @font-size * @h2scale;
+
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+
+  border-bottom: 1px solid @horizontal-line;
+  margin: (@s * 0.8) 0.3rem (@s * 0.6) 0.3rem;
+}
+
+h2 a,
+h3 a {
+  font-weight: normal;
+  margin-left: auto;
+  margin-right: 0;
+  display: block;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+
+  &.inline {
+    float: none;
+  }
+}
+
+h3 {
+  @s: @font-size * @h3scale;
+
+  font-size: @s;
+  line-height: @line-height-factor * @s;
+
+  margin: (@s * 0.6) 0.3rem (@s * 0.4) 0.3rem;
+}
+
+
+
+a {
+  color: @link;
+}
+
+a:hover,
+button:hover {
+  color: @link-hover;
+  text-decoration: underline;
+}
+
+img {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+
+
+
+//--------------------------------------
+// forms
+
+
+label {
+  display: inline-block;
+  margin: 0.2rem 0.3rem;
+  vertical-align: top;
+}
+
+
+input[type="email"],
+input[type="text"],
+input[type="password"],
+select,
+textarea,
+ul.tag-editor,
+div.texteditor div.content {
+  border: 1px solid hsv(0, 0, 0.8);
+  background: hsv(0, 0, 0.98);
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+
+  display: block;
+  padding: 0.2rem 0.3rem;
+  margin: 0 0;
+  outline: 0;
+
+  min-width: 10rem;
+}
+
+select {
+  padding: 0.05rem 0.3rem;
+  max-width: 20rem;
+}
+
+input[type="checkbox"] {
+  display: inline;
+  width: auto;
+  vertical-align: middle;
+}
+
+textarea,
+div.texteditor div.content {
+  resize: vertical;
+  height: 5 * @font-size * @line-height-factor;
+  min-width: 32rem;
+}
+
+
+
+input.small {
+  min-width: 4rem;
+  width: 6rem;
+
+  &[type="checkbox"] {
+    min-width: auto;
+    width: auto;
+    display: inline;
+  }
+}
+
+select.small {
+  min-width: 8rem;
+/* width: 10rem; */
+}
+
+input.inline,
+a.inline,
+button.inline,
+select.inline,
+.inline {
+  display: inline-block;
+}
+
+
+
+
+button,
+a.button,
+div.a.button {
+  border: 1px solid hsv(0, 0, 0.6);
+  background: hsv(209, 0, 0.92);
+
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+
+  box-shadow: inset 0 0 4px hsv(0, 0, 0.76);
+
+  display: block;
+  outline: 0;
+
+  min-width: 4rem;
+  padding: 0.2rem 1.8rem;
+  text-align: center;
+
+  &:hover {
+    background: hsv(209, 0.12, 0.86);
+    box-shadow: none;
+  }
+
+  &.inline {
+    display: inline-block;
+  }
+}
+
+
+p {
+  margin: 0.2rem 0.3rem;
+}
+
+p.cloud a {
+  display: inline-block;
+  margin: 0.1em 0.2em;
+}
+
+form > button {
+  margin: 0.2rem auto;
+  min-width: 20%;
+}
+
+
+
+
+
+
+table {
+  border: 1px solid @horizontal-line;
+  width: 100%;
+  margin: 0.2rem 0;
+
+  td,
+  th {
+    border-bottom: 1px solid @horizontal-line;
+  }
+
+  td {
+    padding: 0.1rem;
+  }
+
+  th {
+    text-align: left;
+    background: hsv(0, 0, 0.90);
+    padding: 0.2rem;
+    border-bottom: 1px solid @horizontal-line;
+  }
+}
+
+div.margin {
+  margin: 0.2rem 0.3rem;
+}
+
+
+
+
+.subform {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 0.6rem;
+
+  & > .caption {
+    flex-shrink: 0;
+    flex-grow: 0;
+    border-right: 0.4rem solid @horizontal-line;
+
+    padding-right: 0.1rem;
+
+    h3 {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  & > * {
+    flex-shrink: 1;
+    flex-grow: 1;
+    margin-top: 0;
+    margin-left: 0.2rem;
+  }
+}
+
+
+.subform {
+  & > .caption {
+    border-right-color: hsv(210, 0.4, 0.7);
+  }
+}
+
+.subform + .subform {
+  & > .caption {
+    border-right-color: hsv(60, 0.4, 0.7);
+  }
+}
+
+
+.subform + .subform + .subform {
+  & > .caption {
+    border-right-color: hsv(320, 0.4, 0.7);
+  }
+}
+
+
+.subform + .subform + .subform + .subform {
+  & > .caption {
+    border-right-color: hsv(150, 0.4, 0.7);
+  }
+}
+
+
+
+//--------------------------------------
+// layouting
+
+
+div.as-row {
+  display: flex;
+  width: 100%;
+
+  flex-direction: row;
+  align-items: flex-start;
+
+  /* border: 1px solid orange; */
+
+  & > * {
+    display: block;
+
+  /* border: 1px solid green; */
+
+  }
+
+  label.checkbox {
+    align-self: center;
+  }
+
+  &.last-fit > :last-child,
+  &.first-fit > :first-child,
+  &.equal > * {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    input, select, textarea, div.texteditor div.content {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+
+//--------------------------------------
+// images overview.
+
+
+div.images {
+  margin: 0 @outer-right-border 0 @outer-left-border;
+
+  div {
+    border: 1px solid @horizontal-line-light;
+    width: 7rem;
+    margin: 0.1rem;
+    padding: 0.2rem;
+    overflow: hidden;
+    float: left;
+
+    p {
+      /* white-space: nowrap; */
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-indent: 0;
+      padding: 0;
+      margin: 0;
+      height: @font-size * @line-height-factor * 3;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      margin: 0;
+    }
+  }
+}
+
+
+
+//--------------------------------------
+// text editor.
+
+textarea.texteditor {
+  display: none;
+}
+
+div.texteditor {
+  div.controls {
+    border: 1px solid hsv(0, 0, 0.8);
+    border-bottom: none;
+    background: hsv(0, 0, 0.98);
+
+    display: block;
+    min-width: 10rem;
+    padding: 0;
+    margin: 0;
+    outline: 0;
+
+    font-size: 0;
+    line-height: 0;
+
+    div.controlgroup {
+      display: inline-block;
+      border-right: 1px solid hsv(0, 0, 0.8);
+
+      font-size: 0;
+      line-height: 0;
+
+      a {
+        color: @font;
+        display: inline-block;
+        padding: 0.2rem 0.3rem;
+        margin: 0;
+
+        &:hover {
+          background: @focus-inner;
+        }
+      }
+    }
+
+    div.controlgroup:last-child {
+      border-right: 0;
+    }
+  }
+
+  div.content {
+    resize: vertical;
+    overflow: auto;
+    cursor: text;
+  }
+}
+
+//--------------------------------------
+// tag editor.
+
+ul.tag-editor {
+  padding: 0.1rem 0.15rem;
+
+  li {
+    padding: 0;
+    margin: 0;
+
+    margin: 0.1rem 0.15rem;
+
+    font-size: @font-size;
+    line-height: @font-size * @line-height-factor;
+
+    div.tag-editor-spacer {
+      border-radius: 0;
+      color: transparent;
+      width: 0.2rem;
+    }
+
+    div.tag-editor-tag,
+    div.tag-editor-delete {
+      border-radius: 0;
+      color: @font;
+      background: @tag;
+    }
+
+    div.tag-editor-tag {
+      padding: 0;
+      padding-left: 0.4rem;
+    }
+
+    div.tag-editor-delete {
+      padding: 0 0.4rem;
+    }
+
+    div.tag-editor-tag.active input {
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    display: inline;
+  }
+}
+
+ul.ui-autocomplete {
+  li.ui-menu-item {
+    border: 0;
+    margin: 0.1rem;
+    padding: 0.1rem 0.2rem;
+    color: @font;
+
+    &.ui-state-focus {
+      font-weight: normal;
+      border: 0;
+      background: @tag;
+      color: @font;
+    }
+  }
+}
