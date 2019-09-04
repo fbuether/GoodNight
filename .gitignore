@@ -1,33 +1,11 @@
-*.class
-*.log
-node_modules
 
-# sbt specific
-.cache/
-.history/
-.lib/
-dist/*
-target/
-lib_managed/
-src_managed/
-project/boot/
-project/plugins/project/
+# ignore any and all target directories created by sbt.
+/project/project/target/
+/project/target/
+/target/
 
-# Scala-IDE specific
-.scala_dependencies
-.worksheet
-.cache*
-.settings
-.project
-.classpath
-*/bin
+/client/target/
+/server/target/
 
-# IntelliJ IDEA
-.idea
-*.iml
-out
-*.sc
-
-# GitBook
-doc/_book
-/_book
+/common/.js/target/
+/common/.jvm/target/
