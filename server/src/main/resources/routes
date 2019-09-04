@@ -1,16 +1,10 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
 
-# Home page
-GET     /                                 controllers.Application.index
+# The frontend application, served as a base html file that provides links,
+# as well as a set of static files. These include all images, js dependencies,
+# as well as the actual goodnight-client.js.
+GET / goodnight.client.Frontend.html
+GET /assets/*file controllers.Assets.versioned(file)
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/fonts/*file               controllers.Assets.at(path="/public/lib/font-awesome/fonts", file)
-GET     /assets/*file                     controllers.Assets.versioned(path="/public", file: Asset)
 
-# Autowire calls
-POST    /api/*path                        controllers.Application.autowireApi(path: String)
+# The server-side api.
 
-# Logging
-POST /logging                             controllers.Application.logging

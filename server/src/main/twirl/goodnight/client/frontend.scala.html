@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A GoodNight Story, for you to sleep steady">
+    <meta name="author" content="goodnight.jasminefields.net">
+    <link rel="shortcut icon" href="@routes.Assets.versioned("images/favicon.png")">
+    <title>GoodNight - Have a Good Night</title>
+
+    <link rel="stylesheet" href="@routes.Assets.versioned("css/normalize.min.css")">
+    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/external.css")"> -->
+    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/font-awesome.min.css")"> -->
+    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/goodnight.css")"> -->
+    <!-- <link rel="stylesheet" href="@routes.Assets.versioned("css/default.css")"> -->
+  </head>
+  <body>
+    <div id="goodnight-client"></div>
+
+    <!-- <script src="@routes.Assets.versioned("js/jquery-2.1.0.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/jquery.cookie-1.4.1.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/jquery.hotkeys-0.8.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/jquery.caret.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/jquery.tag-editor-1.0.18.min.js")"></script> -->
+    <!-- <script src="@routes.Assets.versioned("js/jquery-ui-1.11.4.min.js")"></script> -->
+
+    <script src="@routes.Assets.versioned("js/goodnight-client.js")"></script>
+    <!-- Matomo -->
+    <script type="text/javascript">
+      var _paq = window._paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+      var u="https://jasminefields.net/stat/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '1']);
+      var d=document, g=d.createElement('script'),
+      s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true;
+      g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+  </body>
+</html>
