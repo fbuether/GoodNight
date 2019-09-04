@@ -29,6 +29,9 @@ val versions = new {
   // val bootstrap = "4.3.1"
   // val chartjs = "2.6.0"
 
+  val playSlick = "4.0.2"
+  val postgresql = "42.2.6"
+
   val scalajsScripts = "1.1.2"
 }
 
@@ -171,6 +174,10 @@ lazy val server = project.in(file("server")).
       "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
       "org.webjars.npm" % "fontawesome" % versions.fontawesome % Provided,
       // "org.webjars.npm" % "bootstrap" % versions.bootstrap % Provided,
+
+      "com.typesafe.play" %% "play-slick" % versions.playSlick,
+      "com.typesafe.play" %% "play-slick-evolutions" % versions.playSlick,
+      "org.postgresql" % "postgresql" % versions.postgresql,
 
       "com.lihaoyi" %% "utest" % versions.uTest % Test,
     )
