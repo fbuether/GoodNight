@@ -1,17 +1,16 @@
 
 package goodnight.api
 
-import javax.inject.Inject
-
-import play.api.mvc._
-import play.api.Configuration
+import play.api.mvc.BaseController
+import play.api.mvc.ControllerComponents
 
 
-class Users @Inject() (val controllerComponents: ControllerComponents,
-    configuration: Configuration)
-      extends BaseController {
+class Users(components: ControllerComponents) extends BaseController {
+
+  def controllerComponents: ControllerComponents =
+    components
 
   def getUser(user: String) = Action {
-    Ok(goodnight.client.html.frontend())
+    Ok("good enough")
   }
 }

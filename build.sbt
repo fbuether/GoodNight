@@ -169,8 +169,6 @@ lazy val server = project.in(file("server")).
     },
 
     libraryDependencies ++= Seq(
-      guice, // injection for play
-
       "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
       "org.webjars.npm" % "fontawesome" % versions.fontawesome % Provided,
       // "org.webjars.npm" % "bootstrap" % versions.bootstrap % Provided,

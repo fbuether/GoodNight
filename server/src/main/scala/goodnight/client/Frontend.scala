@@ -1,17 +1,21 @@
 
 package goodnight.client
 
-import javax.inject.Inject
+import play.api.mvc.BaseController
+import play.api.mvc.ControllerComponents
+import controllers.AssetsFinder
 
-import play.api.mvc._
-import play.api.Configuration
 
+class Frontend(
+  components: ControllerComponents,
+  assetsFinder: AssetsFinder)
+    extends BaseController {
 
-class Frontend @Inject() (val controllerComponents: ControllerComponents,
-    configuration: Configuration)
-      extends BaseController {
+  def controllerComponents: ControllerComponents =
+    components
 
   def html = Action {
-    Ok(goodnight.client.html.frontend())
+    val resolver = assetsFinder.path _
+    Ok(goodnight.client.html.frontend(resolver))
   }
 }
