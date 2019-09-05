@@ -4,7 +4,6 @@ package goodnight.api
 // import javax.inject.Inject
 
 import play.api.mvc._
-import play.api.Configuration
 
 import goodnight.server.Router
 

@@ -29,27 +29,10 @@ class GoodnightComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
     with HttpFiltersComponents
     with AssetsComponents
-    // with CSRFComponents
-{
-
-
-  // lazy val barRoutes = new bar.Routes(httpErrorHandler)
-  // lazy val applicationController =
-  //   new controllers.Application(controllerComponents)
-
-
-  // lazy val router = new Routes(httpErrorHandler, applicationController, barRoutes, assets)
-
+    with CSRFComponents {
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
 
-  lazy val frontend: Frontend = new Frontend(
-    controllerComponents,
-    // router,
-    assetsFinder)
-
-
-  lazy val router = new Router(
-    actionBuilder, bodyParsers, frontend
-  )// (httpErrorHandler, ap
+  lazy val frontend = new Frontend(controllerComponents, assetsFinder)
+  lazy val router = new Router(actionBuilder, bodyParsers, frontend, assets)
 }

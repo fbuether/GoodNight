@@ -1,54 +1,79 @@
 
 package goodnight.server
 
-import play.api.routing.SimpleRouter
-import play.api.routing.Router.Routes
+import controllers.Assets
 import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
 import play.api.mvc.Results
+import play.api.routing.Router.Routes
+import play.api.routing.SimpleRouter
 import play.api.routing._
 import play.api.routing.sird._
 
 import goodnight.client.Frontend
 
-// import controllers.Assets
 
 class Router(
   action: DefaultActionBuilder,
   parse: PlayBodyParsers,
-  frontend: Frontend
-)
+  frontend: Frontend,
+  assets: Assets)
     extends SimpleRouter {
 
-  // lazy val assets = new Assets
-
-  // PartialFunction[RequestHeader, Handler]
   def routes: Routes = {
+    // static content: the html page, as well as all assets
     case GET(p"/") => frontend.html
-
-
-// action(parse.text) {
-//       // Results.Ok("okay.")
-//     }
+    case GET(p"/assets/$file*") => assets.versioned(file)
   }
-
 }
 
 
 
-// class Routes(
-//   override val errorHandler: play.api.http.HttpErrorHandler,
-//   Application_0: controllers.Application,
-//   bar_Routes_0: bar.Routes,
-//   Assets_1: controllers.Assets,
-//   val prefix: String
-// ) extends GeneratedRouter {
+/*
 
-//   def this(
-//     errorHandler: play.api.http.HttpErrorHandler,
-//     Application_0: controllers.Application,
-//     bar_Routes_0: bar.Routes,
-//     Assets_1: controllers.Assets
-//   ) = this(Application_0, bar_Routes_0, Assets_1, "/")
-//   ...
-// }
+# The frontend application, served as a base html file that provides links,
+# as well as a set of static files. These include all images, js dependencies,
+# as well as the actual goodnight-client.js.
+GET / goodnight.client.Frontend.html
+GET /assets/ * file controllers.Assets.versioned(file)
+
+
+# The server-side api. Version 1.
+
+
+### Authentication
+
+# Registration step 1: Post data of sign-up form.
+POST /api/1/auth/signup goodnight.api.Authentication.doSignUp
+
+# Registration step 2: Confirmation of email via token.
+# -- is this required? How about social signup?
+POST /api/1/auth/signup/:token goodnight.api.Authentication.confirmSignUp(token: String)
+
+# Password reset step 1: Post reset information form.
+POST /api/1/auth/reset/ goodnight.api.Authentication.doRequestResetPassword
+
+# Password reset step 2: Post refreshed password information.
+POST /api/1/auth/reset/:token goodnight.api.Authentication.doResetPassword(token: String)
+
+# Confirm user data, request authentication token
+POST /api/1/auth/authenticate/ goodnight.api.Authentication.authenticate
+
+# Confirm sign in via a social authentication provider
+POST /api/1/auth/social/:provider goodnight.api.Authentication.socialAuthenticate(provider: String)
+
+# Sign out, remove all current sessions.
+POST /api/1/auth/signout/ goodnight.api.Authentication.signOut
+
+
+
+
+# GET /api/1/users/:name goodnight.api.Users.getUser(name: String)
+
+
+
+# personal information.
+
+GET /profile goodnight.api.Profile.show
+
+ */
