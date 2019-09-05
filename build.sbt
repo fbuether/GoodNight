@@ -38,8 +38,6 @@ val versions = new {
 }
 
 
-resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
-
 
 val setScalaOptions = Seq(
   scalaVersion := versions.scala,
@@ -172,6 +170,11 @@ lazy val server = project.in(file("server")).
       "set elideOptions in client := Seq()" ::
       state
     },
+
+    resolvers ++= Seq(
+      Resolver.jcenterRepo,
+      Resolver.typesafeRepo("releases")
+    ),
 
     libraryDependencies ++= Seq(
       "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
