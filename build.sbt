@@ -31,9 +31,14 @@ val versions = new {
 
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
+  val silhouette = "6.1.0"
+  val jwt = "2.0.5" // required by silhouette
 
   val scalajsScripts = "1.1.2"
 }
+
+
+resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
 
 
 val setScalaOptions = Seq(
@@ -176,6 +181,14 @@ lazy val server = project.in(file("server")).
       "com.typesafe.play" %% "play-slick" % versions.playSlick,
       "com.typesafe.play" %% "play-slick-evolutions" % versions.playSlick,
       "org.postgresql" % "postgresql" % versions.postgresql,
+
+      "com.mohiva" %% "play-silhouette" % versions.silhouette,
+      "com.atlassian.jwt" % "jwt-core" % versions.jwt,
+      "com.atlassian.jwt" % "jwt-api" % versions.jwt,
+      // "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.0-RC2",
+      // "com.mohiva" %% "play-silhouette-persistence" % "5.0.0-RC2",
+      // "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.0-RC2",
+      // "com.mohiva" %% "play-silhouette-testkit" % "5.0.0-RC2" % "test"
 
       "com.lihaoyi" %% "utest" % versions.uTest % Test,
     )
