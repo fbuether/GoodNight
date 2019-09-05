@@ -6,6 +6,8 @@ import java.util.UUID
 import slick.jdbc.PostgresProfile.api._
 
 import com.mohiva.play.silhouette.api.Identity
+import com.mohiva.play.silhouette.api.Authenticator
+import com.mohiva.play.silhouette.api.Authorization
 
 case class User(
   id: Option[UUID],
@@ -38,3 +40,8 @@ object UserTable extends TableQuery(new UserTable(_)) {
   //     into((user, id) => user.copy(id = Some(id))).
   //     +=(user)(session)
 }
+
+
+
+case class IsAuthorised() extends Authorization[User, Authenticator] {
+  override def isAuthorized[B] ...

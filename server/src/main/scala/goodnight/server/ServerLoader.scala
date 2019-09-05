@@ -66,12 +66,7 @@ class GoodnightComponents(context: Context)
       new SecureRandomIDGenerator(),
       Clock()),
     Seq(), // requestProvidersImpl: Seq[RequestProvider]
-    EventBus()
-    // identityServiceImpl: IdentityService[Environment.apply.E.I],
-    // authenticatorServiceImpl: AuthenticatorService[Environment.apply.E.A],
-    // requestProvidersImpl: Seq[RequestProvider],
-    // eventBusImpl: EventBus)(implicit ec: ExecutionContext)
-)
+    EventBus())
   lazy val defaultBodyParsers = new BodyParsers.Default(bodyParsers)
 
   lazy val securedAction = new DefaultSecuredAction(
