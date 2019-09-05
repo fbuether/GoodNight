@@ -5,6 +5,7 @@ import java.util.UUID
 
 import slick.jdbc.PostgresProfile.api._
 
+import com.mohiva.play.silhouette.api.Identity
 
 case class User(
   id: Option[UUID],
@@ -14,7 +15,7 @@ case class User(
   canCreateWorlds: Boolean,
   cookie: Option[String],
   staySignedIn: Boolean
-)
+) extends Identity
 
 
 class UserTable(tag: Tag) extends Table[User](tag, "user") {

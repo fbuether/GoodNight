@@ -1,4 +1,5 @@
 # GoodNight
+
 GoodNight is a platform to interactive storytelling.
 
 Try it yourself:
@@ -15,5 +16,8 @@ https://github.com/jjcosare/scalajs-spa-tutorial
 GoodNight uses these tools:
 
 * [Scala](https://scala-lang.org)
-
-
+* Scala.js
+* React
+* Slick
+* PostGreSQL
+* Silhouette

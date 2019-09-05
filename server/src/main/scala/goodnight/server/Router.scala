@@ -4,19 +4,20 @@ package goodnight.server
 import controllers.Assets
 import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
-import play.api.mvc.Results
 import play.api.routing.Router.Routes
 import play.api.routing.SimpleRouter
 import play.api.routing._
 import play.api.routing.sird._
 
 import goodnight.client.Frontend
+import goodnight.api.Authentication
 
 
 class Router(
   action: DefaultActionBuilder,
   parse: PlayBodyParsers,
   frontend: Frontend,
+  auth: Authentication,
   assets: Assets)
     extends SimpleRouter {
 
@@ -24,6 +25,11 @@ class Router(
     // static content: the html page, as well as all assets
     case GET(p"/") => frontend.html
     case GET(p"/assets/$file*") => assets.versioned(file)
+
+    // Authentication
+
+    // confirm login authentication.
+    case POST(p"/api/v1/auth/authenticate") => auth.authenticate
   }
 }
 
