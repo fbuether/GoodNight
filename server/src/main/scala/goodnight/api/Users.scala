@@ -11,7 +11,7 @@ class Users @Inject() (val controllerComponents: ControllerComponents,
     configuration: Configuration)
       extends BaseController {
 
-  def html = Action {
+  def getUser(user: String) = Action {
     Ok(goodnight.client.html.frontend())
   }
 }

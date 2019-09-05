@@ -9,6 +9,6 @@ GET /assets/*file controllers.Assets.versioned(file)
 # The server-side api.
 
 # users
-GET /users/ goodnight.api.Users.get(user: String)
+GET /users/:name goodnight.api.Users.getUser(name: String)
 
 
