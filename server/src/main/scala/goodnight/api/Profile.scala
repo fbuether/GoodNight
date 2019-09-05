@@ -5,22 +5,21 @@ package goodnight.api
 
 import play.api.mvc._
 
+import com.mohiva.play.silhouette.api.Silhouette
+
 import goodnight.server.Router
 
 
-class Profile(components: ControllerComponents, router: Router)
-
-// class Profile // @Inject() (
-//   val controllerComponents: ControllerComponents,
-//   configuration: Configuration
-// )
-extends BaseController {
+class Profile(
+  components: ControllerComponents,
+  silhouette: Silhouette[JWTEnv])
+    extends BaseController {
 
 
   def controllerComponents: ControllerComponents =
     components
 
-  def show = Action {
+  def show = silhouette.SecuredAction {
     Ok("hello.")
   }
 }

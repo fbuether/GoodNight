@@ -35,6 +35,7 @@ import goodnight.client.Frontend
 import goodnight.api.Authentication
 import goodnight.api.UserService
 import goodnight.api.JWTEnv
+import goodnight.api.Profile
 
 
 class ServerLoader extends ApplicationLoader {
@@ -89,6 +90,7 @@ class GoodnightComponents(context: Context)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
+  lazy val profile = new Profile(controllerComponents, silhouette)
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authentication, assets)
+    authentication, profile, assets)
 }

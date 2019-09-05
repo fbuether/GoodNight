@@ -4,6 +4,8 @@ package goodnight.api
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
+import play.api.mvc.Request
+import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
 
@@ -53,7 +55,7 @@ class Authentication(components: ControllerComponents,
     Ok("{ success: true }").as(JSON)
   }
 
-  def authenticate = silhouette.UnsecuredAction {
+  def authenticate = silhouette.UnsecuredAction { r: Request[AnyContent] =>
     Ok("{ success: true }").as(JSON)
   }
 

@@ -11,13 +11,14 @@ import play.api.routing.sird._
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
-
+import goodnight.api.Profile
 
 class Router(
   action: DefaultActionBuilder,
   parse: PlayBodyParsers,
   frontend: Frontend,
   auth: Authentication,
+  profile: Profile,
   assets: Assets)
     extends SimpleRouter {
 
@@ -30,6 +31,10 @@ class Router(
 
     // confirm login authentication.
     case POST(p"/api/v1/auth/authenticate") => auth.authenticate
+
+
+    // Profile data
+    case GET(p"/api/v1/profile") => profile.show
   }
 }
 
