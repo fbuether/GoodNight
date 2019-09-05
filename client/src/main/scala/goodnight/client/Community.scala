@@ -12,7 +12,9 @@ import goodnight.components.Shell
 object Community extends Page {
   def route(dsl: RouterConfigDsl[Pages.Page]) = {
     import dsl._
-    staticRoute("#" / "community", Pages.Community) ~> renderR(this.render)
+    Pages.Community.getRoute(dsl) ~> renderR(this.render)
+
+    // staticRoute("#" / "community", Pages.Community) ~> renderR(this.render)
   }
 
   def render(router: RouterCtl[Pages.Page]) =

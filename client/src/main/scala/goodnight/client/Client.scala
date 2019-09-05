@@ -27,7 +27,7 @@ object Client {
         notFound(redirectToPage(Pages.Home)(Redirect.Replace)).
         logToConsole
     })
-    val router = Router(BaseUrl.fromWindowOrigin / "#", routerConfig)
+    val router = Router(BaseUrl.fromWindowOrigin / "#/", routerConfig)
     val rootElement = document.getElementById("goodnight-client")
     router.ctor().renderIntoDOM(rootElement)
   }

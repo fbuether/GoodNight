@@ -16,7 +16,7 @@ object Pages
   trait StaticPage extends Page {
     def getRoute(dsl: RouterConfigDsl[Page]) = {
       import dsl._
-      staticRoute("", this)
+      staticRoute(route, this)
     }
 
     def route: String
