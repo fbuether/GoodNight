@@ -9,6 +9,10 @@ import play.api.LoggerConfigurator
 import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFComponents
 import controllers.AssetsComponents
+import play.api.db.slick.SlickComponents
+import play.api.db.slick.DbName
+import play.api.db.evolutions.EvolutionsComponents
+import play.api.db.slick.evolutions.SlickEvolutionsComponents
 
 import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
@@ -34,7 +38,7 @@ import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
 import goodnight.client.Frontend
 import goodnight.api.Authentication
 import goodnight.api.authentication.SignUp
-import goodnight.api.UserService
+import goodnight.api.authentication.UserService
 import goodnight.api.authentication.JwtEnvironment
 import goodnight.api.Profile
 
@@ -52,16 +56,27 @@ class ServerLoader extends ApplicationLoader {
 class GoodnightComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
     with HttpFiltersComponents
+    with SlickComponents
+    with SlickEvolutionsComponents
+    with EvolutionsComponents
     with AssetsComponents
     with CSRFComponents {
+
+  // run the database evolution scripts
+  applicationEvolutions
+
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
 
+  lazy val database = slickApi.dbConfigs[PostgresProfile]().head._2.db
+
+
+  lazy val userService = new UserService()
+
   lazy val jwtSharedSecret =
     "7e1d6bfe49f744c62096826006b8a8c2fe242cc3ca511f8bc850512f138c935d"
-
   lazy val silhouetteEnvironment = Environment[JwtEnvironment](
-    new UserService(),
+    userService,
 
     new JWTAuthenticatorService(
       JWTAuthenticatorSettings(sharedSecret = jwtSharedSecret),
@@ -91,7 +106,9 @@ class GoodnightComponents(context: Context)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
   lazy val authSignUp = new SignUp(controllerComponents,
     silhouette)
-  lazy val profile = new Profile(controllerComponents, silhouette)
+  lazy val profile = new Profile(controllerComponents, userService,
+    database,
+    silhouette)
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
     authentication, authSignUp,
     profile, assets)

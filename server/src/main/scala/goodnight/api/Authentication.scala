@@ -25,20 +25,8 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import goodnight.model.User
 import goodnight.api.authentication.JwtEnvironment
 
-// trait JwtEnvironment extends Env {
-//   type I = User
-//   type A = JWTAuthenticator
-// }
 
 
-
-class UserService(implicit ec: ExecutionContext) extends IdentityService[User] {
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] =
-    Future {
-      Some(User(UUID.randomUUID(), "username", loginInfo))
-      // None
-      }
-}
 
 
 class Authentication(components: ControllerComponents,
