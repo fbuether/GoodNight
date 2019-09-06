@@ -11,6 +11,7 @@ import play.api.routing.sird._
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
+import goodnight.api.authentication
 import goodnight.api.Profile
 
 class Router(
@@ -18,6 +19,7 @@ class Router(
   parse: PlayBodyParsers,
   frontend: Frontend,
   auth: Authentication,
+  authSignUp: authentication.SignUp,
   profile: Profile,
   assets: Assets)
     extends SimpleRouter {
@@ -28,6 +30,9 @@ class Router(
     case GET(p"/assets/$file*") => assets.versioned(file)
 
     // Authentication
+
+    // Registration step 1: Post data of sign-up form.
+    case POST(p"/api/v1/auth/signup") => authSignUp.doSignUp
 
     // confirm login authentication.
     case POST(p"/api/v1/auth/authenticate") => auth.authenticate
@@ -55,31 +60,31 @@ GET /assets/ * file controllers.Assets.versioned(file)
 ### Authentication
 
 # Registration step 1: Post data of sign-up form.
-POST /api/1/auth/signup goodnight.api.Authentication.doSignUp
+POST /api/v1/auth/signup goodnight.api.Authentication.doSignUp
 
 # Registration step 2: Confirmation of email via token.
 # -- is this required? How about social signup?
-POST /api/1/auth/signup/:token goodnight.api.Authentication.confirmSignUp(token: String)
+POST /api/v1/auth/signup/:token goodnight.api.Authentication.confirmSignUp(token: String)
 
 # Password reset step 1: Post reset information form.
-POST /api/1/auth/reset/ goodnight.api.Authentication.doRequestResetPassword
+POST /api/v1/auth/reset/ goodnight.api.Authentication.doRequestResetPassword
 
 # Password reset step 2: Post refreshed password information.
-POST /api/1/auth/reset/:token goodnight.api.Authentication.doResetPassword(token: String)
+POST /api/v1/auth/reset/:token goodnight.api.Authentication.doResetPassword(token: String)
 
 # Confirm user data, request authentication token
-POST /api/1/auth/authenticate/ goodnight.api.Authentication.authenticate
+POST /api/v1/auth/authenticate/ goodnight.api.Authentication.authenticate
 
 # Confirm sign in via a social authentication provider
-POST /api/1/auth/social/:provider goodnight.api.Authentication.socialAuthenticate(provider: String)
+POST /api/v1/auth/social/:provider goodnight.api.Authentication.socialAuthenticate(provider: String)
 
 # Sign out, remove all current sessions.
-POST /api/1/auth/signout/ goodnight.api.Authentication.signOut
+POST /api/v1/auth/signout/ goodnight.api.Authentication.signOut
 
 
 
 
-# GET /api/1/users/:name goodnight.api.Users.getUser(name: String)
+# GET /api/v1/users/:name goodnight.api.Users.getUser(name: String)
 
 
 

@@ -33,8 +33,9 @@ import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
+import goodnight.api.authentication.SignUp
 import goodnight.api.UserService
-import goodnight.api.JWTEnv
+import goodnight.api.authentication.JwtEnvironment
 import goodnight.api.Profile
 
 
@@ -56,11 +57,14 @@ class GoodnightComponents(context: Context)
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
 
-  lazy val silhouetteEnvironment = Environment[JWTEnv](
+  lazy val jwtSharedSecret =
+    "7e1d6bfe49f744c62096826006b8a8c2fe242cc3ca511f8bc850512f138c935d"
+
+  lazy val silhouetteEnvironment = Environment[JwtEnvironment](
     new UserService(),
 
     new JWTAuthenticatorService(
-      JWTAuthenticatorSettings(sharedSecret = "I-R-SECRET"),
+      JWTAuthenticatorSettings(sharedSecret = jwtSharedSecret),
       None, // repository: Option[AuthenticatorRepository[JWTAuthenticator]],
       new Base64AuthenticatorEncoder(),
       new SecureRandomIDGenerator(),
@@ -85,7 +89,10 @@ class GoodnightComponents(context: Context)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
+  lazy val authSignUp = new SignUp(controllerComponents,
+    silhouette)
   lazy val profile = new Profile(controllerComponents, silhouette)
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authentication, profile, assets)
+    authentication, authSignUp,
+    profile, assets)
 }
