@@ -1,3 +1,4 @@
+-- creates a table for users, as a first test.
 
 -- !Ups
 

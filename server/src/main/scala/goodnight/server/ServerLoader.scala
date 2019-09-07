@@ -10,7 +10,6 @@ import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFComponents
 import controllers.AssetsComponents
 import play.api.db.slick.SlickComponents
-import play.api.db.slick.DbName
 import play.api.db.evolutions.EvolutionsComponents
 import play.api.db.slick.evolutions.SlickEvolutionsComponents
 

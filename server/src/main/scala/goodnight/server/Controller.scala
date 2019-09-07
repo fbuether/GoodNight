@@ -7,9 +7,9 @@ import play.api.mvc.ControllerComponents
 
 
 class Controller(
-  components: ControllerComponents)(
-  implicit ec: ExecutionContext)
+  components: ControllerComponents)
     extends BaseController {
-  def controllerComponents: ControllerComponents = components
+  def controllerComponents: ControllerComponents =
+    components
 }
 

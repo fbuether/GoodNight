@@ -44,7 +44,7 @@ val versions = new {
 val setScalaOptions = Seq(
   scalaVersion := versions.scala,
   scalacOptions ++= Seq(
-    "-Xlint:_",
+    // "-Xlint:_",
     "-unchecked",
     "-deprecation",
     "-feature",

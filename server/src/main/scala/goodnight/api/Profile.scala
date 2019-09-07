@@ -1,6 +1,8 @@
 
 package goodnight.api
 
+import java.util.UUID
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
@@ -14,6 +16,7 @@ import goodnight.api.authentication.UserService
 import goodnight.server.Controller
 
 import goodnight.model.{ User, UserTable }
+import goodnight.model.{ Login, LoginTable }
 
 import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Database
@@ -35,6 +38,17 @@ class Profile(
     request.identity match {
       case Some(id) => Future.successful(Ok("Hello " + id))
       case None =>
+
+        val userId = UUID.randomUUID()
+        val insertions =
+        DBIO.seq(
+          UserTable.users += User(userId, "myusername"),
+          LoginTable.logins += Login(UUID.randomUUID(), userId,
+            "somwhere", "somewhow")
+        )
+
+        db.run(insertions)
+
 
         val user = UserTable.users.result
 

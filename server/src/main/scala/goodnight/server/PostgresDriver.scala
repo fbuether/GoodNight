@@ -3,6 +3,7 @@ package goodnight.server
 
 import slick.basic.Capability
 import slick.jdbc.JdbcProfile
+import slick.jdbc.JdbcCapabilities
 import slick.driver.JdbcProfile
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -24,7 +25,7 @@ trait PostgresProfile extends ExPostgresProfile
   // Add back `capabilities.insertOrUpdate` to enable native `upsert` support;
   // for postgres 9.5+
   override protected def computeCapabilities: Set[Capability] =
-    super.computeCapabilities + JdbcProfile.capabilities.insertOrUpdate
+    super.computeCapabilities + JdbcCapabilities.insertOrUpdate
 
   override val api = MyAPI
 
