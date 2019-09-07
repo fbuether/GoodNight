@@ -25,7 +25,6 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
 
 import goodnight.server.PostgresProfile.Database
-// import goodnight.server.
 import goodnight.server.Controller
 
 import goodnight.model.{ User, UserTable }
@@ -45,24 +44,6 @@ class SignUp(components: ControllerComponents,
     (JsPath \ "identity").read[String] and
       (JsPath \ "username").read[String] and
       (JsPath \ "password").read[String])(SignUpData.apply _)
-
-
-  def withJsonAs[A](innerAction: ((Request[JsValue], A) => Future[Result]))(
-    request: Request[JsValue])(implicit reads: Reads[A]): Future[Result] = {
-    request.body.validate[A] match {
-      case JsSuccess(data, _) => innerAction(request, data)
-      case JsError(errors) =>
-          val errorMessage = Json.obj(
-            "success" -> false,
-            "errors" -> errors.map({ case (p,ves) =>
-              Json.obj(
-                "path" -> p.toString,
-                "errors" -> ves.map({ case JsonValidationError(a) =>
-                  a}))}))
-          Future.successful(
-            BadRequest(errorMessage))
-    }
-  }
 
 
   def doSignUp = silhouette.UnsecuredAction.async(parse.json)(

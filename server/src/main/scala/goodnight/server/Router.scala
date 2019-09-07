@@ -63,4 +63,3 @@ class Router(
     case GET(p"/api/v1/profile") => profile.show
   }
 }
-

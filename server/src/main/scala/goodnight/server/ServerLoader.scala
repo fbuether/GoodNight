@@ -105,7 +105,7 @@ class GoodnightComponents(context: Context)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
   lazy val authSignUp = new SignUp(controllerComponents, database,
     silhouette)
-  lazy val authSignIn = new SignIn(controllerComponents,
+  lazy val authSignIn = new SignIn(controllerComponents, database,
     silhouette)
   lazy val profile = new Profile(controllerComponents, userService,
     database,
