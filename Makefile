@@ -19,6 +19,9 @@ database:
 	-e POSTGRES_PASSWORD=gnpgsecretpassword -d logging_postgres
 	sudo docker logs -f gnp
 
+sbt:
+	clear; clear; sbt -J-XX:MaxMetaspaceSize=500m
+
 
 clean:
 	sbt clean

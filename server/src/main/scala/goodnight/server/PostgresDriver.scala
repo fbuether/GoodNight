@@ -1,9 +1,16 @@
 
 package goodnight.server
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
+import slick.jdbc.PostgresProfile.api._
+
 import slick.basic.Capability
+import slick.sql.FixedSqlAction
 import slick.jdbc.JdbcProfile
 import slick.jdbc.JdbcCapabilities
+import slick.lifted.AbstractTable
+import slick.lifted.TableQuery
 import slick.driver.JdbcProfile
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -49,7 +56,19 @@ trait PostgresProfile extends ExPostgresProfile
   }
 
   type DbConfig = slick.basic.DatabaseConfig[PostgresProfile]
-  type Database = PostgresProfile#Backend#Database
+  type Database = Backend#Database
+
+  implicit class InsertTableQuery[E <: AbstractTable[_]](
+    tableQuery: TableQuery[E]) {
+    def insert(element: E#TableElementType):
+        FixedSqlAction[Int,NoStream,Effect.Write] =
+      tableQuery += element
+  }
 }
+
+
+// object TableQueryExtensions {
+// }
+
 
 object PostgresProfile extends PostgresProfile

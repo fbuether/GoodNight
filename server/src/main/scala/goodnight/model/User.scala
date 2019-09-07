@@ -20,9 +20,9 @@ case class Login(
   providerKey: String
 )
 
-class LoginTable(tag: Tag) extends Table[Login](tag, "login_info") {
+class LoginTable(tag: Tag) extends Table[Login](tag, "login") {
   def id = column[UUID]("id", O.PrimaryKey)
-  def user = column[UUID]("user")
+  def user = column[UUID]("user_id")
   def providerID = column[String]("provider_id")
   def providerKey = column[String]("provider_key")
   def * = ((id, user, providerID, providerKey) <>

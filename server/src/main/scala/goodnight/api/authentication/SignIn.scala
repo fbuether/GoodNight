@@ -1,5 +1,5 @@
 
-package goodnight.api
+package goodnight.api.authentication
 
 import java.util.UUID
 
@@ -21,37 +21,25 @@ import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 
+import goodnight.server.Controller
 
 import goodnight.model.User
-import goodnight.api.authentication.JwtEnvironment
 
 
 
-
-
-class Authentication(components: ControllerComponents,
+class SignIn(components: ControllerComponents,
   silhouette: Silhouette[JwtEnvironment])(
   implicit ec: ExecutionContext)
-    extends BaseController {
-
-  def controllerComponents: ControllerComponents =
-    components
+    extends Controller(components) {
 
 
-  def confirmSignUp(token: String) = Action {
+  def authenticate = silhouette.UnsecuredAction { r: Request[AnyContent] =>
     Ok("{ success: true }").as(JSON)
   }
 
-  def doRequestResetPassword = Action {
+  def socialAuthenticate(provider: String) = silhouette.UnsecuredAction {
     Ok("{ success: true }").as(JSON)
   }
 
-  def doResetPassword(token: String) = Action {
-    Ok("{ success: true }").as(JSON)
-  }
-
-  def signOut = Action {
-    Ok("{ success: true }").as(JSON)
-  }
 
 }

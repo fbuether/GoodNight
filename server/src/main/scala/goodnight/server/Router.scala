@@ -20,6 +20,7 @@ class Router(
   frontend: Frontend,
   auth: Authentication,
   authSignUp: authentication.SignUp,
+  authSignIn: authentication.SignIn,
   profile: Profile,
   assets: Assets)
     extends SimpleRouter {
@@ -29,13 +30,33 @@ class Router(
     case GET(p"/") => frontend.html
     case GET(p"/assets/$file*") => assets.versioned(file)
 
-    // Authentication
+
+    // Authentication, Registration, Sign in and out
 
     // Registration step 1: Post data of sign-up form.
     case POST(p"/api/v1/auth/signup") => authSignUp.doSignUp
 
-    // confirm login authentication.
-    case POST(p"/api/v1/auth/authenticate") => auth.authenticate
+    // Registration step 2: Confirmation of email via token.
+    // -- is this required? How about social signup?
+    // case POST(p"/api/v1/auth/signup/$token") =>
+
+
+    // Confirm user data, request authentication token
+    case POST(p"/api/v1/auth/authenticate") => authSignIn.authenticate
+
+    // Confirm sign in via a social authentication provider
+    case POST(p"/api/v1/auth/authenticate/social/$provider") =>
+      authSignIn.socialAuthenticate(provider)
+
+    // Sign out, remove all current sessions.
+    // case POST(p"/api/v1/auth/signout/") =>
+
+    // Password reset step 1: Post reset information form.
+    // case POST(p"/api/v1/auth/reset/") =>
+
+    // Password reset step 2: Post refreshed password information.
+    // case POST(p"/api/v1/auth/reset/$token") =>
+
 
 
     // Profile data
@@ -43,53 +64,3 @@ class Router(
   }
 }
 
-
-
-/*
-
-# The frontend application, served as a base html file that provides links,
-# as well as a set of static files. These include all images, js dependencies,
-# as well as the actual goodnight-client.js.
-GET / goodnight.client.Frontend.html
-GET /assets/ * file controllers.Assets.versioned(file)
-
-
-# The server-side api. Version 1.
-
-
-### Authentication
-
-# Registration step 1: Post data of sign-up form.
-POST /api/v1/auth/signup goodnight.api.Authentication.doSignUp
-
-# Registration step 2: Confirmation of email via token.
-# -- is this required? How about social signup?
-POST /api/v1/auth/signup/:token goodnight.api.Authentication.confirmSignUp(token: String)
-
-# Password reset step 1: Post reset information form.
-POST /api/v1/auth/reset/ goodnight.api.Authentication.doRequestResetPassword
-
-# Password reset step 2: Post refreshed password information.
-POST /api/v1/auth/reset/:token goodnight.api.Authentication.doResetPassword(token: String)
-
-# Confirm user data, request authentication token
-POST /api/v1/auth/authenticate/ goodnight.api.Authentication.authenticate
-
-# Confirm sign in via a social authentication provider
-POST /api/v1/auth/social/:provider goodnight.api.Authentication.socialAuthenticate(provider: String)
-
-# Sign out, remove all current sessions.
-POST /api/v1/auth/signout/ goodnight.api.Authentication.signOut
-
-
-
-
-# GET /api/v1/users/:name goodnight.api.Users.getUser(name: String)
-
-
-
-# personal information.
-
-GET /profile goodnight.api.Profile.show
-
- */

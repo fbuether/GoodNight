@@ -21,15 +21,34 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
 // import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 
+import slick.sql.SqlAction
+import slick.jdbc.PostgresProfile.api._
 
-import goodnight.model.User
+import goodnight.server.PostgresProfile.Database
+import goodnight.model.{ User, UserTable }
+import goodnight.model.{ Login, LoginTable }
+
 
 
 class UserService(
+  db: Database)(
   implicit ec: ExecutionContext)
     extends IdentityService[User] {
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] =
-    Future {
-      Some(User(UUID.randomUUID(), "username"))
-      }
+
+  // def getUserFromLogin(pID: String, pKey: String): SqlAction[Option[User],_,_] =
+
+    // LoginTable.logins.filter(l => l.providerID === pID &&
+    //   l.providerKey === pKey).flatMap(l =>
+    //   UserTable.users.where(_.id === l.user))
+
+  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
+    val getUserFromLogin = Compiled(
+      LoginTable.logins.join(UserTable.users).on(_.user === _.id).
+        filter({ case (l,u) => l.providerID === loginInfo.providerID &&
+          l.providerKey === loginInfo.providerKey }).
+        map({ case (l,u) => u }).
+        take(1)).result.headOption
+
+    db.run(getUserFromLogin)
+  }
 }

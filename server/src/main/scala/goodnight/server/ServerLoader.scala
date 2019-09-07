@@ -37,6 +37,7 @@ import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
 import goodnight.client.Frontend
 import goodnight.api.Authentication
 import goodnight.api.authentication.SignUp
+import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
 import goodnight.api.authentication.JwtEnvironment
 import goodnight.api.Profile
@@ -70,13 +71,12 @@ class GoodnightComponents(context: Context)
   lazy val database = slickApi.dbConfigs[PostgresProfile]().head._2.db
 
 
-  lazy val userService = new UserService()
+  lazy val userService = new UserService(database)
 
   lazy val jwtSharedSecret =
     "7e1d6bfe49f744c62096826006b8a8c2fe242cc3ca511f8bc850512f138c935d"
   lazy val silhouetteEnvironment = Environment[JwtEnvironment](
     userService,
-
     new JWTAuthenticatorService(
       JWTAuthenticatorSettings(sharedSecret = jwtSharedSecret),
       None, // repository: Option[AuthenticatorRepository[JWTAuthenticator]],
@@ -103,12 +103,14 @@ class GoodnightComponents(context: Context)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
-  lazy val authSignUp = new SignUp(controllerComponents,
+  lazy val authSignUp = new SignUp(controllerComponents, database,
+    silhouette)
+  lazy val authSignIn = new SignIn(controllerComponents,
     silhouette)
   lazy val profile = new Profile(controllerComponents, userService,
     database,
     silhouette)
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authentication, authSignUp,
+    authentication, authSignUp, authSignIn,
     profile, assets)
 }

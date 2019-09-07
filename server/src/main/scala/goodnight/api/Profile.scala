@@ -39,21 +39,23 @@ class Profile(
       case Some(id) => Future.successful(Ok("Hello " + id))
       case None =>
 
-        val userId = UUID.randomUUID()
-        val insertions =
-        DBIO.seq(
-          UserTable.users += User(userId, "myusername"),
-          LoginTable.logins += Login(UUID.randomUUID(), userId,
-            "somwhere", "somewhow")
-        )
+//         val userId = UUID.randomUUID()
+//         val insertions =
+//         DBIO.seq(
+//           UserTable.users += 
+//           LoginTable.logins += 
+//         )
 
-        db.run(insertions)
+//         db.run(UserTable.users.insert(User(userId, "myusername"))).andThen(
+//           db.run(LoginTable.logins.insert(Login(UUID.randomUUID(), userId,
+//             "somwhere", "somewhow")
+
+// insertions)
 
 
         val user = UserTable.users.result
 
-        db.run(user).// map({
-          map({ r =>
+        db.run(user).map({ r =>
             Ok("Hello, unidentified person.\n" + r
               // getName(dbConfig.db)
             )
