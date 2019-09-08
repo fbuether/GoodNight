@@ -23,22 +23,26 @@ object Pages
   }
 
   case object Home extends StaticPage {
-    def route = ""
+    def route = "/"
   }
 
   case object Worlds extends StaticPage {
-    def route = "worlds"
+    def route = "/#/worlds"
   }
 
   case object Community extends StaticPage {
-    def route = "community"
+    def route = "/#/community"
   }
 
   case object Register extends StaticPage {
-    def route = "register"
+    def route = "/#/auth/register"
   }
 
   case object SignIn extends StaticPage {
-    def route = "sign-in"
+    def route = "/#/auth/sign-in"
+  }
+
+  case object RequestPasswordReset extends StaticPage {
+    def route = "/#/auth/request-password-reset"
   }
 }

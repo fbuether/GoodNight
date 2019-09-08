@@ -68,9 +68,6 @@ class SignIn(components: ControllerComponents,
       })
     }))
 
-  def socialAuthenticate(provider: String) = silhouette.UnsecuredAction {
-    Ok("{ success: true }").as(JSON)
-  }
-
-
+  def socialAuthenticate(provider: String) =
+    TODO
 }

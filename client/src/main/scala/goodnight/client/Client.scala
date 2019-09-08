@@ -12,10 +12,11 @@ import japgolly.scalajs.react.extra.router._
 object Client {
   private def pages: List[Page] = List(
     goodnight.client.Home,
-    goodnight.worlds.Worlds,
     goodnight.client.Community,
-    goodnight.client.Register,
-    goodnight.client.SignIn)
+    goodnight.worlds.Worlds,
+    goodnight.auth.Register,
+    goodnight.auth.SignIn,
+    goodnight.auth.PasswordReset)
 
   def main(args: Array[String]): Unit = {
     val routerConfig = RouterConfigDsl[Pages.Page].buildConfig(dsl => {
@@ -27,7 +28,7 @@ object Client {
         notFound(redirectToPage(Pages.Home)(Redirect.Replace)).
         logToConsole
     })
-    val router = Router(BaseUrl.fromWindowOrigin / "#/", routerConfig)
+    val router = Router(BaseUrl.fromWindowOrigin, routerConfig)
     val rootElement = document.getElementById("goodnight-client")
     router.ctor().renderIntoDOM(rootElement)
   }

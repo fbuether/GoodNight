@@ -12,13 +12,16 @@
     </encoder>
   </appender>
 
-  <logger name="play" level="INFO" />
-
-  <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
-
   <root level="WARN">
     <appender-ref ref="STDOUT" />
   </root>
+
+  <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
+
+  <logger name="play" level="TRACE" />
+
+  <logger name="application" level="TRACE" />
+
 
   <!-- all slick sql variable bindings -->
   <!-- <logger name="slick.jdbc.JdbcBackend.parameter" level="TRACE" /> -->

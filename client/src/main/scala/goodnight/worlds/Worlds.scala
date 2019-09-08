@@ -14,7 +14,7 @@ import goodnight.components.Shell
 object Worlds extends Page {
   def route(dsl: RouterConfigDsl[Pages.Page]) = {
     import dsl._
-    staticRoute("worlds", Pages.Worlds) ~> renderR(this.render)
+    Pages.Worlds.getRoute(dsl) ~> renderR(this.render)
   }
 
   def render(router: RouterCtl[Pages.Page]): VdomElement =
