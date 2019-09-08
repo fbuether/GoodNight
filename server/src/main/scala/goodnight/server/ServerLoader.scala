@@ -17,22 +17,27 @@ import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
 import play.api.mvc.BodyParsers
 
-import com.mohiva.play.silhouette.api.SilhouetteProvider
 import com.mohiva.play.silhouette.api.Environment
+import com.mohiva.play.silhouette.api.EventBus
+import com.mohiva.play.silhouette.api.SilhouetteProvider
 import com.mohiva.play.silhouette.api.actions.DefaultSecuredAction
+import com.mohiva.play.silhouette.api.actions.DefaultSecuredErrorHandler
+import com.mohiva.play.silhouette.api.actions.DefaultSecuredRequestHandler
 import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredAction
+import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
+import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredRequestHandler
 import com.mohiva.play.silhouette.api.actions.DefaultUserAwareAction
+import com.mohiva.play.silhouette.api.actions.DefaultUserAwareRequestHandler
+import com.mohiva.play.silhouette.api.crypto.Base64AuthenticatorEncoder
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.util.Clock
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticatorService
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticatorSettings
-import com.mohiva.play.silhouette.api.crypto.Base64AuthenticatorEncoder
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
-import com.mohiva.play.silhouette.api.util.Clock
-import com.mohiva.play.silhouette.api.EventBus
-import com.mohiva.play.silhouette.api.actions.DefaultSecuredRequestHandler
-import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredRequestHandler
-import com.mohiva.play.silhouette.api.actions.DefaultUserAwareRequestHandler
-import com.mohiva.play.silhouette.api.actions.DefaultSecuredErrorHandler
-import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
+import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
@@ -40,7 +45,7 @@ import goodnight.api.authentication.SignUp
 import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
 import goodnight.api.authentication.JwtEnvironment
-import goodnight.api.Profile
+import goodnight.api.authentication.CredentialAuthInfoRepository
 
 
 class ServerLoader extends ApplicationLoader {
@@ -87,6 +92,17 @@ class GoodnightComponents(context: Context)
     EventBus())
   lazy val defaultBodyParsers = new BodyParsers.Default(bodyParsers)
 
+  lazy val authInfoRepository = new DelegableAuthInfoRepository(
+    new CredentialAuthInfoRepository(database))
+
+
+  lazy val passwordHasherRegistry = new PasswordHasherRegistry(
+      new BCryptSha256PasswordHasher())
+
+  lazy val credentialsProvider = new CredentialsProvider(
+    authInfoRepository,
+    passwordHasherRegistry)
+
   lazy val securedAction = new DefaultSecuredAction(
     new DefaultSecuredRequestHandler(
       new DefaultSecuredErrorHandler(messagesApi)),
@@ -104,13 +120,10 @@ class GoodnightComponents(context: Context)
   lazy val frontend = new Frontend(controllerComponents, assetsFinder)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
   lazy val authSignUp = new SignUp(controllerComponents, database,
-    silhouette)
+    silhouette, passwordHasherRegistry, authInfoRepository)
   lazy val authSignIn = new SignIn(controllerComponents, database,
-    silhouette)
-  lazy val profile = new Profile(controllerComponents, userService,
-    database,
-    silhouette)
+    silhouette, credentialsProvider)
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
     authentication, authSignUp, authSignIn,
-    profile, assets)
+    assets)
 }

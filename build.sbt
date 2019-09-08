@@ -193,7 +193,7 @@ lazy val server = project.in(file("server")).
       "com.atlassian.jwt" % "jwt-core" % versions.jwt,
       "com.atlassian.jwt" % "jwt-api" % versions.jwt,
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
-      // "com.mohiva" %% "play-silhouette-persistence" % "5.0.0-RC2",
+      "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
       // "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.0-RC2",
       // "com.mohiva" %% "play-silhouette-testkit" % "5.0.0-RC2" % "test"
 

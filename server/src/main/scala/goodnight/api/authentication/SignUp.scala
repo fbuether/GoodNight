@@ -19,10 +19,10 @@ import slick.jdbc.PostgresProfile.api._
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.Env
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Controller
@@ -33,18 +33,17 @@ import goodnight.model.{ Login, LoginTable }
 
 class SignUp(components: ControllerComponents,
   db: Database,
-  silhouette: Silhouette[JwtEnvironment])(
+  silhouette: Silhouette[JwtEnvironment],
+  passwordRegistry: PasswordHasherRegistry,
+  authInfoRepository: AuthInfoRepository)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
-
-  private val passwordHasher = new BCryptSha256PasswordHasher()
 
   case class SignUpData(identity: String, username: String, password: String)
   implicit val signUpDataReads: Reads[SignUpData] = (
     (JsPath \ "identity").read[String] and
       (JsPath \ "username").read[String] and
       (JsPath \ "password").read[String])(SignUpData.apply _)
-
 
   def doSignUp = silhouette.UnsecuredAction.async(parse.json)(
     withJsonAs((request: Request[JsValue], signUpData: SignUpData) => {
@@ -58,16 +57,18 @@ class SignUp(components: ControllerComponents,
         case None =>
           // this user has not been registered before, create a new one.
           val authServ = silhouette.env.authenticatorService
-          val authInfo = passwordHasher.hash(signUpData.password)
+          val authInfo = passwordRegistry.current.hash(signUpData.password)
           val userId = UUID.randomUUID()
 
           authServ.create(login)(request).flatMap({ authenticator =>
-            authServ.init(authenticator)(request) }).flatMap({ jwt =>
-              db.run(UserTable.users.insert(User(userId, signUpData.username)).
-                andThen(LoginTable.logins.insert(Login(UUID.randomUUID(),
+            authServ.init(authenticator)(request) }).flatMap({ ident =>
+              db.run(UserTable().insert(User(userId, signUpData.username)).
+                andThen(LoginTable().insert(Login(UUID.randomUUID(),
                   userId, login.providerID, login.providerKey)))).
                 flatMap({ _ =>
-                  authServ.embed(jwt, Created)(request)
+                  authInfoRepository.add(login, authInfo).flatMap({ _ =>
+                    authServ.embed(ident, Created)(request)
+                  })
                 })
             })
       })

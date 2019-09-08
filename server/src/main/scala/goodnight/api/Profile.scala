@@ -1,65 +1,65 @@
 
-package goodnight.api
+// package goodnight.api
 
-import java.util.UUID
+// import java.util.UUID
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+// import scala.concurrent.Future
+// import scala.concurrent.ExecutionContext
 
-import play.api.mvc._
+// import play.api.mvc._
 
-import com.mohiva.play.silhouette.api.Silhouette
+// import com.mohiva.play.silhouette.api.Silhouette
 
-import goodnight.server.Router
-import goodnight.api.authentication.JwtEnvironment
-import goodnight.api.authentication.UserService
-import goodnight.server.Controller
+// import goodnight.server.Router
+// import goodnight.api.authentication.JwtEnvironment
+// import goodnight.api.authentication.UserService
+// import goodnight.server.Controller
 
-import goodnight.model.{ User, UserTable }
-import goodnight.model.{ Login, LoginTable }
+// import goodnight.model.{ User, UserTable }
+// import goodnight.model.{ Login, LoginTable }
 
-import slick.jdbc.PostgresProfile.api._
-import goodnight.server.PostgresProfile.Database
-import play.api.db.slick.DbName
-
-
-class Profile(
-  components: ControllerComponents,
-  userService: UserService,
-  db: Database,
-  silhouette: Silhouette[JwtEnvironment])(
-  implicit ec: ExecutionContext)
-    extends Controller(components) {
-
-  def getName(user: User) = user.name
+// import slick.jdbc.PostgresProfile.api._
+// import goodnight.server.PostgresProfile.Database
+// import play.api.db.slick.DbName
 
 
-  def show = silhouette.UserAwareAction.async { request =>
-    request.identity match {
-      case Some(id) => Future.successful(Ok("Hello " + id))
-      case None =>
+// class Profile(
+//   components: ControllerComponents,
+//   userService: UserService,
+//   db: Database,
+//   silhouette: Silhouette[JwtEnvironment])(
+//   implicit ec: ExecutionContext)
+//     extends Controller(components) {
 
-//         val userId = UUID.randomUUID()
-//         val insertions =
-//         DBIO.seq(
-//           UserTable.users += 
-//           LoginTable.logins += 
-//         )
-
-//         db.run(UserTable.users.insert(User(userId, "myusername"))).andThen(
-//           db.run(LoginTable.logins.insert(Login(UUID.randomUUID(), userId,
-//             "somwhere", "somewhow")
-
-// insertions)
+//   def getName(user: User) = user.name
 
 
-        val user = UserTable.users.result
+//   def show = silhouette.UserAwareAction.async { request =>
+//     request.identity match {
+//       case Some(id) => Future.successful(Ok("Hello " + id))
+//       case None =>
 
-        db.run(user).map({ r =>
-            Ok("Hello, unidentified person.\n" + r
-              // getName(dbConfig.db)
-            )
-          })
-    }
-  }
-}
+// //         val userId = UUID.randomUUID()
+// //         val insertions =
+// //         DBIO.seq(
+// //           UserTable.users += 
+// //           LoginTable.logins += 
+// //         )
+
+// //         db.run(UserTable.users.insert(User(userId, "myusername"))).andThen(
+// //           db.run(LoginTable.logins.insert(Login(UUID.randomUUID(), userId,
+// //             "somwhere", "somewhow")
+
+// // insertions)
+
+
+//         val user = UserTable.users.result
+
+//         db.run(user).map({ r =>
+//             Ok("Hello, unidentified person.\n" + r
+//               // getName(dbConfig.db)
+//             )
+//           })
+//     }
+//   }
+// }

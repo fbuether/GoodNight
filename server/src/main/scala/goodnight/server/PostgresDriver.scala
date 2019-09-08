@@ -3,6 +3,8 @@ package goodnight.server
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import scala.reflect.ClassTag
+
 import slick.jdbc.PostgresProfile.api._
 
 import slick.basic.Capability
@@ -64,11 +66,10 @@ trait PostgresProfile extends ExPostgresProfile
         FixedSqlAction[Int,NoStream,Effect.Write] =
       tableQuery += element
   }
+
+
+  // def table[E <: AbstractTable[_]] = TableQuery[E]
 }
-
-
-// object TableQueryExtensions {
-// }
 
 
 object PostgresProfile extends PostgresProfile

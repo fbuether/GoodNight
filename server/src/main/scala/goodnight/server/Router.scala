@@ -12,7 +12,7 @@ import play.api.routing.sird._
 import goodnight.client.Frontend
 import goodnight.api.Authentication
 import goodnight.api.authentication
-import goodnight.api.Profile
+
 
 class Router(
   action: DefaultActionBuilder,
@@ -21,7 +21,6 @@ class Router(
   auth: Authentication,
   authSignUp: authentication.SignUp,
   authSignIn: authentication.SignIn,
-  profile: Profile,
   assets: Assets)
     extends SimpleRouter {
 
@@ -60,6 +59,6 @@ class Router(
 
 
     // Profile data
-    case GET(p"/api/v1/profile") => profile.show
+    // case GET(p"/api/v1/profile") => profile.show
   }
 }

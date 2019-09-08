@@ -35,20 +35,16 @@ class UserService(
   implicit ec: ExecutionContext)
     extends IdentityService[User] {
 
-  // def getUserFromLogin(pID: String, pKey: String): SqlAction[Option[User],_,_] =
-
-    // LoginTable.logins.filter(l => l.providerID === pID &&
-    //   l.providerKey === pKey).flatMap(l =>
-    //   UserTable.users.where(_.id === l.user))
-
   def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
     val getUserFromLogin = Compiled(
-      LoginTable.logins.join(UserTable.users).on(_.user === _.id).
+      LoginTable().join(UserTable()).on(_.user === _.id).
         filter({ case (l,u) => l.providerID === loginInfo.providerID &&
           l.providerKey === loginInfo.providerKey }).
         map({ case (l,u) => u }).
         take(1)).result.headOption
-
     db.run(getUserFromLogin)
   }
+
+
+  // auth info repository?
 }

@@ -21,6 +21,8 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.api.util.Credentials
+import com.mohiva.play.silhouette.impl.exceptions.InvalidPasswordException
 
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Controller
@@ -32,7 +34,8 @@ import goodnight.model.{ Login, LoginTable }
 
 class SignIn(components: ControllerComponents,
   db: Database,
-  silhouette: Silhouette[JwtEnvironment])(
+  silhouette: Silhouette[JwtEnvironment],
+  credentialsProvider: CredentialsProvider)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
@@ -45,19 +48,25 @@ class SignIn(components: ControllerComponents,
 
   def authenticate = silhouette.UnsecuredAction.async(parse.json)(
     withJsonAs((request: Request[JsValue], signInData: SignInData) => {
-      val login = LoginInfo(CredentialsProvider.ID, signInData.identity)
-      silhouette.env.identityService.retrieve(login).flatMap({
-        case Some(user) =>
-          val authServ = silhouette.env.authenticatorService
-          authServ.create(login)(request).flatMap({ authenticator =>
-            authServ.init(authenticator)(request) }).flatMap({ jwt =>
-              authServ.embed(jwt, NoContent)(request)
-            })
-        case None =>
-          Future.successful(Unauthorized)
+
+      val credentials = Credentials(signInData.identity, signInData.password)
+      credentialsProvider.authenticate(credentials).flatMap({ login =>
+        silhouette.env.identityService.retrieve(login).flatMap({
+          case Some(user) =>
+            val authServ = silhouette.env.authenticatorService
+            authServ.create(login)(request).flatMap({ authenticator =>
+              authServ.init(authenticator)(request) }).flatMap({ ident =>
+                authServ.embed(ident, NoContent)(request)
+              })
+          case None =>
+            Future.successful(Unauthorized)
+        })
+      }).recoverWith({ case (e: InvalidPasswordException) =>
+        Future.successful(Forbidden(Json.obj(
+          "success" -> false,
+          "error" -> e.getMessage())))
       })
     }))
-
 
   def socialAuthenticate(provider: String) = silhouette.UnsecuredAction {
     Ok("{ success: true }").as(JSON)
