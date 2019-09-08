@@ -23,6 +23,7 @@ import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.InvalidPasswordException
+import com.mohiva.play.silhouette.api.exceptions.SilhouetteException
 
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Controller
@@ -61,7 +62,7 @@ class SignIn(components: ControllerComponents,
           case None =>
             Future.successful(Unauthorized)
         })
-      }).recoverWith({ case (e: InvalidPasswordException) =>
+      }).recoverWith({ case (e: SilhouetteException) =>
         Future.successful(Forbidden(Json.obj(
           "success" -> false,
           "error" -> e.getMessage())))

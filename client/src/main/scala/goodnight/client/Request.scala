@@ -13,11 +13,13 @@ object Request {
   def get(url: String): HttpRequest =
     HttpRequest(baseUrl + url).
       withMethod(GET).
-      withHeader("Accept", "text/json")
+      withHeader("Accept", "text/json")// .
+      // withHeader("Csrf-Token", )
 
   def post(url: String): HttpRequest =
     HttpRequest(baseUrl + url).
       withMethod(POST).
-      withHeader("Accept", "text/json")
+      withHeader("Accept", "text/json")// .
+      // withHeader("Csrf-Token", )
 
 }

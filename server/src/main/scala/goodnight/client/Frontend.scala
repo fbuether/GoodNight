@@ -1,6 +1,8 @@
 
 package goodnight.client
 
+import play.filters.csrf._
+
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
 import controllers.AssetsFinder
@@ -14,8 +16,10 @@ class Frontend(
   def controllerComponents: ControllerComponents =
     components
 
-  def html = Action {
-    val resolver = assetsFinder.path _
-    Ok(goodnight.client.html.frontend(resolver))
+  def html = addToken {
+    Action {
+      val resolver = assetsFinder.path _
+      Ok(goodnight.client.html.frontend(resolver))
+    }
   }
 }

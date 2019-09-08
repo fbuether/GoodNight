@@ -46,6 +46,7 @@ object SignIn extends Page {
             (username.value, password.value) }) }).
         flatMapCB({ case (user, pass) =>
 
+                println("woah.")
 
           AsyncCallback.fromFuture(
             Request.post("/api/v1/auth/authenticate").
@@ -54,7 +55,7 @@ object SignIn extends Page {
                 "password" -> pass)).
               send().map({ response =>
 
-                println("woah.")
+                println("woah2.")
 
               })
 
