@@ -1,16 +1,21 @@
 
 package goodnight.auth
 
+import org.scalajs.dom.html
+
+import fr.hmil.roshttp.body.Implicits._
+import fr.hmil.roshttp.body.JSONBody._
+import monix.execution.Scheduler.Implicits.global
+
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterConfigDsl
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.component.builder.Lifecycle.RenderScope
 
-import org.scalajs.dom.html
-
 import goodnight.client.Page
 import goodnight.client.Pages
+import goodnight.client.Request
 import goodnight.components.Shell
 
 
@@ -31,18 +36,43 @@ object SignIn extends Page {
   )
 
   class Backend(bs: BackendScope[Props, State]) {
-
-    // def saveUsername(e: ReactEventFromInput) = {
-    //   val newName = e.target.value
-    //   Callback(e.preventDefault()) >>
-    //   bs.modState(_.copy(username = newName))
-    // }
-
     val usernameRef = Ref[html.Input]
     val passwordRef = Ref[html.Input]
 
     def doSignIn(e: ReactEventFromInput): Callback = {
-      Callback { }
+      e.preventDefaultCB >>
+      usernameRef.get.flatMap({ username =>
+        passwordRef.get.map({ password =>
+            (username.value, password.value) }) }).
+        flatMapCB({ case (user, pass) =>
+
+
+          AsyncCallback.fromFuture(
+            Request.post("/api/v1/auth/authenticate").
+              withBody(JSONObject(
+                "identity" -> user,
+                "password" -> pass)).
+              send().map({ response =>
+
+                println("woah.")
+
+              })
+
+          ).toCallback
+        })
+
+      // orElse()
+      // asCallback.void
+
+
+
+// .get.map({ username =>
+
+        // passwordRef.get.map({ password =>
+
+      //   // })
+      // // })
+      // )
     }
 
     def render(p: Props, s: State): VdomElement =
@@ -76,7 +106,7 @@ object SignIn extends Page {
               ^.onSubmit ==> doSignIn,
               <.h2(
                 <.span(^.className := "fa fa-check-square-o"),
-                "Sign in"),
+                " Sign in"),
               <.p(^.className := "plain error"),
               <.label(^.className := "captioned",
                 "Email or Username:",

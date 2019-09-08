@@ -28,6 +28,7 @@ val versions = new {
   val fontawesome = "5.6.3"
   // val bootstrap = "4.3.1"
   // val chartjs = "2.6.0"
+  val roshttp = "2.2.4"
 
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
@@ -66,8 +67,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
-      // "com.lihaoyi" %%% "autowire" % versions.autowire,
-      // "io.suzaku" %%% "boopickle" % versions.booPickle
+
     )
   )
 
@@ -86,12 +86,18 @@ lazy val client: Project = project.in(file("client")).
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := true,
 
+    resolvers ++= Seq(
+      Resolver.bintrayRepo("hmil", "maven")
+    ),
+
     libraryDependencies ++= Seq(
       "com.github.japgolly.scalajs-react" %%% "core" % versions.scalajsReact,
       "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalajsReact,
 
       "org.scala-js" %%% "scalajs-dom" % versions.scalajsDom,
       "org.scala-js" %%% "scalajs-java-time" % versions.scalaJsTime,
+
+      "fr.hmil" %%% "roshttp" % versions.roshttp,
 
       // "io.suzaku" %%% "diode" % versions.diode,
       // "io.suzaku" %%% "diode-react" % versions.diodeReact,
@@ -206,3 +212,5 @@ lazy val server = project.in(file("server")).
 onLoad in Global := (Command.
   process("project server", _: State)).
   compose((onLoad in Global).value)
+
+
