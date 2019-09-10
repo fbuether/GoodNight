@@ -476,98 +476,90 @@ div#centre > img.left {
 // menu
 
 .menu {
-  display: inline-block;
-
-  div ul {
-    font-size: 0;
-    line-height: 0;
-  }
-
-  padding: 0;
-  margin: 0;
-
   width: 100%;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  justify-content: space-between;
 
   border-top-right-radius: 0.8rem;
   border-top-left-radius: 0.8rem;
 
-
   background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
 
-
-  .item,
-  ul {
-    border: 0;
-    padding: 0;
+  & > ul {
+    font-size: 0;
+    line-height: 0;
     margin: 0;
-  }
+    padding: 0;
 
 
-  .item {
-    display: inline-block;
-
-    a,
-    button {
-      cursor: pointer;
+    & > li {
       border: 0;
-      background: transparent;
-      border-radius: 0;
-      padding: 0.45em 1.3em;
-      box-sizing: border-box;
-      transition: background 0.15s ease;
-      vertical-align: middle;
+      padding: 0;
       margin: 0;
-      text-align: left;
-
-      font-size: @font-size;
-      line-height: @font-size * @line-height-factor * 1.2;
-      text-decoration: none;
-
-      -webkit-box-shadow: none;
-      -moz-box-shadow: none;
-      box-shadow: none;
-
-      -moz-user-select: none;
       display: inline-block;
-      position: relative;
 
-      color: @font;
-    }
+      & > a {
+        cursor: pointer;
+        border: 0;
+        background: transparent;
+        border-radius: 0;
+        padding: 0.45em 1.3em;
+        box-sizing: border-box;
+        transition: background 0.15s ease;
+        vertical-align: middle;
+        margin: 0;
+        text-align: left;
 
-    .item.expander {
-      display: none;
-    }
+        font-size: @font-size;
+        line-height: @font-size * @line-height-factor * 1.2;
+        text-decoration: none;
+
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+
+        -moz-user-select: none;
+        display: inline-block;
+        position: relative;
+
+        color: @font;
+      }
+
+      & > a:hover {
+        background: hsv(30, 0.32, 0.92);
+        color: hsv(40, 0.1, 0.49);
+      }
 
 
-    a:hover,
-    button:hover {
-      background: hsv(30, 0.32, 0.92);
-      color: hsv(40, 0.1, 0.49);
+      &.expander {
+        display: none;
+      }
+
+      &.header a {
+        font-size: @font-size * 1.2;
+        line-height: @font-size * @line-height-factor;
+      }
     }
   }
-
-
-  .item.header a {
-    font-size: @font-size * 1.2;
-    line-height: @font-size * @line-height-factor;
-  }
-
 
 
   @media (min-width: (@font-size * 48)) {
-    .left .item:first-child a {
+    ul:first-child li:first-child a {
       border-top-left-radius: 0.8rem;
     }
 
-    .right .item:last-child a {
+    ul:last-child li:last-child a {
       border-top-right-radius: 0.8rem;
     }
 
-    .left .item a {
+    ul:first-child li a {
       border-right: 1px dashed hsv(30, 0.37, 0.7);
     }
 
-    .right .item a {
+    ul:last-child li a {
       border-left: 1px dashed hsv(30, 0.37, 0.7);
     }
 
@@ -576,45 +568,27 @@ div#centre > img.left {
     }
   }
 
-
   @media (max-width: (@font-size * 48)) {
     border-top-right-radius: 0;
     border-top-left-radius: 0;
 
-    .item {
+    & > ul > li {
       display: none;
+
+      &.header, &.expander {
+        display: inline-block;
+      }
     }
 
-    .item.header,
-    .item.expander {
-      display: inline-block;
+    &.expanded {
+      & > ul > li {
+        display: block;
+      }
+
+      & > ul:last-child > li {
+        text-align: right;
+      }
     }
-  }
-
-  &.overlay {
-    position: absolute;
-    top: 0;
-    z-index: 1;
-
-    .item {
-      display: block;
-    }
-
-    .right .item {
-      text-align: right;
-    }
-  }
-
-  & > .spacer {
-    display: none;
-  }
-
-  &.overlay > .spacer {
-    display: block;
-
-    padding: 0.45em 1.3em;
-    font-size: @font-size;
-    line-height: @font-size * @line-height-factor * 1.2;
   }
 }
 
@@ -624,18 +598,21 @@ div#centre > img.left {
 
 
 .withColumns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+
   padding-left: @outer-left-border;
   padding-right: @outer-right-border;
-}
 
-.column.oftwo {
-  width: 48.5%;
-}
-
-@media (max-width: (@font-size * 48)) {
-  .column.oftwo {
-    width: 100%;
+  @media (max-width: (@font-size * 36)) {
+    flex-direction: column;
   }
+}
+
+.withColumns > * {
+  flex: 1 1 0;
 }
 
 ul.listed li {

@@ -71,13 +71,14 @@ object SignIn extends Page {
             toCallback
 
           case None =>
-            Callback(println("login unsuccessful."))
+            Callback(println("could not get input field values, " +
+              "login unsuccessful."))
         })
     }
 
     def render(p: Props, s: State): VdomElement =
         <.div(^.className := "withColumns",
-          <.div(^.className := "column oftwo left",
+          <.div(
             <.h2("Register"),
             <.p("If you are new to GoodNight, you can register yourself here:"),
             <.p(
@@ -98,7 +99,7 @@ object SignIn extends Page {
             //       <.span(^.className := "fa fa-github"),
             //       "Github")))
           ),
-          <.div(^.className := "column oftwo right",
+          <.div(
             <.form(^.className := "centered inset",
               ^.onSubmit ==> doSignIn,
               <.h2(

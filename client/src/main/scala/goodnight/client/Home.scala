@@ -26,11 +26,11 @@ object Home extends Page {
           climbing the stars, or fighting for your survival in the
           cold arctic."""),
         <.div(^.className := "withColumns",
-          <.div(^.className := "column oftwo left",
+          <.div(
             <.h3("News"),
             <.p("GoodNight is in development! New things are bound to appear " +
               "any time.")),
-          <.div(^.className := "column oftwo right",
+          <.div(
             <.h3("Available Worlds"),
             <.ul(^.className := "worldList",
               // WorldList()

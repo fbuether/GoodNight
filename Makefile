@@ -15,7 +15,7 @@ release:
 
 database:
 	(cd postgres && sudo docker build -t logging_postgres .)
-	sudo docker run --name gnp -p 5432:5432 \
+	sudo docker run --name gnp -p 5432:5432 --restart always \
 	-e POSTGRES_PASSWORD=gnpgsecretpassword -d logging_postgres
 	sudo docker logs -f gnp
 

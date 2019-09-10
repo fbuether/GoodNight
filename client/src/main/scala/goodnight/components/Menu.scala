@@ -1,6 +1,8 @@
 
 package goodnight.components
 
+import org.scalajs.dom.html
+
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -13,45 +15,52 @@ object Menu {
     router: RouterCtl[Pages.Page]
   )
 
-  type State = Unit
+  type State = (Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
+    val menuRef = Ref[html.Div]
+
+    def expandMenu: Callback =
+      menuRef.foreach({ menu =>
+        val cn = menu.className
+        if (cn.endsWith("expanded"))
+          menu.className = cn.substring(0, cn.indexOf("expanded") - 1)
+        else
+          menu.className = cn + " expanded"
+      })
+
     def render(p: Props): VdomElement =
       <.div(^.className := "menu",
-        <.div(
-          <.ul(^.className := "left",
-            <.li(^.className := "item header",
-              p.router.link(Pages.Home)(
-                <.span(^.className := "fa fa-moon-o"),
-                " GoodNight")),
-            <.li(^.className := "item",
-              p.router.link(Pages.Worlds)(
-                <.span(^.className := "fa fa-globe"),
-                " Worlds")),
-            <.li(^.className := "item",
-              p.router.link(Pages.Community)(
-                <.span(^.className := "fa fa-comment-o"),
-                " Community"))),
-          <.ul(^.className := "right",
-            <.li(^.className := "item expander",
-              <.a(^.href := "#",
-                ^.id := "mainMenuExpander",
-                <.span(^.className := "fa fa-navicon"),
-                " Menu")),
-            <.li(^.className := "item",
-              p.router.link(Pages.Register)(
-                <.span(^.className := "fa fa-bookmark-o"),
-                " Register")),
-            <.li(^.className := "item",
-              p.router.link(Pages.SignIn)(
-                <.span(^.className := "fa fa-check-square-o"),
-                " Sign in")))),
-        <.div(^.className := "spacer",
-          "&nbsp;"))
+        <.ul(
+          <.li(^.className := "header",
+            p.router.link(Pages.Home)(
+              <.span(^.className := "fa fa-moon-o"),
+              " GoodNight")),
+          <.li(
+            p.router.link(Pages.Worlds)(
+              <.span(^.className := "fa fa-globe"),
+              " Worlds")),
+          <.li(
+            p.router.link(Pages.Community)(
+              <.span(^.className := "fa fa-comment-o"),
+              " Community"))),
+        <.ul(
+          <.li(^.className := "expander",
+            <.a(^.onClick --> expandMenu,
+              <.span(^.className := "fa fa-navicon"),
+              " Menu")),
+          <.li(
+            p.router.link(Pages.Register)(
+              <.span(^.className := "fa fa-bookmark-o"),
+              " Register")),
+          <.li(
+            p.router.link(Pages.SignIn)(
+              <.span(^.className := "fa fa-check-square-o"),
+              " Sign in")))).withRef(menuRef)
   }
 
   def component = ScalaComponent.builder[Props]("Menu").
-    stateless.
+    initialState(false).
     renderBackend[Backend].
     build
 }
