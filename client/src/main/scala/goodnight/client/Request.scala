@@ -18,6 +18,8 @@ import play.api.libs.json._
 import japgolly.scalajs.react._
 
 
+case class Reply(statusCode: Int, body: JsValue)
+
 class Request(req: HttpRequest) {
 
   def withBody(body: JsValue) =
@@ -38,7 +40,11 @@ class Request(req: HttpRequest) {
           Future.successful((0, ""))
       }))
 
-  def send = performRequest
+  def send: AsyncCallback[Reply] =
+    performRequest.map({ case (status, body) =>
+      if (body.isEmpty) Reply(status, JsNull)
+      else Reply(status, Json.parse(body))
+    })
 }
 
 

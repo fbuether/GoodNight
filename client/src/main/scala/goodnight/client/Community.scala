@@ -1,7 +1,7 @@
 
 package goodnight.client
 
-// import japgolly.scalajs.react._
+import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterConfigDsl
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -19,5 +19,8 @@ object Community extends Page {
     Shell.component(Shell.Props(router,
       "Cloudy Night.png",
       "Have a Good Night"))(
-      <.div("Community is not yet implemented."))
+      component())
+
+  def component = ScalaComponent.static("Community")(
+    <.div("Community is not yet implemented."))
 }

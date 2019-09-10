@@ -11,16 +11,22 @@ import japgolly.scalajs.react.extra.router.RouterConfigDsl
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.component.builder.Lifecycle.RenderScope
 
+
 import goodnight.client.Page
 import goodnight.client.Pages
-import goodnight.client.Request
+import goodnight.client.{ Request, Reply }
 import goodnight.components.Shell
+import goodnight.components.Input
 
 
 object SignIn extends Page {
   def route(dsl: RouterConfigDsl[Pages.Page]) = {
     import dsl._
-    Pages.SignIn.getRoute(dsl) ~> renderR(r => this.component(Props(r)))
+    Pages.SignIn.getRoute(dsl) ~> renderR(r =>
+      Shell.component(Shell.Props(r,
+        "A Proper Journal Icon.png",
+        "Sign In"))(
+        this.component(Props(r))))
   }
 
 
@@ -49,15 +55,16 @@ object SignIn extends Page {
               "identity" -> user,
               "password" -> pass)).
             send.flatMap({
-              case ((202, body)) => // success.
+              case Reply(202, body) => // success.
                 bs.modState(_.copy(loginError = Some("success"))).
                   asAsyncCallback
 
-              case ((401, body)) => // wrong credentials.
-                bs.modState(_.copy(loginError = Some(body))).
+              case Reply(401, body) => // wrong credentials.
+                bs.modState(_.copy(loginError = Some(
+                  "Error: Username or password is wrong."))).
                   asAsyncCallback
 
-              case ((status, body)) => // any other error.
+              case Reply(status, body) => // any other error.
                 Callback(println(s"got ($status) $body")).
                   asAsyncCallback
             }).
@@ -69,9 +76,6 @@ object SignIn extends Page {
     }
 
     def render(p: Props, s: State): VdomElement =
-      Shell.component(Shell.Props(p.router,
-        "A Proper Journal Icon.png",
-        "Sign In"))(
         <.div(^.className := "withColumns",
           <.div(^.className := "column oftwo left",
             <.h2("Register"),
@@ -101,19 +105,27 @@ object SignIn extends Page {
                 <.span(^.className := "fa fa-check-square-o"),
                 " Sign in"),
               <.p(^.className := "plain error"),
-              <.label(^.className := "captioned",
-                "Email or Username:",
-                <.input.text(^.name := "username",
-                  ^.defaultValue := s.username,
-                  ^.required := true,
-                  ^.autoFocus := true,
-                  ^.tabIndex := 1).withRef(usernameRef)),
-              <.label(^.className := "captioned",
-                "Password:",
-                <.input.password(^.name := "password",
-                  ^.defaultValue := s.username,
-                  ^.required := true,
-                  ^.tabIndex := 2).withRef(passwordRef)),
+
+              Input.component(Input.Props("Email or Username:", "username"
+                // List(^.required := true, ^.autoFocus := true)
+              )),
+              Input.component(Input.Props("Password:", "password",
+                // password = true)
+              )),
+
+              // <.label(^.className := "captioned",
+              //   "Email or Username:",
+              //   <.input.text(^.name := "username",
+              //     ^.defaultValue := s.username,
+              //     ^.required := true,
+              //     ^.autoFocus := true,
+              //     ^.tabIndex := 1).withRef(usernameRef)),
+              // <.label(^.className := "captioned",
+              //   "Password:",
+              //   <.input.password(^.name := "password",
+              //     ^.defaultValue := s.username,
+              //     ^.required := true,
+              //     ^.tabIndex := 2).withRef(passwordRef)),
               // <label class="checkbox">
               //   <input type="hidden" name="staySignedInExists" value="true">
               //   <input type="checkbox" name="staySignedIn" value="true"
@@ -125,7 +137,8 @@ object SignIn extends Page {
                 <.span(^.className := "fa fa-pencil-square-o"),
                 " Sign in"),
               s.loginError.map(err =>
-                <.p(err))))))
+                <.p(^.className := "plain error",
+                  err)))))
   }
 
   def component = ScalaComponent.builder[Props]("SignIn").

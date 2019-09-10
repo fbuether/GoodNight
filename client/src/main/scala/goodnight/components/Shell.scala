@@ -47,5 +47,8 @@ object Shell {
     ScalaComponent.builder[Props]("Shell").
       stateless.
       renderBackendWithChildren[Backend].
+      configure(Reusability.shouldComponentUpdateAndLog("shell")).
+      componentDidMount(u => Callback(
+        println("shell did monut."))).
       build
 }
