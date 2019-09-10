@@ -37,6 +37,8 @@ val versions = new {
   val silhouette = "6.1.0"
   val jwt = "2.0.5" // required by silhouette
 
+  val playJson = "2.7.4"
+
   val scalajsScripts = "1.1.2"
 }
 
@@ -67,7 +69,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
-
+      "com.typesafe.play" %% "play-json" % versions.playJson,
     )
   )
 

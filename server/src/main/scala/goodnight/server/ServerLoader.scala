@@ -12,6 +12,9 @@ import controllers.AssetsComponents
 import play.api.db.slick.SlickComponents
 import play.api.db.evolutions.EvolutionsComponents
 import play.api.db.slick.evolutions.SlickEvolutionsComponents
+import play.filters.csrf.CSRFFilter
+import play.filters.gzip.GzipFilter
+import play.api.mvc.EssentialFilter
 
 import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
@@ -69,6 +72,14 @@ class GoodnightComponents(context: Context)
 
   // run the database evolution scripts
   applicationEvolutions
+
+
+  // remove http filters that we do not use.
+  override def httpFilters: Seq[EssentialFilter] = {
+    super.httpFilters.
+      filterNot(_.getClass == classOf[CSRFFilter]).:+(new GzipFilter())
+  }
+
 
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
