@@ -18,7 +18,7 @@ object Home extends Page {
   def render(router: RouterCtl[Pages.Page]): VdomElement =
     Shell.component(Shell.Props(router,
       "Cloudy Night.png",
-      "Have a Good Night",
+      "Have a Good Night"))(
       <.div(
         <.h2("Welcome!"),
         <.p("""GoodNight is the home of many wonderous adventures.
@@ -34,6 +34,5 @@ object Home extends Page {
             <.h3("Available Worlds"),
             <.ul(^.className := "worldList",
               // WorldList()
-            ))))))
+            )))))
 }
-

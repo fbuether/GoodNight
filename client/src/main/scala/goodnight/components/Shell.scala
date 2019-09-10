@@ -14,8 +14,7 @@ object Shell {
   case class Props(
     router: RouterCtl[Pages.Page],
     icon: String,
-    title: String,
-    content: VdomElement
+    title: String
   )
 
   type State = Unit
@@ -36,21 +35,17 @@ object Shell {
 
 
   class Backend(bs: BackendScope[Props, State]) {
-    def render(p: Props, s: State): VdomElement =
+    def render(p: Props, s: State, c: PropsChildren): VdomElement =
       <.div(^.className := "central",
         Menu.component(Menu.Props(p.router)),
-        <.h1(^.className := "banner",
-          <.img(^.src := "https://goodnight.jasminefields.net/goodnight/stat/" +
-            "images/buuf/" + p.icon),
-          <.span(p.title)),
-        p.content,
+        Banner.component(Banner.Props(p.icon, p.title)),
+        c,
         footer)
   }
 
   def component =
     ScalaComponent.builder[Props]("Shell").
       stateless.
-      // initialState(List("hello", "snazzy")).
-      renderBackend[Backend].
+      renderBackendWithChildren[Backend].
       build
 }

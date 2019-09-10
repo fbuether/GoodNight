@@ -28,9 +28,8 @@ object PasswordReset extends Page {
     def render(p: Props): VdomElement =
       Shell.component(Shell.Props(p.router,
         "applications-accessories.png",
-        "Password Reset",
-        <.h2("Reset your password")
-      ))
+        "Password Reset"))(
+        <.h2("Reset your password"))
   }
 
   def component = ScalaComponent.builder[Props]("PasswordReset").
@@ -38,4 +37,3 @@ object PasswordReset extends Page {
     renderBackend[Backend].
     build
 }
-

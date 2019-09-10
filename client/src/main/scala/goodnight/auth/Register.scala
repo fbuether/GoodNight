@@ -20,7 +20,6 @@ object Register extends Page {
   def render(router: RouterCtl[Pages.Page]) =
     Shell.component(Shell.Props(router,
       "Cloudy Night.png",
-      "Have a Good Night",
-      <.div("Registration is not yet implemented.")))
+      "Have a Good Night"))(
+      <.div("Registration is not yet implemented."))
 }
-

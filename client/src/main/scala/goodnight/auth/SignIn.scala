@@ -71,7 +71,7 @@ object SignIn extends Page {
     def render(p: Props, s: State): VdomElement =
       Shell.component(Shell.Props(p.router,
         "A Proper Journal Icon.png",
-        "Sign In",
+        "Sign In"))(
         <.div(^.className := "withColumns",
           <.div(^.className := "column oftwo left",
             <.h2("Register"),
@@ -125,8 +125,7 @@ object SignIn extends Page {
                 <.span(^.className := "fa fa-pencil-square-o"),
                 " Sign in"),
               s.loginError.map(err =>
-                <.p(err)))))
-      ))
+                <.p(err))))))
   }
 
   def component = ScalaComponent.builder[Props]("SignIn").
