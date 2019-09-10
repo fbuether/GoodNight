@@ -10,7 +10,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterConfigDsl
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.component.builder.Lifecycle.RenderScope
-
+import japgolly.scalajs.react.component.Scala.MountedImpure
 
 import goodnight.client.Page
 import goodnight.client.Pages
@@ -41,14 +41,15 @@ object SignIn extends Page {
   )
 
   class Backend(bs: BackendScope[Props, State]) {
-    val usernameRef = Ref[html.Input]
-    val passwordRef = Ref[html.Input]
+    private val usernameRef = Ref.toScalaComponent(Input.component)
+    private val passwordRef = Ref.toScalaComponent(Input.component)
 
     def doSignIn(e: ReactEventFromInput): Callback = {
       e.preventDefaultCB >>
-      usernameRef.get.
-        flatMap({ username => passwordRef.get.
-          map({ password => (username.value, password.value) }) }).asCallback.
+      usernameRef.get.flatMap(_.backend.get).
+        flatMap({ username =>
+          passwordRef.get.flatMap(_.backend.get).
+          map({ password => (username, password) }) }).asCallback.
         flatMap({ case Some((user, pass)) =>
           Request.post("/api/v1/auth/authenticate").
             withBody(Json.obj(
@@ -107,26 +108,12 @@ object SignIn extends Page {
                 " Sign in"),
               <.p(^.className := "plain error"),
 
-              Input.component(Input.Props("Email or Username:", "username"
-                // List(^.required := true, ^.autoFocus := true)
-              )),
-              Input.component(Input.Props("Password:", "password",
-                // password = true)
-              )),
-
-              // <.label(^.className := "captioned",
-              //   "Email or Username:",
-              //   <.input.text(^.name := "username",
-              //     ^.defaultValue := s.username,
-              //     ^.required := true,
-              //     ^.autoFocus := true,
-              //     ^.tabIndex := 1).withRef(usernameRef)),
-              // <.label(^.className := "captioned",
-              //   "Password:",
-              //   <.input.password(^.name := "password",
-              //     ^.defaultValue := s.username,
-              //     ^.required := true,
-              //     ^.tabIndex := 2).withRef(passwordRef)),
+              usernameRef.component(Input.Props(
+                "Email or Username:", "username",
+                List(^.autoFocus := true, ^.required := true))),
+              passwordRef.component(Input.Props(
+                "Password:", "password",
+                List(^.required := true), password = true)),
               // <label class="checkbox">
               //   <input type="hidden" name="staySignedInExists" value="true">
               //   <input type="checkbox" name="staySignedIn" value="true"
