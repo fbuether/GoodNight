@@ -63,7 +63,7 @@ class SignIn(components: ControllerComponents,
             Future.successful(Unauthorized)
         })
       }).recoverWith({ case (e: SilhouetteException) =>
-        Future.successful(Forbidden(Json.obj(
+        Future.successful(Unauthorized(Json.obj(
           "success" -> false,
           "error" -> e.getMessage())))
       })

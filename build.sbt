@@ -69,7 +69,6 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % versions.playJson,
     )
   )
 
@@ -101,6 +100,7 @@ lazy val client: Project = project.in(file("client")).
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
 
+      "com.typesafe.play" %%% "play-json" % versions.playJson,
       // "io.suzaku" %%% "diode" % versions.diode,
       // "io.suzaku" %%% "diode-react" % versions.diodeReact,
 

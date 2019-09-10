@@ -1,11 +1,9 @@
 
 package goodnight.auth
 
-import org.scalajs.dom.html
+import play.api.libs.json.Json
 
-import fr.hmil.roshttp.body.Implicits._
-import fr.hmil.roshttp.body.JSONBody._
-import monix.execution.Scheduler.Implicits.global
+import org.scalajs.dom.html
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -32,7 +30,8 @@ object SignIn extends Page {
 
   case class State(
     username: String,
-    password: String
+    password: String,
+    loginError: Option[String]
   )
 
   class Backend(bs: BackendScope[Props, State]) {
@@ -41,39 +40,32 @@ object SignIn extends Page {
 
     def doSignIn(e: ReactEventFromInput): Callback = {
       e.preventDefaultCB >>
-      usernameRef.get.flatMap({ username =>
-        passwordRef.get.map({ password =>
-            (username.value, password.value) }) }).
-        flatMapCB({ case (user, pass) =>
+      usernameRef.get.
+        flatMap({ username => passwordRef.get.
+          map({ password => (username.value, password.value) }) }).asCallback.
+        flatMap({ case Some((user, pass)) =>
+          Request.post("/api/v1/auth/authenticate").
+            withBody(Json.obj(
+              "identity" -> user,
+              "password" -> pass)).
+            send.flatMap({
+              case ((202, body)) => // success.
+                bs.modState(_.copy(loginError = Some("success"))).
+                  asAsyncCallback
 
-                println("woah.")
+              case ((401, body)) => // wrong credentials.
+                bs.modState(_.copy(loginError = Some(body))).
+                  asAsyncCallback
 
-          AsyncCallback.fromFuture(
-            Request.post("/api/v1/auth/authenticate").
-              withBody(JSONObject(
-                "identity" -> user,
-                "password" -> pass)).
-              send().map({ response =>
+              case ((status, body)) => // any other error.
+                Callback(println(s"got ($status) $body")).
+                  asAsyncCallback
+            }).
+            toCallback
 
-                println("woah2.")
-
-              })
-
-          ).toCallback
+          case None =>
+            Callback(println("login unsuccessful."))
         })
-
-      // orElse()
-      // asCallback.void
-
-
-
-// .get.map({ username =>
-
-        // passwordRef.get.map({ password =>
-
-      //   // })
-      // // })
-      // )
     }
 
     def render(p: Props, s: State): VdomElement =
@@ -131,12 +123,14 @@ object SignIn extends Page {
               <.button(^.tpe := "submit",
                 ^.tabIndex := 3,
                 <.span(^.className := "fa fa-pencil-square-o"),
-                " Sign in"))))
+                " Sign in"),
+              s.loginError.map(err =>
+                <.p(err)))))
       ))
   }
 
   def component = ScalaComponent.builder[Props]("SignIn").
-    initialState(State("", "")).
+    initialState(State("", "", None)).
     renderBackend[Backend].
     build
 }
