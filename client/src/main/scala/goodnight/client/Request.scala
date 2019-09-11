@@ -4,10 +4,9 @@ package goodnight.client
 import java.io.IOException
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{Try, Failure, Success}
 
 import org.scalajs.dom.document
-import org.scalajs.dom.window
 
 import fr.hmil.roshttp.HttpRequest
 import fr.hmil.roshttp.Method._
@@ -21,54 +20,59 @@ import monix.execution.Scheduler.Implicits.global
 import play.api.libs.json._
 import japgolly.scalajs.react._
 
+import goodnight.auth.ProfileService
+
 
 case class Reply(statusCode: Int, body: JsValue)
 
 class Request(req: HttpRequest) {
+  private val authHeader = "X-Auth-Token"
+
+  private def storeAuthentication(headers: HeaderMap[String]): Callback =
+    headers.get(authHeader).
+      map(ProfileService.setAuthentication).
+      getOrElse(Callback(()))
+
+  private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
+    ProfileService.getAuthentication.
+      map(t => t.map(t => req.withHeader("Authorization", "Bearer " + t)).
+        getOrElse(req))
+
+  private def successResult(r: SimpleHttpResponse):
+      CallbackTo[(Int, String)] = {
+    Callback { println(s"reply: ${r.statusCode} -> ${r.body}") } >>
+    storeAuthentication(r.headers) >>
+    CallbackTo((r.statusCode, r.body))
+  }
+
+  private def catchErrors(request: Try[SimpleHttpResponse]):
+  Try[SimpleHttpResponse] = {
+    request match {
+      case Success(r) => Success(r)
+      case Failure(e) => e match {
+        case (e: HttpException[SimpleHttpResponse]) => Success(e.response)
+        case _ => Failure(e)
+      }
+    }
+  }
+
+  private def treatResult(request: Future[SimpleHttpResponse]):
+      AsyncCallback[(Int, String)] =
+      AsyncCallback.
+        fromFuture(request.transform(catchErrors)).
+        flatMap(r => successResult(r).asAsyncCallback)
+
+  private def performRequest: AsyncCallback[(Int, String)] =
+    attachAuthentication(req).map(_.send).
+      asAsyncCallback.
+      flatMap(treatResult)
+
+
 
   def withBody(body: JsValue) =
     Request(req.
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
-
-  private val authStore = "authentication"
-  private val authHeader = "X-Auth-Token"
-
-  private def storeAuthentication(headers: HeaderMap[String]) = {
-    // AsyncCallback[Unit] = {
-    if (headers.contains(authHeader))
-      window.localStorage.setItem(authStore, headers(authHeader))
-  }
-
-  private def attachAuthentication(req: HttpRequest): HttpRequest = {
-    window.localStorage.getItem(authStore) match {
-      case "" => req
-      case token => req.withHeader("Authorization", "Bearer " + token)
-    }
-  }
-
-
-
-  private def performRequest: AsyncCallback[(Int, String)] =
-    AsyncCallback.fromFuture(
-      attachAuthentication(req).
-      send.
-      map({ r =>
-        println("got reply: " + r.statusCode + " -> " + r.body)
-        storeAuthentication(r.headers)
-        (r.statusCode, r.body) }).
-      recoverWith({
-        case (e: HttpException[SimpleHttpResponse]) =>
-          println("got reply: " + e.response.statusCode + " -> " +
-            e.response.body)
-          storeAuthentication(e.response.headers)
-          Future.successful((e.response.statusCode, e.response.body))
-        case (e: IOException) =>
-          println("unexpected http exception: " +
-            e.getClass() + ", " +
-            e.getMessage() + ", ")
-          Future.successful((0, ""))
-      }))
 
   def send: AsyncCallback[Reply] =
     performRequest.map({ case (status, body) =>

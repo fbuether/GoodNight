@@ -25,8 +25,7 @@ object Client {
         foldLeft(emptyRule)(_ | _).
         noFallback.
         // notFound(<.div("404"))
-        notFound(redirectToPage(Pages.Home)(Redirect.Replace)).
-        logToConsole
+        notFound(redirectToPage(Pages.Home)(Redirect.Replace))
     })
     val router = Router(BaseUrl.fromWindowOrigin, routerConfig)
     val rootElement = document.getElementById("goodnight-client")
