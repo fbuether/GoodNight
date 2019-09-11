@@ -20,8 +20,6 @@ import monix.execution.Scheduler.Implicits.global
 import play.api.libs.json._
 import japgolly.scalajs.react._
 
-import goodnight.auth.ProfileService
-
 
 case class Reply(statusCode: Int, body: JsValue)
 
@@ -30,11 +28,11 @@ class Request(req: HttpRequest) {
 
   private def storeAuthentication(headers: HeaderMap[String]): Callback =
     headers.get(authHeader).
-      map(ProfileService.setAuthentication).
+      map(AuthenticationService.setAuthentication).
       getOrElse(Callback(()))
 
   private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
-    ProfileService.getAuthentication.
+    AuthenticationService.getAuthentication.
       map(t => t.map(t => req.withHeader(authHeader, t)).
         getOrElse(req))
 

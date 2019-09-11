@@ -7,12 +7,12 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
-import goodnight.client.Pages
+import goodnight.client.Page
 
 
 object Shell {
   case class Props(
-    router: RouterCtl[Pages.Page],
+    // router: RouterCtl[Page],
     icon: String,
     title: String
   )
@@ -37,8 +37,8 @@ object Shell {
   class Backend(bs: BackendScope[Props, State]) {
     def render(p: Props, s: State, c: PropsChildren): VdomElement =
       <.div(^.className := "central",
-        Menu.component(Menu.Props(p.router)),
-        Banner.component(Banner.Props(p.icon, p.title)),
+        // Menu.component(Menu.Props(p.router)),
+        // Banner.component(Banner.Props(p.icon, p.title)),
         c,
         footer)
   }

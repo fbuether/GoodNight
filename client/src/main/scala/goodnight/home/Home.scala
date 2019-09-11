@@ -1,24 +1,31 @@
 
 package goodnight.home
 
-// import japgolly.scalajs.react._
+import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterConfigDsl
-import japgolly.scalajs.react.extra.router.RouterCtl
+import japgolly.scalajs.react.extra.router._
+import japgolly.scalajs.react.extra.router.StaticDsl._
 
 import goodnight.components.Shell
+import goodnight.client.Page
+import goodnight.client.StaticPageDescriptor
 
 
-object Home extends Page {
-  def route(dsl: RouterConfigDsl[Pages.Page]) = {
-    import dsl._
-    Pages.Home.getRoute(dsl) ~> renderR(this.render)
+object Home {
+  case object HomePage extends Page
+
+  def page = new StaticPageDescriptor {
+    def route(dsl: Dsl) = dsl.root
+    def showPage(dsl: Dsl) = dsl.render(component(Props()))
+    val getPage = HomePage
   }
 
-  def render(router: RouterCtl[Pages.Page]): VdomElement =
-    Shell.component(Shell.Props(router,
-      "Cloudy Night.png",
-      "Have a Good Night"))(
+  case class Props()
+
+  case class State()
+
+  class Backend(bs: BackendScope[Props, State]) {
+    def render(p: Props, s: State): VdomElement =
       <.div(
         <.h2("Welcome!"),
         <.p("""GoodNight is the home of many wonderous adventures.
@@ -34,5 +41,11 @@ object Home extends Page {
             <.h3("Available Worlds"),
             <.ul(^.className := "worldList",
               // WorldList()
-            )))))
+            ))))
+  }
+
+  def component = ScalaComponent.builder[Props]("Home").
+    initialState(State()).
+    renderBackend[Backend].
+    build
 }

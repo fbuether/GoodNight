@@ -1,35 +1,49 @@
 
 package goodnight.client
 
+import scala.util.{ Either, Left, Right }
 import org.scalajs.dom.document
 
-// import japgolly.scalajs.react._
-// import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router._
-// import japgolly.scalajs.react.vdom.Implicits._
 
+import goodnight.components.Shell
+import goodnight.home.Home
+import goodnight.home.NotFound
 
 object Client {
-  private def pages: List[Page] = List(
-    goodnight.client.Home,
-    goodnight.client.Community,
-    goodnight.worlds.Worlds,
-    goodnight.auth.Register,
-    goodnight.auth.SignIn,
-    goodnight.auth.PasswordReset)
+  private def pages: List[PageDescriptor] = List(
+    goodnight.home.Home.page,
+    goodnight.home.NotFound.page
+    // goodnight.home.NotFound.page(new Path("/")),
+    // goodnight.community.Community,
+    // goodnight.worlds.Worlds,
+    // goodnight.home.authentication.Register,
+    // goodnight.home.authentication.SignIn,
+    // goodnight.home.authentication.PasswordReset
+  )
 
   def main(args: Array[String]): Unit = {
-    val routerConfig = RouterConfigDsl[Pages.Page].buildConfig(dsl => {
+    val routerConfig = RouterConfigDsl[Page].buildConfig(dsl => {
       import dsl._
-      this.pages.map(_.route(dsl)).
+      this.pages.map(_.getRoute(dsl)).
         foldLeft(emptyRule)(_ | _).
-        noFallback.
-        // notFound(<.div("404"))
-        notFound(redirectToPage(Pages.Home)(Redirect.Replace))
+        notFound(path =>
+//           // NotFound.component(NotFound.Props(path.value))).
+NotFound.NotFoundPage(path.value)).
+        // notFound(redirectToPage(Home.HomePage)(Redirect.Replace)).
+
+        logToConsole
     })
     val router = Router(BaseUrl.fromWindowOrigin, routerConfig)
-    val rootElement = document.getElementById("goodnight-client")
-    router.ctor().renderIntoDOM(rootElement)
+    val root = document.getElementById("goodnight-client")
+
+    router().renderIntoDOM(root)
+
+    // Shell.component(Shell.Props(// router,
+    //   "Burn.png", "Title"))(
+    //   // router.ctor()//.renderIntoDOM(rootElement)
+    //   router()
+    // ).renderIntoDOM(rootElement)
   }
 }
 
