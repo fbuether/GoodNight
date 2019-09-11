@@ -35,7 +35,7 @@ class Request(req: HttpRequest) {
 
   private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
     ProfileService.getAuthentication.
-      map(t => t.map(t => req.withHeader("Authorization", "Bearer " + t)).
+      map(t => t.map(t => req.withHeader(authHeader, t)).
         getOrElse(req))
 
   private def successResult(r: SimpleHttpResponse):

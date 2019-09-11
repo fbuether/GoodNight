@@ -44,6 +44,7 @@ import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepo
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
+import goodnight.api.Profile
 import goodnight.api.authentication.SignUp
 import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
@@ -94,7 +95,9 @@ class GoodnightComponents(context: Context)
   lazy val silhouetteEnvironment = Environment[JwtEnvironment](
     userService,
     new JWTAuthenticatorService(
-      JWTAuthenticatorSettings(sharedSecret = jwtSharedSecret),
+      JWTAuthenticatorSettings(
+        issuerClaim = "goodnight",
+        sharedSecret = jwtSharedSecret),
       None, // repository: Option[AuthenticatorRepository[JWTAuthenticator]],
       new Base64AuthenticatorEncoder(),
       new SecureRandomIDGenerator(),
@@ -134,7 +137,10 @@ class GoodnightComponents(context: Context)
     silhouette, passwordHasherRegistry, authInfoRepository)
   lazy val authSignIn = new SignIn(controllerComponents, database,
     silhouette, credentialsProvider)
+  lazy val profile = new Profile(controllerComponents, userService,
+    database, silhouette)
+
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authentication, authSignUp, authSignIn,
+    authentication, authSignUp, authSignIn, profile,
     assets)
 }
