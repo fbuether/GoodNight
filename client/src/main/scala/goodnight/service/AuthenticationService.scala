@@ -1,12 +1,12 @@
 
-package goodnight.auth
+package goodnight.service
 
 import org.scalajs.dom.window
 
 import japgolly.scalajs.react._
 
 
-object ProfileService {
+object AuthenticationService {
   private val authStore = "authentication"
 
   def setAuthentication(token: String): Callback = Callback {

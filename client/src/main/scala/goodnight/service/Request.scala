@@ -1,5 +1,5 @@
 
-package goodnight.client
+package goodnight.service
 
 import java.io.IOException
 

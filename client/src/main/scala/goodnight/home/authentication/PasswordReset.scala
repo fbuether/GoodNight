@@ -1,5 +1,5 @@
 
-package goodnight.auth
+package goodnight.home.authentication
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._

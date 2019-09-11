@@ -1,5 +1,5 @@
 
-package goodnight.auth
+package goodnight.home.authentication
 
 import play.api.libs.json.Json
 
