@@ -35,8 +35,6 @@ object SignIn extends Page {
   )
 
   case class State(
-    username: String,
-    password: String,
     loginError: Option[String]
   )
 
@@ -55,25 +53,22 @@ object SignIn extends Page {
             withBody(Json.obj(
               "identity" -> user,
               "password" -> pass)).
-            send.flatMap({
+            send.map({
               case Reply(202, body) => // success.
-                bs.modState(_.copy(loginError = Some("success"))).
-                  asAsyncCallback
+                bs.props.flatMap(_.router.set(Pages.Home))
 
               case Reply(401, body) => // wrong credentials.
                 bs.modState(_.copy(loginError = Some(
-                  "Error: Username or password is wrong."))).
-                  asAsyncCallback
+                  "Error: Username or password is wrong.")))
 
               case Reply(status, body) => // any other error.
-                Callback(println(s"got ($status) $body")).
-                  asAsyncCallback
-            }).
-            toCallback
+                Callback(println(s"got ($status) $body"))
+            }).flatMap(_.asAsyncCallback).toCallback
 
           case None =>
-            Callback(println("could not get input field values, " +
-              "login unsuccessful."))
+          Callback(())
+          // bs.modState(_.copy(error =
+          //   Some("Please fill in all required fields.")))
         })
     }
 
@@ -106,10 +101,8 @@ object SignIn extends Page {
               <.h2(
                 <.span(^.className := "fa fa-check-square-o"),
                 " Sign in"),
-              <.p(^.className := "plain error"),
-
               usernameRef.component(Input.Props(
-                "Email or Username:", "username",
+                "Email:", "username",
                 List(^.autoFocus := true, ^.required := true))),
               passwordRef.component(Input.Props(
                 "Password:", "password",
@@ -121,7 +114,6 @@ object SignIn extends Page {
               //   Stay signed in
               // </label>
               <.button(^.tpe := "submit",
-                ^.tabIndex := 3,
                 <.span(^.className := "fa fa-pencil-square-o"),
                 " Sign in"),
               s.loginError.map(err =>
@@ -130,7 +122,7 @@ object SignIn extends Page {
   }
 
   def component = ScalaComponent.builder[Props]("SignIn").
-    initialState(State("", "", None)).
+    initialState(State(None)).
     renderBackend[Backend].
     build
 }

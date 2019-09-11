@@ -57,7 +57,7 @@ class SignIn(components: ControllerComponents,
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                authServ.embed(ident, NoContent)(request)
+                authServ.embed(ident, Accepted)(request)
               })
           case None =>
             Future.successful(Unauthorized)

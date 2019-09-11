@@ -29,9 +29,13 @@ class Request(req: HttpRequest) {
 
   private def performRequest: AsyncCallback[(Int, String)] =
     AsyncCallback.fromFuture(req.send.
-      map({ r => (r.statusCode, r.body) }).
+      map({ r =>
+        println("got reply: " + r.statusCode + " -> " + r.body)
+        (r.statusCode, r.body) }).
       recoverWith({
         case (e: HttpException[SimpleHttpResponse]) =>
+          println("got reply: " + e.response.statusCode + " -> " +
+            e.response.body)
           Future.successful((e.response.statusCode, e.response.body))
         case (e: IOException) =>
           println("unexpected http exception: " +
