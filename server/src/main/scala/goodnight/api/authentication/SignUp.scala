@@ -67,7 +67,6 @@ class SignUp(components: ControllerComponents,
                   userId, login.providerID, login.providerKey)))).
                 flatMap({ _ =>
                   authInfoRepository.add(login, authInfo).flatMap({ _ =>
-                    println("success!")
                     authServ.embed(ident, Created)(request)
                   })
                 })

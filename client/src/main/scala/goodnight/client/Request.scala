@@ -6,9 +6,13 @@ import java.io.IOException
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
+import org.scalajs.dom.document
+import org.scalajs.dom.window
+
 import fr.hmil.roshttp.HttpRequest
 import fr.hmil.roshttp.Method._
 import fr.hmil.roshttp.body.PlainTextBody
+import fr.hmil.roshttp.util.HeaderMap
 import fr.hmil.roshttp.response.SimpleHttpResponse
 import fr.hmil.roshttp.body.Implicits._
 import fr.hmil.roshttp.exceptions.HttpException
@@ -27,15 +31,37 @@ class Request(req: HttpRequest) {
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
 
+  private val authStore = "authentication"
+  private val authHeader = "X-Auth-Token"
+
+  private def storeAuthentication(headers: HeaderMap[String]) = {
+    // AsyncCallback[Unit] = {
+    if (headers.contains(authHeader))
+      window.localStorage.setItem(authStore, headers(authHeader))
+  }
+
+  private def attachAuthentication(req: HttpRequest): HttpRequest = {
+    window.localStorage.getItem(authStore) match {
+      case "" => req
+      case token => req.withHeader("Authorization", "Bearer " + token)
+    }
+  }
+
+
+
   private def performRequest: AsyncCallback[(Int, String)] =
-    AsyncCallback.fromFuture(req.send.
+    AsyncCallback.fromFuture(
+      attachAuthentication(req).
+      send.
       map({ r =>
         println("got reply: " + r.statusCode + " -> " + r.body)
+        storeAuthentication(r.headers)
         (r.statusCode, r.body) }).
       recoverWith({
         case (e: HttpException[SimpleHttpResponse]) =>
           println("got reply: " + e.response.statusCode + " -> " +
             e.response.body)
+          storeAuthentication(e.response.headers)
           Future.successful((e.response.statusCode, e.response.body))
         case (e: IOException) =>
           println("unexpected http exception: " +
