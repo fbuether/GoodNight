@@ -7,6 +7,7 @@ import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.html_<^._
 
 import goodnight.home.Home
+import goodnight.home.Profile
 import goodnight.worlds.World
 import goodnight.worlds.Worlds
 import goodnight.community.Community
@@ -23,8 +24,7 @@ object Client {
   def main(args: Array[String]): Unit = {
     val routerConfig = RouterConfigDsl[pages.Page].buildConfig({ dsl =>
       routes.
-        notFound(redirectToPage(pages.Home)(Redirect.Replace)).
-        logToConsole
+        notFound(redirectToPage(pages.Home)(Redirect.Replace))
     })
     val router = Router(BaseUrl.fromWindowOrigin, routerConfig)
     val goodnightElement = document.getElementById("goodnight-client")
@@ -39,6 +39,8 @@ object Client {
     staticRoute("/#auth/sign-in", pages.SignIn) ~> renderR(SignIn.render) |
     (staticRoute("/#auth/reset-password", pages.RequestPasswordReset) ~>
       renderR(PasswordReset.render)) |
+    staticRoute("/#profile", pages.Profile) ~> renderR(Profile.render) |
+
 
     staticRoute("/#worlds", pages.Worlds) ~> renderR(Worlds.render) |
     {val route = ("/#world" / string("[^/]+")).caseClass[pages.World]

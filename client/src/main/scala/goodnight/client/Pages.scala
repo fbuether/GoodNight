@@ -7,12 +7,12 @@ package pages {
 
   case object Home extends Page
   case object Community extends Page
+  case object Profile extends Page
 
   // authentication
   case object Register extends Page
   case object SignIn extends Page
   case object RequestPasswordReset extends Page
-  case object Profile extends Page
 
   // playing worlds
   case object Worlds extends Page
