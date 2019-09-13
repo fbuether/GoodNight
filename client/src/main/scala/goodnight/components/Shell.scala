@@ -7,19 +7,17 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
-import goodnight.client.Page
+import goodnight.client.pages
 
 
 object Shell {
   case class Props(
-    // router: RouterCtl[Page],
+    router: RouterCtl[pages.Page],
     icon: String,
     title: String
   )
 
-  type State = Unit
-
-  def footer =
+  def footer = ScalaComponent.builder.static("Footer")(
     <.div(^.className := "schlussvermerk",
       "© " + Year.now.getValue + " ",
       <.a(^.href := "https://jasminefields.net",
@@ -31,23 +29,21 @@ object Shell {
       // mailto
       <.img(^.src := "https://goodnight.jasminefields.net/goodnight/" +
         "stat/images/othftwy.gif",
-        ^.title := "on the hunt for the white yonder"))
+        ^.title := "on the hunt for the white yonder"))).
+    build
 
-
-  class Backend(bs: BackendScope[Props, State]) {
-    def render(p: Props, s: State, c: PropsChildren): VdomElement =
-      <.div(^.className := "central",
-        // Menu.component(Menu.Props(p.router)),
-        // Banner.component(Banner.Props(p.icon, p.title)),
+  class Backend(bs: BackendScope[Props, Unit]) {
+    def render(p: Props, c: PropsChildren): VdomElement =
+      <.div(^.className := "goodnight",
+        Menu.component(Menu.Props(p.router)),
+        Banner.component(Banner.Props(p.icon, p.title)),
         c,
-        footer)
+        footer())
   }
 
-  def component =
-    ScalaComponent.builder[Props]("Shell").
-      stateless.
-      renderBackendWithChildren[Backend].
-      componentDidMount(u => Callback(
-        println("shell did monut."))).
-      build
+  def component = ScalaComponent.builder[Props]("Shell").
+    stateless.
+    renderBackendWithChildren[Backend].
+    componentDidMount(u => Callback(println("shell did monut."))).
+    build
 }

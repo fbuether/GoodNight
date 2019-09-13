@@ -5,27 +5,24 @@ import play.api.libs.json.Json
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterConfigDsl
 import japgolly.scalajs.react.extra.router.RouterCtl
 
-import goodnight.client.Page
-import goodnight.client.Pages
-import goodnight.client.{ Request, Reply }
+import goodnight.client.pages
+import goodnight.service.{ Request, Reply }
 import goodnight.components.Shell
 import goodnight.components.Input
 
 
-object Register extends Page {
-  def route(dsl: RouterConfigDsl[Pages.Page]) = {
-    import dsl._
-    Pages.Register.getRoute(dsl) ~> renderR(r =>
-      Shell.component(Shell.Props(r,
-        "Boring Envelope.png", "Register"))(
-        this.component(Props(r))))
+object Register {
+  def render(router: RouterCtl[pages.Page]): VdomElement = {
+    Shell.component(Shell.Props(router,
+      "Boring Envelope.png", "Register"))(
+      this.component(Props(router)))
   }
 
+
   case class Props(
-    router: RouterCtl[Pages.Page]
+    router: RouterCtl[pages.Page]
   )
 
   case class State(
@@ -51,7 +48,7 @@ object Register extends Page {
               "password" -> password)).
             send.map({
               case Reply(201, reply) => // success.
-                bs.props.flatMap(_.router.set(Pages.Home))
+                bs.props.flatMap(_.router.set(pages.Home))
 
               case Reply(403, reply) => // already registered.
                 bs.modState(_.copy(error = Some(
@@ -94,11 +91,3 @@ object Register extends Page {
     renderBackend[Backend].
     build
 }
-
-
-// def render(router: RouterCtl[Pages.Page]) =
-//   Shell.component(Shell.Props(router,
-//     "Cloudy Night.png",
-//     "Have a Good Night"))(
-//     <.div("Registration is not yet implemented."))
-// }

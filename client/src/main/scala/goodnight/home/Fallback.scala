@@ -1,13 +1,13 @@
 
-package goodnight.home
+// package goodnight.home
 
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router._
-import japgolly.scalajs.react.extra.router.StaticDsl._
+// import japgolly.scalajs.react._
+// import japgolly.scalajs.react.vdom.html_<^._
+// import japgolly.scalajs.react.extra.router._
+// import japgolly.scalajs.react.extra.router.StaticDsl._
 
-import goodnight.components.Shell
-import goodnight.client.Page
+// import goodnight.components.Shell
+// import goodnight.client.Page
 // import goodnight.client.StaticPage
 
 
