@@ -8,6 +8,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
+import goodnight.service.AuthenticationService
 
 
 object Shell {

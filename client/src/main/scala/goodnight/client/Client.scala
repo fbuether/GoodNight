@@ -3,6 +3,7 @@ package goodnight.client
 
 import org.scalajs.dom.document
 
+import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.html_<^._
 
@@ -26,7 +27,7 @@ object Client {
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
       staticRoute("#about", pages.About) ~> renderR(About.render) |
-      // Authentication.
+      // Authentication
       {staticRoute("#auth/register", pages.Register) ~>
         renderR(Register.render)} |
       staticRoute("#auth/sign-in", pages.SignIn) ~> renderR(SignIn.render) |

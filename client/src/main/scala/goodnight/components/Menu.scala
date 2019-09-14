@@ -7,8 +7,9 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
-import japgolly.scalajs.react.StateAccess.ModStateWithProps
-import japgolly.scalajs.react.component.builder.Lifecycle.ComponentWillMount
+import japgolly.scalajs.react.extra.OnUnmount
+import japgolly.scalajs.react.extra.Listenable
+import japgolly.scalajs.react.extra.Broadcaster
 
 import goodnight.client.pages
 import goodnight.service.User
@@ -16,11 +17,11 @@ import goodnight.service.AuthenticationService
 
 
 object Menu {
-  type Props = (RouterCtl[pages.Page])
+  type Props = RouterCtl[pages.Page]
 
-  type State = (Option[User])
+  type State = Option[User]
 
-  class Backend(bs: BackendScope[Props, State]) {
+  class Backend(bs: BackendScope[Props, State]) extends OnUnmount {
     val menuRef = Ref[html.Div]
 
     def toggleExpandedMenu = menuRef.foreach({ menu =>
@@ -31,34 +32,38 @@ object Menu {
         menu.className = cn + " expanded"
     })
 
-    def item(router: RouterCtl[pages.Page],
-      page: pages.Page, icon: String, title: String,linkClass: String = "") =
+    def item(router: RouterCtl[pages.Page], page: pages.Page, icon: String,
+      title: String, linkClass: String = "") =
       <.li(^.className := linkClass,
         router.link(page)(
           <.span(^.className := "fa fa-" + icon),
           " " + title))
 
-    def doSignOut: Callback = Callback {
-      println("signing out.")
+    def doSignOut(router: RouterCtl[pages.Page]): Callback = {
+      AuthenticationService.removeAuthentication >>
+      router.set(pages.Home)
     }
 
-    def render(router: RouterCtl[pages.Page], user: State) = {
+    def render(p: Props, user: State) = {
       val userItems = user match {
-        case None =>
-          Seq(item(router, pages.Register, "bookmark-o", "Register"),
-            item(router, pages.SignIn, "check-square-o", "Sign in"))
-        case Some(User(name)) =>
-          Seq(item(router, pages.Profile, "sun-o", name),
-            <.li(<.a(^.onClick --> doSignOut,
-              <.span(^.className := "fa fa-times-circle-o"),
-              " Sign out")))
+        case None => Seq(
+          item(p, pages.Register, "bookmark-o", "Register"),
+          // this is required to have react create new elements.
+          // otherwise, after logout, the new sign in link would also fire.
+          <.span(),
+          item(p, pages.SignIn, "check-square-o", "Sign in"))
+        case Some(User(name)) => Seq(
+          item(p, pages.Profile, "sun-o", name),
+          <.li(<.a(^.onClick --> doSignOut(p),
+            <.span(^.className := "fa fa-times-circle-o"),
+            " Sign out")))
       }
 
       <.div.withRef(menuRef)(^.className := "menu",
         <.ul(
-          item(router, pages.Home, "moon-o", "GoodNight", "header"),
-          item(router, pages.Worlds, "globe", "Worlds"),
-          item(router, pages.Community, "comment-o", "Community")),
+          item(p, pages.Home, "moon-o", "GoodNight", "header"),
+          item(p, pages.Worlds, "globe", "Worlds"),
+          item(p, pages.Community, "comment-o", "Community")),
         <.ul(
           <.li(^.className := "expander",
             <.a(^.onClick --> toggleExpandedMenu,
@@ -72,16 +77,10 @@ object Menu {
   def getUsername: CallbackTo[State] =
     AuthenticationService.getUser
 
-  // def fetchLoginInfo(cwu: // ComponentWillMount[Props, Unit, Backend]
-  //     ModStateWithProps[CallbackTo, Props, State]
-  // ) =
-  //   AuthenticationService.isLoggedIn.flatMap(valid => Callback {
-
-  //     println("menu for logged in " + valid)
-  //   })
-
   val component = ScalaComponent.builder[Props]("Menu").
     initialStateCallback(getUsername).
     renderBackend[Backend].
+    configure(Listenable.listen(_ => AuthenticationService.LoginEvents,
+      cmu => cmu.setState)).
     build
 }

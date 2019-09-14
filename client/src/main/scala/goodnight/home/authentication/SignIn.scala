@@ -51,7 +51,7 @@ object SignIn {
               "password" -> pass)).
             send.map({
               case Reply(202, body) => // success.
-                bs.props.flatMap(_.router.set(pages.Home))
+                bs.props.flatMap(_.router.set(pages.Profile))
 
               case Reply(401, body) => // wrong credentials.
                 bs.modState(_.copy(loginError = Some(
@@ -62,9 +62,8 @@ object SignIn {
             }).flatMap(_.asAsyncCallback).toCallback
 
           case None =>
-          Callback(())
-          // bs.modState(_.copy(error =
-          //   Some("Please fill in all required fields.")))
+          bs.modState(_.copy(loginError =
+            Some("Please fill in all required fields.")))
         })
     }
 
