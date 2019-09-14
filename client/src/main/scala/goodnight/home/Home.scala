@@ -5,13 +5,14 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
-import goodnight.client.pages.Page
+import goodnight.client.pages
 import goodnight.components.Shell
+import goodnight.components.Banner
 
 
 object Home {
-  def render(router: RouterCtl[Page]): VdomElement = {
-    val content = ScalaComponent.builder.static("Home")(
+  val component = ScalaComponent.builder[RouterCtl[pages.Page]]("Home").
+    render_P(router =>
       <.div(
         <.h2("Welcome!"),
         <.p("""GoodNight is the home of many wonderous adventures.
@@ -28,10 +29,14 @@ object Home {
             <.ul(^.className := "worldList",
               // WorldList()
             ))))).
-      build
+    componentWillMount(u => Callback(println("mount.home"))).
+    componentWillUpdate(u => Callback(println("update.home"))).
+    componentWillUnmount(u => Callback(println("unmount.home"))).
+    build
 
-    Shell.component(Shell.Props(router,
-      "Cloudy Night.png", "Have a Good Night"))(
-      content())
-  }
+
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router, "Cloudy Night.png", "Have a Good Night"),
+      this.component(router))
 }

@@ -7,16 +7,19 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.components.Shell
+import goodnight.components.Banner
 
 
 object Community {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    val content = ScalaComponent.builder.static("Community")(
-      <.div("Community is not yet implemented.")).
-      build
+  val component = ScalaComponent.builder.static("Community")(
+    <.div("Community is not yet implemented.")).
+    build
 
-    Shell.component(Shell.Props(router,
-      "Cloudy Night.png", "Have a Good Night"))(
-      content())
-  }
+
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router,
+        "An esculator can never break, it can only become stairs..png",
+        "Community"),
+      this.component())
 }
