@@ -6,6 +6,9 @@ import org.scalajs.dom.window
 import japgolly.scalajs.react._
 
 
+case class User(name: String)
+
+
 object AuthenticationService {
   private val authStore = "authentication"
 
@@ -24,4 +27,11 @@ object AuthenticationService {
       case token => Some(token)
     }
   }
+
+  def isLoggedIn: CallbackTo[Boolean] = getAuthentication.
+    // map(_.isValid).
+    map(_.nonEmpty)
+
+  def getUser: CallbackTo[Option[User]] = getAuthentication.
+    map(_.map(_ => User("username")))
 }

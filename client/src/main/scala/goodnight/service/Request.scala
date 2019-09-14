@@ -95,5 +95,4 @@ object Request {
     Request(HttpRequest(baseUrl + url).
       withMethod(POST).
       withHeader("Accept", "text/json"))
-
 }

@@ -7,13 +7,20 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
+import japgolly.scalajs.react.StateAccess.ModStateWithProps
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentWillMount
+
 import goodnight.client.pages
+import goodnight.service.User
+import goodnight.service.AuthenticationService
 
 
 object Menu {
   type Props = (RouterCtl[pages.Page])
 
-  class Backend(bs: BackendScope[Props, Unit]) {
+  type State = (Option[User])
+
+  class Backend(bs: BackendScope[Props, State]) {
     val menuRef = Ref[html.Div]
 
     def toggleExpandedMenu = menuRef.foreach({ menu =>
@@ -31,7 +38,22 @@ object Menu {
           <.span(^.className := "fa fa-" + icon),
           " " + title))
 
-    def render(router: RouterCtl[pages.Page]) =
+    def doSignOut: Callback = Callback {
+      println("signing out.")
+    }
+
+    def render(router: RouterCtl[pages.Page], user: State) = {
+      val userItems = user match {
+        case None =>
+          Seq(item(router, pages.Register, "bookmark-o", "Register"),
+            item(router, pages.SignIn, "check-square-o", "Sign in"))
+        case Some(User(name)) =>
+          Seq(item(router, pages.Profile, "sun-o", name),
+            <.li(<.a(^.onClick --> doSignOut,
+              <.span(^.className := "fa fa-times-circle-o"),
+              " Sign out")))
+      }
+
       <.div.withRef(menuRef)(^.className := "menu",
         <.ul(
           item(router, pages.Home, "moon-o", "GoodNight", "header"),
@@ -42,11 +64,24 @@ object Menu {
             <.a(^.onClick --> toggleExpandedMenu,
               <.span(^.className := "fa fa-navicon"),
               " Menu")),
-          item(router, pages.Register, "bookmark-o", "Register"),
-          item(router, pages.SignIn, "check-square-o", "Sign in")))
+          userItems.toTagMod))
+    }
   }
 
+
+  def getUsername: CallbackTo[State] =
+    AuthenticationService.getUser
+
+  // def fetchLoginInfo(cwu: // ComponentWillMount[Props, Unit, Backend]
+  //     ModStateWithProps[CallbackTo, Props, State]
+  // ) =
+  //   AuthenticationService.isLoggedIn.flatMap(valid => Callback {
+
+  //     println("menu for logged in " + valid)
+  //   })
+
   val component = ScalaComponent.builder[Props]("Menu").
+    initialStateCallback(getUsername).
     renderBackend[Backend].
     build
 }
