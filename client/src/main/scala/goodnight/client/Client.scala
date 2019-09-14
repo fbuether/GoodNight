@@ -8,6 +8,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 
 import goodnight.home.Home
 import goodnight.home.Profile
+import goodnight.home.About
 import goodnight.worlds.World
 import goodnight.worlds.Worlds
 import goodnight.community.Community
@@ -24,6 +25,7 @@ object Client {
     (trimSlashes |
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
+      staticRoute("#about", pages.About) ~> renderR(About.render) |
       // Authentication.
       {staticRoute("#auth/register", pages.Register) ~>
         renderR(Register.render)} |

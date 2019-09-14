@@ -16,8 +16,5 @@ object Banner {
       <.h1(^.className := "banner",
         <.img(^.src := (router.baseUrl + "assets/images/buuf/" + icon).value),
         <.span(title)) }).
-    componentWillMount(u => Callback(println("mount.banner"))).
-    componentWillUpdate(u => Callback(println("update.banner"))).
-    componentWillUnmount(u => Callback(println("unmount.banner"))).
     build
 }

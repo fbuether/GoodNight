@@ -8,6 +8,7 @@ package pages {
   case object Home extends Page
   case object Community extends Page
   case object Profile extends Page
+  case object About extends Page
 
   // authentication
   case object Register extends Page

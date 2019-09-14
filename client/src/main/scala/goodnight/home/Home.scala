@@ -29,9 +29,6 @@ object Home {
             <.ul(^.className := "worldList",
               // WorldList()
             ))))).
-    componentWillMount(u => Callback(println("mount.home"))).
-    componentWillUpdate(u => Callback(println("update.home"))).
-    componentWillUnmount(u => Callback(println("unmount.home"))).
     build
 
 

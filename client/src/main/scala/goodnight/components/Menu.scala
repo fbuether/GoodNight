@@ -34,7 +34,7 @@ object Menu {
     def render(router: RouterCtl[pages.Page]) =
       <.div.withRef(menuRef)(^.className := "menu",
         <.ul(
-          item(router, pages.Home, "moon-o", "Goodnight", "header"),
+          item(router, pages.Home, "moon-o", "GoodNight", "header"),
           item(router, pages.Worlds, "globe", "Worlds"),
           item(router, pages.Community, "comment-o", "Community")),
         <.ul(
@@ -48,8 +48,5 @@ object Menu {
 
   val component = ScalaComponent.builder[Props]("Menu").
     renderBackend[Backend].
-    componentWillMount(u => Callback(println("mount.menu"))).
-    componentWillUpdate(u => Callback(println("update.menu"))).
-    componentWillUnmount(u => Callback(println("unmount.menu"))).
     build
 }
