@@ -7,28 +7,28 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.components.Shell
+import goodnight.components.Banner
 
 
 object PasswordReset {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    Shell.component(Shell.Props(router,
-      "applications-accessories.png",
-      "Password Reset"))(
-      component(Props()))
-  }
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router,
+        "applications-accessories.png", "Password Reset"),
+      component())
 
-  case class Props(
-  )
+  // type Props = Unit
+  // type State = Unit
 
-  type State = Unit
+  // class Backend(bs: BackendScope[Props, State]) {
+  //   def render(p: Props): VdomElement =
+  //     <.h2("Reset your password")
+  // }
 
-  class Backend(bs: BackendScope[Props, State]) {
-    def render(p: Props): VdomElement =
-      <.h2("Reset your password")
-  }
-
-  def component = ScalaComponent.builder[Props]("PasswordReset").
-    stateless.
-    renderBackend[Backend].
+  val component = ScalaComponent.builder[Unit]("PasswordReset").
+    render_(
+      <.h2("Reset your password")).
+    // stateless.
+    // renderBackend[Backend].
     build
 }

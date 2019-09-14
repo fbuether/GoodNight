@@ -25,7 +25,8 @@ object Client {
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
       // Authentication.
-      staticRoute("#auth/register", pages.Register) ~> renderR(Register.render) |
+      {staticRoute("#auth/register", pages.Register) ~>
+        renderR(Register.render)} |
       staticRoute("#auth/sign-in", pages.SignIn) ~> renderR(SignIn.render) |
       (staticRoute("#auth/reset-password", pages.RequestPasswordReset) ~>
         renderR(PasswordReset.render)) |

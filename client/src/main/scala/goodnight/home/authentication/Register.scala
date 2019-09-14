@@ -10,29 +10,27 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
 import goodnight.components.Shell
+import goodnight.components.Banner
 import goodnight.components.Input
 
 
 object Register {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    Shell.component(Shell.Props(router,
-      "Boring Envelope.png", "Register"))(
-      this.component(Props(router)))
-  }
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router, "Boring Envelope.png", "Register"),
+      this.component(router))
 
 
-  case class Props(
-    router: RouterCtl[pages.Page]
-  )
+  type Props = RouterCtl[pages.Page]
 
   case class State(
     error: Option[String]
   )
 
   class Backend(bs: BackendScope[Props, State]) {
-    private val usernameRef = Ref.toScalaComponent(Input.component)
-    private val mailRef = Ref.toScalaComponent(Input.component)
-    private val passwordRef = Ref.toScalaComponent(Input.component)
+    private val usernameRef = Input.componentRef
+    private val mailRef = Input.componentRef
+    private val passwordRef = Input.componentRef
 
     def doRegister(e: ReactEventFromInput): Callback = {
       e.preventDefaultCB >>
@@ -48,7 +46,7 @@ object Register {
               "password" -> password)).
             send.map({
               case Reply(201, reply) => // success.
-                bs.props.flatMap(_.router.set(pages.Home))
+                bs.props.flatMap(_.set(pages.Home))
 
               case Reply(403, reply) => // already registered.
                 bs.modState(_.copy(error = Some(
@@ -64,7 +62,7 @@ object Register {
         })
     }
 
-    def render(p: Props, s: State): VdomElement =
+    def render(router: Props, s: State): VdomElement =
       <.form(^.className := "centered inset",
         ^.onSubmit ==> doRegister,
         <.h2(
@@ -86,7 +84,7 @@ object Register {
             err)))
   }
 
-  def component = ScalaComponent.builder[Props]("Register").
+  val component = ScalaComponent.builder[Props]("Register").
     initialState(State(None)).
     renderBackend[Backend].
     build

@@ -41,7 +41,7 @@
 //             ))))
 //   }
 
-//   def component = ScalaComponent.builder[Props]("Home").
+//   val component = ScalaComponent.builder[Props]("Home").
 //     initialState(State()).
 //     renderBackend[Backend].
 //     build

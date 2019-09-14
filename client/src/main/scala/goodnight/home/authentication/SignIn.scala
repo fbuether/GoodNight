@@ -15,16 +15,15 @@ import japgolly.scalajs.react.component.Scala.MountedImpure
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
 import goodnight.components.Shell
+import goodnight.components.Banner
 import goodnight.components.Input
 
 
 object SignIn {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    Shell.component(Shell.Props(router,
-      "A Proper Journal Icon.png",
-      "Sign In"))(
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router, "A Proper Journal Icon.png", "Sign In"),
       this.component(Props(router)))
-  }
 
 
   case class Props(
@@ -118,7 +117,7 @@ object SignIn {
                 err)))))
   }
 
-  def component = ScalaComponent.builder[Props]("SignIn").
+  val component = ScalaComponent.builder[Props]("SignIn").
     initialState(State(None)).
     renderBackend[Backend].
     build

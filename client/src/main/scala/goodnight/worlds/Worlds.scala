@@ -7,21 +7,21 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.components.Shell
+import goodnight.components.Banner
 
 
 object Worlds {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    val content = ScalaComponent.builder.static("Worlds")(
+  val component = ScalaComponent.builder.static("Worlds")(
     <.div(
       <.h3("Available Worlds"),
       <.p("""Worlds in GoodNight exist within a universe. Worlds
           from the same universe share a common theme, maybe even
           characters and locations. The following shows all universes
           and the worlds within."""))).
-      build
+    build
 
-    Shell.component(Shell.Props(router,
-      "Alien World.png", "The Worlds"))(
-      content())
-  }
+  def render(router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router, "Alien World.png", "The Worlds"),
+      this.component())
 }

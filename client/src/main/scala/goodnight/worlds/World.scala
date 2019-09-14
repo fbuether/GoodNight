@@ -7,11 +7,11 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.components.Shell
+import goodnight.components.Banner
 
 
 object World {
-  def render(page: pages.World, router: RouterCtl[pages.Page]) = {
-    val content = ScalaComponent.builder.static("Not Found")(
+  val component = ScalaComponent.builder.static("World")(
       <.div(
         <.h2("Welcome!"),
         <.p("""Worlds in GoodNight exist within a universe. Worlds
@@ -19,10 +19,11 @@ object World {
           characters and locations. The following shows all universes
           and the worlds within."""),
         <.h3("The World"),
-        <.p("You have found the world " + page.name + "."))).
-      build
+        <.p("You have found the world " + "."))).
+    build
 
-    Shell.component(Shell.Props(router, "Lock.png", page.name))(content())
-  }
-
+  def render(page: pages.World, router: RouterCtl[pages.Page]) =
+    Shell.component(router)(
+      Banner.component(router, "Alien World.png", "A world"),
+      this.component())
 }

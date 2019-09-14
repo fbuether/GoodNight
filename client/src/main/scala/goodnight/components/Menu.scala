@@ -46,7 +46,7 @@ object Menu {
           item(router, pages.SignIn, "check-square-o", "Sign in")))
   }
 
-  def component = ScalaComponent.builder[Props]("Menu").
+  val component = ScalaComponent.builder[Props]("Menu").
     renderBackend[Backend].
     componentWillMount(u => Callback(println("mount.menu"))).
     componentWillUpdate(u => Callback(println("update.menu"))).

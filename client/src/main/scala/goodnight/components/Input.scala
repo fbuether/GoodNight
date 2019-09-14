@@ -34,8 +34,10 @@ object Input {
     }
   }
 
-  def component = ScalaComponent.builder[Props]("Input").
+  val component = ScalaComponent.builder[Props]("Input").
     initialState(State("")).
     renderBackend[Backend].
     build
+
+  def componentRef = Ref.toScalaComponent(component)
 }

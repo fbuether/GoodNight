@@ -11,11 +11,11 @@ import goodnight.components.Banner
 
 
 object Profile {
-  def render(router: RouterCtl[pages.Page]): VdomElement = {
-    Shell.component(Shell.Props(router,
-      ))(
-      component(Props(router)))
-  }
+  // def render(router: RouterCtl[pages.Page]): VdomElement = {
+  //   Shell.component(Shell.Props(router,
+  //     ))(
+  //     component(Props(router)))
+  // }
 
 
   // type Props = (RouterCtl[pages.Page])
@@ -52,5 +52,5 @@ object Profile {
     Shell.component(router)(
       Banner.component(router,
         "Excuse me, that's just the Henny man....png", "Profile"),
-      this.component())
+      this.component(Props(router)))
 }
