@@ -13,7 +13,7 @@ import goodnight.components.Banner
 object Worlds {
   val component = ScalaComponent.builder.static("Worlds")(
     <.div(
-      <.h3("Available Worlds"),
+      <.h2("Available Worlds"),
       <.p("""Worlds in GoodNight exist within a universe. Worlds
           from the same universe share a common theme, maybe even
           characters and locations. The following shows all universes

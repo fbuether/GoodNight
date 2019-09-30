@@ -36,7 +36,7 @@ object Menu {
       title: String, linkClass: String = "") =
       <.li(^.className := linkClass,
         router.link(page)(
-          <.span(^.className := "fa fa-" + icon),
+          <.span(^.className := icon),
           " " + title))
 
     def doSignOut(router: RouterCtl[pages.Page]): Callback = {
@@ -47,23 +47,23 @@ object Menu {
     def render(p: Props, user: State) = {
       val userItems = user match {
         case None => Seq(
-          item(p, pages.Register, "bookmark-o", "Register"),
+          item(p, pages.Register, "far fa-bookmark", "Register"),
           // this is required to have react create new elements.
           // otherwise, after logout, the new sign in link would also fire.
           <.span(),
-          item(p, pages.SignIn, "check-square-o", "Sign in"))
+          item(p, pages.SignIn, "far fa-check-square", "Sign in"))
         case Some(User(name)) => Seq(
-          item(p, pages.Profile, "sun-o", name),
+          item(p, pages.Profile, "fa fa-user-astronaut", name),
           <.li(<.a(^.onClick --> doSignOut(p),
-            <.span(^.className := "fa fa-times-circle-o"),
+            <.span(^.className := "far fa-times-circle"),
             " Sign out")))
       }
 
       <.div.withRef(menuRef)(^.className := "menu",
         <.ul(
-          item(p, pages.Home, "moon-o", "GoodNight", "header"),
-          item(p, pages.Worlds, "globe", "Worlds"),
-          item(p, pages.Community, "comment-o", "Community")),
+          item(p, pages.Home, "far fa-moon", "GoodNight", "header"),
+          item(p, pages.Worlds, "fa fa-globe-africa", "Worlds"),
+          item(p, pages.Community, "far fa-comment", "Community")),
         <.ul(
           <.li(^.className := "expander",
             <.a(^.onClick --> toggleExpandedMenu,

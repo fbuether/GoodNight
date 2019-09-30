@@ -10,7 +10,8 @@ run:
 
 
 release:
-	cat /dev/null | sbt release || (echo "" && false)
+#	cat /dev/null | sbt universal:packageZipTarball || (echo "" && false)
+	cat /dev/null | sbt stage || (echo "" && false)
 
 
 database:
