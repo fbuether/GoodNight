@@ -10,8 +10,8 @@ import japgolly.scalajs.react.vdom.html_<^._
 import goodnight.home.Home
 import goodnight.home.Profile
 import goodnight.home.About
-import goodnight.worlds.World
-import goodnight.worlds.Worlds
+import goodnight.stories.Story
+import goodnight.stories.Stories
 import goodnight.community.Community
 import goodnight.home.authentication.Register
 import goodnight.home.authentication.SignIn
@@ -35,9 +35,9 @@ object Client {
         renderR(PasswordReset.render)) |
       staticRoute("#profile", pages.Profile) ~> renderR(Profile.render) |
       // Worlds
-      staticRoute("#worlds", pages.Worlds) ~> renderR(Worlds.render) |
-      {val route = ("#world" / string("[^/]+")).caseClass[pages.World]
-        dynamicRouteCT(route) ~> dynRenderR(World.render)}).
+      staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
+      {val route = ("#story" / string("[^/]+")).caseClass[pages.Story]
+        dynamicRouteCT(route) ~> dynRenderR(Story.render)}).
       notFound(redirectToPage(pages.Home)(Redirect.Replace))
   })
 

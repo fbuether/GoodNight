@@ -16,10 +16,10 @@ package pages {
   case object RequestPasswordReset extends Page
 
   // playing worlds
-  case object Worlds extends Page
-  case class World(name: String) extends Page
+  case object Stories extends Page
+  case class Story(name: String) extends Page
   case class Inventory(world: String) extends Page
-  case class Story(world: String) extends Page
+  case class Scene(world: String) extends Page
 
   // creation
   case object Create extends Page

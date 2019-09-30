@@ -48,7 +48,7 @@ object Menu {
       val userItems = user match {
         case None => Seq(
           item(p, pages.Register, "far fa-bookmark", "Register"),
-          // this is required to have react create new elements.
+          // this span is required to have react create new elements.
           // otherwise, after logout, the new sign in link would also fire.
           <.span(),
           item(p, pages.SignIn, "far fa-check-square", "Sign in"))
@@ -62,7 +62,7 @@ object Menu {
       <.div.withRef(menuRef)(^.className := "menu",
         <.ul(
           item(p, pages.Home, "far fa-moon", "GoodNight", "header"),
-          item(p, pages.Worlds, "fa fa-globe-africa", "Worlds"),
+          item(p, pages.Stories, "far fa-file-alt", "Stories"),
           item(p, pages.Community, "far fa-comment", "Community")),
         <.ul(
           <.li(^.className := "expander",

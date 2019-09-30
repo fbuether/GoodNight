@@ -1,5 +1,5 @@
 
-package goodnight.worlds
+package goodnight.stories
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -10,8 +10,11 @@ import goodnight.components.Shell
 import goodnight.components.Banner
 
 
-object World {
-  val component = ScalaComponent.builder.static("World")(
+object Story {
+
+
+  val component = ScalaComponent.builder[String]("World").
+    render_P(name =>
       <.div(
         <.h2("Welcome!"),
         <.p("""Worlds in GoodNight exist within a universe. Worlds
@@ -19,11 +22,11 @@ object World {
           characters and locations. The following shows all universes
           and the worlds within."""),
         <.h3("The World"),
-        <.p("You have found the world " + "."))).
+        <.p("You have found the world \"" + name + "\"."))).
     build
 
-  def render(page: pages.World, router: RouterCtl[pages.Page]) =
+  def render(page: pages.Story, router: RouterCtl[pages.Page]) =
     Shell.component(router)(
       Banner.component(router, "Alien World.png", "A world"),
-      this.component())
+      this.component(page.name))
 }
