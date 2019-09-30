@@ -18,6 +18,7 @@ database:
 	sudo docker run --name gnp -p 5432:5432 --restart always \
 	-e POSTGRES_PASSWORD=gnpgsecretpassword -d logging_postgres
 	sudo docker logs -f gnp
+	sudo docker run --link gnp -p 8080:8080 --name adminer adminer
 
 sbt:
 	clear; clear; sbt -J-XX:MaxMetaspaceSize=500m
