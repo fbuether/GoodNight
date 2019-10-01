@@ -5,10 +5,12 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
+import scala.util.{ Try, Success, Failure }
 import play.api.libs.json._
 
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
+import goodnight.service.Conversions._
 import goodnight.components.Shell
 import goodnight.components.Banner
 
@@ -19,8 +21,8 @@ object Stories {
   // type State = (Boolean, List[String])
 
   def loadStories(router: RouterCtl[pages.Page]) =
-    Request.get("/api/v1/stories").send.
-      map({ case Reply(_, JsArray(stories)) =>
+    Request.get("/api/v1/stories").send.forJson.
+      map({ case Reply(_, Success(JsArray(stories))) =>
         <.ul(^.className := "storyList",
           stories.map({ case JsString(name) =>
             <.li(
