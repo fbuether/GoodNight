@@ -11,6 +11,7 @@ import play.api.routing.sird._
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
+import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
 
@@ -23,6 +24,7 @@ class Router(
   authSignUp: authentication.SignUp,
   authSignIn: authentication.SignIn,
   profile: Profile,
+  stories: Stories,
   assets: Assets)
     extends SimpleRouter {
 
@@ -58,6 +60,10 @@ class Router(
     // Password reset step 2: Post refreshed password information.
     // case POST(p"/api/v1/auth/reset/$token") =>
 
+
+
+    // Stories and Story Content.
+    case GET(p"/api/v1/stories") => stories.showAll
 
 
     // Profile data
