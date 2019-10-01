@@ -1,6 +1,7 @@
 
 package goodnight.home.authentication
 
+import scala.util.{ Try, Success, Failure }
 import play.api.libs.json.Json
 
 import japgolly.scalajs.react._
@@ -9,6 +10,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
+import goodnight.service.Conversions._
 import goodnight.components.Shell
 import goodnight.components.Banner
 import goodnight.components.Input
@@ -44,7 +46,7 @@ object Register {
               "identity" -> mail,
               "username" -> user,
               "password" -> password)).
-            send.map({
+            send.forJson.map({
               case Reply(201, reply) => // success.
                 bs.props.flatMap(_.set(pages.Home))
 

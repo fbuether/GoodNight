@@ -21,7 +21,8 @@ import play.api.libs.json._
 import japgolly.scalajs.react._
 
 
-case class Reply(statusCode: Int, body: JsValue)
+case class Reply[T](statusCode: Int, body: T)
+
 
 class Request(req: HttpRequest) {
   private val authHeader = "X-Auth-Token"
@@ -56,9 +57,9 @@ class Request(req: HttpRequest) {
 
   private def treatResult(request: Future[SimpleHttpResponse]):
       AsyncCallback[(Int, String)] =
-      AsyncCallback.
-        fromFuture(request.transform(catchErrors)).
-        flatMap(r => successResult(r).asAsyncCallback)
+    AsyncCallback.
+      fromFuture(request.transform(catchErrors)).
+      flatMap(r => successResult(r).asAsyncCallback)
 
   private def performRequest: AsyncCallback[(Int, String)] =
     attachAuthentication(req).map(_.send).
@@ -72,11 +73,20 @@ class Request(req: HttpRequest) {
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
 
-  def send: AsyncCallback[Reply] =
-    performRequest.map({ case (status, body) =>
-      if (body.isEmpty) Reply(status, JsNull)
-      else Reply(status, Json.parse(body))
-    })
+  def send: AsyncCallback[Reply[String]] =
+    performRequest.map({ case (status, body) => Reply(status, body) })
+}
+
+
+object Conversions {
+  implicit class OfReply(reply: AsyncCallback[Reply[String]]) {
+    def forJson: AsyncCallback[Reply[Try[JsValue]]] =
+      reply.map({ case Reply(code, body) =>
+        Reply(code,
+          if (body.isEmpty) Success(JsNull)
+          else Try(Json.parse(body)))
+      })
+  }
 }
 
 
