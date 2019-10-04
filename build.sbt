@@ -69,13 +69,14 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
+      "com.typesafe.play" %%% "play-json" % versions.playJson,
     )
   )
 
 
 lazy val client: Project = project.in(file("client")).
   enablePlugins(ScalaJSPlugin, ScalaJSWeb).
-  dependsOn(common.jvm.settings(name := "commonJS")).
+  dependsOn(common.js.settings(name := "commonJS")).
   settings(
     setProject("Client"),
     setScalaOptions,
@@ -139,7 +140,7 @@ lazy val client: Project = project.in(file("client")).
     jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     testFrameworks += new TestFramework("utest.runner.Framework"),
 
-    // react 16.8 does not properly anounce dependencies at webjars.org,
+    // react 16.8 does not properly announce dependencies at webjars.org,
     // add these here manually. https://github.com/webjars/webjars/issues/1789
     dependencyOverrides ++= Seq(
       "org.webjars.npm" % "js-tokens" % "4.0.0",
