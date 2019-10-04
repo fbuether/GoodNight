@@ -13,6 +13,7 @@ case class Story(
   id: UUID,
   creator: UUID,
   name: String,
+  urlname: String,
   image: String,
   description: String,
   // theme: String,
@@ -25,11 +26,12 @@ class StoryTable(tag: Tag) extends Table[Story](tag, "story") {
   def id = column[UUID]("id", O.PrimaryKey)
   def creator = column[UUID]("creator")
   def name = column[String]("name")
+  def urlname = column[String]("urlname")
   def image = column[String]("image")
   def description = column[String]("description")
   def startLocation = column[Option[UUID]]("start_location")
 
-  def * = ((id, creator, name, image, description, startLocation) <>
+  def * = ((id, creator, name, urlname, image, description, startLocation) <>
     (Story.tupled, Story.unapply))
 
   def userFk = foreignKey("story_fk_users_user", creator, UserTable())(
