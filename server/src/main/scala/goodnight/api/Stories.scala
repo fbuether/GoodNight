@@ -20,7 +20,7 @@ import play.api.db.slick.DbName
 import goodnight.model.{ Story, StoryTable }
 import goodnight.server.Controller
 
-
+import goodnight.common.api.Story._
 
 
 class Stories(components: ControllerComponents,
@@ -33,30 +33,12 @@ class Stories(components: ControllerComponents,
 
 
   def showAll = Action.async {
-    val query = StoryTable().map(story => (story.name, story.image)).result
-    db.run(query).map({ data =>
-      val reps = data.map({ case (name, image) =>
-        Json.obj(
-          "name" -> name,
-          "image" -> image,
-          "urlname" -> urlnameOf(name))
-      })
-      Ok(JsArray(reps))
-    })
+    val query = StoryTable().result
+    db.run(query).map(sl => Ok(Json.toJson(sl)))
   }
 
   def showOne(reqName: String) = Action.async {
     val query = StoryTable().filter(_.urlname === reqName).result.headOption
-    db.run(query).map({
-      case Some(story) =>
-        Ok(Json.obj(
-          "name" -> story.name,
-          "urlname" -> story.urlname,
-          "image" -> story.image,
-          "description" -> story.description))
-      case None =>
-        NotFound(Json.obj(
-          "error" -> "Story not found."))
-    })
+    db.run(query).map(s => Ok(Json.toJson(s)))
   }
 }

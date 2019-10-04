@@ -7,19 +7,7 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 
-
-
-case class Story(
-  id: UUID,
-  creator: UUID,
-  name: String,
-  urlname: String,
-  image: String,
-  description: String,
-  // theme: String,
-  startLocation: Option[UUID]
-)
-
+import goodnight.model.Story
 
 
 class StoryTable(tag: Tag) extends Table[Story](tag, "story") {

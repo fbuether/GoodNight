@@ -16,12 +16,10 @@ import goodnight.components.Shell
 import goodnight.components.Banner
 import goodnight.components.Loading
 
+import goodnight.model.Story
+import goodnight.common.api.Story._
+
 object Stories {
-  case class StoryData(name: String, image: String, urlname: String)
-  implicit val signInDataReads: Reads[StoryData] =
-    ((JsPath \ "name").read[String] and
-      (JsPath \ "image").read[String] and
-      (JsPath \ "urlname").read[String])(StoryData.apply _)
 
   // type Props = RouterCtl[pages.Page]
 
@@ -33,7 +31,7 @@ object Stories {
         case Reply(_, Success(JsArray(stories))) =>
           <.ul(^.className := "storyList",
             stories.map({ storyJson =>
-              val data = storyJson.as[StoryData]
+              val data = storyJson.as[Story]
               <.li(
                 router.link(pages.Story(data.urlname))(
                   <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
