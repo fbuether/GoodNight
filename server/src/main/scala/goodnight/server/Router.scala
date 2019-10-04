@@ -3,17 +3,20 @@ package goodnight.server
 
 import controllers.Assets
 import play.api.mvc.DefaultActionBuilder
+import play.api.mvc.RequestHeader
 import play.api.mvc.PlayBodyParsers
+import play.api.mvc.Results.ImATeapot
 import play.api.routing.Router.Routes
 import play.api.routing.SimpleRouter
 import play.api.routing._
-import play.api.routing.sird._
 
 import goodnight.client.Frontend
 import goodnight.api.Authentication
 import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
+
+import goodnight.common.ApiV1
 
 
 class Router(
@@ -28,45 +31,45 @@ class Router(
   assets: Assets)
     extends SimpleRouter {
 
-  def routes: Routes = {
-    // static content: the html page, as well as all assets
-    case GET(p"/") => frontend.html
-    case GET(p"/assets/$file*") => assets.versioned(file)
+  private def invalid = action { _ => ImATeapot }
 
+  // type Routes = PartialFunction[RequestHeader, Handler]
+  def routes: Routes = (header: RequestHeader) =>
+  (header.method, header.target.path) match {
+    // static content: the html page, as well as all assets
+    case ApiV1.Frontend() => frontend.html
+    case ApiV1.Asset(file) => assets.versioned(file)
 
     // Authentication, Registration, Sign in and out
-
+    //
     // Registration step 1: Post data of sign-up form.
-    case POST(p"/api/v1/auth/signup") => authSignUp.doSignUp
+    case ApiV1.SignUp() => authSignUp.doSignUp
 
     // Registration step 2: Confirmation of email via token.
     // -- is this required? How about social signup?
-    // case POST(p"/api/v1/auth/signup/$token") =>
-
+    case ApiV1.EmailConfirm(token) => invalid
 
     // Confirm user data, request authentication token
-    case POST(p"/api/v1/auth/authenticate") => authSignIn.authenticate
+    case ApiV1.Authenticate() => authSignIn.authenticate
 
     // Confirm sign in via a social authentication provider
-    case POST(p"/api/v1/auth/authenticate/social/$provider") =>
+    case ApiV1.SocialAuthenticate(provider) =>
       authSignIn.socialAuthenticate(provider)
 
     // Sign out, remove all current sessions.
-    // case POST(p"/api/v1/auth/signout/") =>
+    case ApiV1.SignOut() => invalid
 
     // Password reset step 1: Post reset information form.
-    // case POST(p"/api/v1/auth/reset/") =>
+    case ApiV1.RequestPasswordReset() => invalid
 
     // Password reset step 2: Post refreshed password information.
-    // case POST(p"/api/v1/auth/reset/$token") =>
-
-
+    case ApiV1.ConfirmPasswordReset(token) => invalid
 
     // Stories and Story Content.
-    case GET(p"/api/v1/stories") => stories.showAll
-    case GET(p"/api/v1/story/$name") => stories.showOne(name)
+    case ApiV1.Stories() => stories.showAll
+    case ApiV1.Story(name) => stories.showOne(name)
 
     // Profile data
-    case GET(p"/api/v1/profile") => profile.show
+    case ApiV1.Profile() => profile.show
   }
 }
