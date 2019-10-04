@@ -7,6 +7,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 
 import scala.util.{ Try, Success, Failure }
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
@@ -16,21 +17,31 @@ import goodnight.components.Banner
 
 
 object Stories {
+  case class StoryData(name: String, image: String, urlname: String)
+  implicit val signInDataReads: Reads[StoryData] =
+    ((JsPath \ "name").read[String] and
+      (JsPath \ "image").read[String] and
+      (JsPath \ "urlname").read[String])(StoryData.apply _)
+
   // type Props = RouterCtl[pages.Page]
 
   // type State = (Boolean, List[String])
 
   def loadStories(router: RouterCtl[pages.Page]) =
     Request.get("/api/v1/stories").send.forJson.
-      map({ case Reply(_, Success(JsArray(stories))) =>
-        <.ul(^.className := "storyList",
-          stories.map({ case JsString(name) =>
-            <.li(
-              router.link(pages.Story(name))(
-                // <.img(^....,
-                name))
-          }).toTagMod
-        )
+      map({
+        case Reply(_, Success(JsArray(stories))) =>
+          <.ul(^.className := "storyList",
+            stories.map({ storyJson =>
+              val data = storyJson.as[StoryData]
+              <.li(
+                router.link(pages.Story(data.urlname))(
+                  <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
+                    data.image).value),
+                  <.div(data.name)))
+            }).toTagMod)
+        case Reply(_, f) =>
+          <.p("got wrong reply: " + f)
       })
 
 

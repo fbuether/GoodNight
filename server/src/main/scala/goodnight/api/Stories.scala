@@ -29,20 +29,19 @@ class Stories(components: ControllerComponents,
     extends Controller(components) {
 
   def urlnameOf(name: String) =
-    name.trim
+    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
   def showAll = Action.async {
     val query = StoryTable().map(story => (story.name, story.image)).result
-    val data: Future[Seq[(String, String)]] = db.run(query)
-    val result = data.map(data =>
-      Json.arr(
-        data.map({ case (name, image) =>
-          Json.obj(
-            "name" -> name,
-            "image" -> image,
-            "urlname" -> urlnameOf(name))
-        })))
-    result.map(Ok(_))
+    db.run(query).map({ data =>
+      val reps = data.map({ case (name, image) =>
+        Json.obj(
+          "name" -> name,
+          "image" -> image,
+          "urlname" -> urlnameOf(name))
+      })
+      Ok(JsArray(reps))
+    })
   }
 }

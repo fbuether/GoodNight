@@ -1219,49 +1219,51 @@ div#side {
 // world list
 
 
-ul.worldList {
+ul.storyList {
   list-style-type: none;
   margin: @outer-right-border 8px @outer-left-border 8px;
   padding: 0;
 
   line-height: 0;
   font-size: 0;
-}
 
-ul.worldList li {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
+  li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 0;
 
-ul.worldList li a {
-  display: inline-block;
-  vertical-align: top;
-  width: 252px;
-  margin: 4px;
+    a {
 
-  border-radius: 0.3rem;
-  border: 1px solid @horizontal-line;
+      vertical-align: top;
+      width: 252px;
+      margin: 4px;
 
-  padding: 8px 6px;
+      border-radius: 0.3rem;
+      border: 1px solid @horizontal-line;
 
-  background: hsv(0, 0, 0.9);
+      padding: 8px 6px;
 
-  text-decoration: none;
-  color: @font;
-}
+      background: hsv(0, 0, 0.9);
 
-ul.worldList li a:hover {
-  background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
-  color: @link;
-  border: 1px solid @link;
-}
+      text-decoration: none;
+      color: @font;
 
-ul.worldList li a img {
-  width: 60px;
-  height: 60px;
-  float: left;
+      &:hover {
+        background: hsv(30, 0.32, 0.85) url("../images/menu-background.png");
+        color: @link;
+        border: 1px solid @link;
+      }
+
+      display: inline-flex;
+      align-items: center;
+
+      img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
 }
 
 
