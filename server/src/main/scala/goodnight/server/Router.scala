@@ -64,7 +64,7 @@ class Router(
 
     // Stories and Story Content.
     case GET(p"/api/v1/stories") => stories.showAll
-
+    case GET(p"/api/v1/story/$name") => stories.showOne(name)
 
     // Profile data
     case GET(p"/api/v1/profile") => profile.show

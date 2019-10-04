@@ -44,4 +44,19 @@ class Stories(components: ControllerComponents,
       Ok(JsArray(reps))
     })
   }
+
+  def showOne(reqName: String) = Action.async {
+    val query = StoryTable().filter(_.urlname === reqName).result.headOption
+    db.run(query).map({
+      case Some(story) =>
+        Ok(Json.obj(
+          "name" -> story.name,
+          "urlname" -> story.urlname,
+          "image" -> story.image,
+          "description" -> story.description))
+      case None =>
+        NotFound(Json.obj(
+          "error" -> "Story not found."))
+    })
+  }
 }
