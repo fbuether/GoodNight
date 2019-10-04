@@ -14,7 +14,7 @@ import goodnight.service.{ Request, Reply }
 import goodnight.service.Conversions._
 import goodnight.components.Shell
 import goodnight.components.Banner
-
+import goodnight.components.Loading
 
 object Stories {
   case class StoryData(name: String, image: String, urlname: String)
@@ -46,8 +46,7 @@ object Stories {
 
 
   def storyList(router: RouterCtl[pages.Page]): VdomElement =
-    React.Suspense(<.p("loading..."),
-      loadStories(router))
+    Loading.suspend(router, loadStories(router))
 
 
   val component = ScalaComponent.builder[RouterCtl[pages.Page]]("Stories").
