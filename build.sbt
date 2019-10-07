@@ -51,7 +51,8 @@ val setScalaOptions = Seq(
     "-unchecked",
     "-deprecation",
     "-feature",
-  )
+  ),
+  publishArtifact in (Compile, packageDoc) := false
 )
 
 
@@ -163,7 +164,7 @@ lazy val server = project.in(file("server")).
     // connect the client project
     scalaJSProjects := Seq(client),
     pipelineStages in Assets := Seq(scalaJSPipeline),
-    pipelineStages := Seq(rjs, digest, gzip),
+    pipelineStages := Seq(digest, gzip),
 
     // less assets.
     includeFilter in (Assets, LessKeys.less) := "*.less",

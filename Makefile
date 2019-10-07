@@ -10,9 +10,9 @@ run:
 
 
 release:
-#	cat /dev/null | sbt universal:packageZipTarball || (echo "" && false)
-	cat /dev/null | sbt stage || (echo "" && false)
-
+#	cat /dev/null | sbt dist || (echo "" && false)
+	cp server/target/universal/goodnight-server-*.zip docker/goodnight-server.zip
+	(cd docker && sudo docker build --compress -t goodnight:latest .)
 
 database:
 	(cd postgres && sudo docker build -t logging_postgres .)
