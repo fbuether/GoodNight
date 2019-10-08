@@ -10,6 +10,7 @@ import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFComponents
 import controllers.AssetsComponents
 import play.api.db.slick.SlickComponents
+import play.api.db.slick.DbName
 import play.api.db.evolutions.EvolutionsComponents
 import play.api.db.slick.evolutions.SlickEvolutionsComponents
 import play.filters.csrf.CSRFFilter
@@ -86,7 +87,7 @@ class GoodnightComponents(context: Context)
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
 
-  lazy val database = slickApi.dbConfigs[PostgresProfile]().head._2.db
+  lazy val database = slickApi.dbConfig[PostgresProfile](DbName("goodnight")).db
 
 
   lazy val userService = new UserService(database)

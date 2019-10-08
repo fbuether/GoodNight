@@ -5,7 +5,8 @@ WORKDIR /goodnight/
 COPY ./goodnight-server*.zip goodnight-server.zip
 RUN unzip -d . goodnight-server.zip && \
     rm goodnight-server.zip && \
-    mv ./*/* .
+    mv ./*/* . && \
+    rmdir goodnight-server*
 
 # valid environment variables:
 # APPLICATION_SECRET=12345678

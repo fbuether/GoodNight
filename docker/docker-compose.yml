@@ -1,5 +1,8 @@
 version: '3'
 
+networks:
+  goodnight:
+
 services:
   postgres:
     image: postgres:11
@@ -10,8 +13,8 @@ services:
     - POSTGRES_PASSWORD=EtyUPqs92FPyCeFCzb/3YQ
     volumes:
     - ./db/postgres/data:/var/lib/postgresql/data
-    ports:
-      - 6432:5432
+    networks:
+    - goodnight
 
   goodnight:
     build: .
@@ -19,8 +22,12 @@ services:
     - 9000:9000
     environment:
     - APPLICATION_SECRET=Qa075HhhWoSerKWDFWFQA1Hwz6tb8K4cK1Y6anZS3HI
-    - DATABASE_URL=jdbc:postgresql://postgres:6432/goodnight?currentSchema=public
+    - DATABASE_SERVER=postgres
+    - DATABASE_PORT=5432
+    - DATABASE_NAME=goodnight
     - DATABASE_USER=goodnight
     - DATABASE_PASSWORD=EtyUPqs92FPyCeFCzb/3YQ
     links:
     - postgres
+    networks:
+    - goodnight
