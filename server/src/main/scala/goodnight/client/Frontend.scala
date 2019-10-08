@@ -3,12 +3,14 @@ package goodnight.client
 
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
+import play.api.Mode
 import controllers.AssetsFinder
 
 
 class Frontend(
   components: ControllerComponents,
-  assetsFinder: AssetsFinder)
+  assetsFinder: AssetsFinder,
+  mode: Mode)
     extends BaseController {
 
   def controllerComponents: ControllerComponents =
@@ -16,6 +18,8 @@ class Frontend(
 
   def html = Action {
     val resolver = assetsFinder.path _
-    Ok(goodnight.client.html.frontend(resolver))
+    val mainJs = if (mode == Mode.Prod) "opt" else "fastopt"
+
+    Ok(goodnight.client.html.frontend(mainJs, resolver))
   }
 }

@@ -1,4 +1,4 @@
-@(resolve: String => String)
+@(jsMode: String, resolve: String => String)
 <!DOCTYPE html>
 <html>
   <head>
@@ -19,7 +19,7 @@
     <div id="goodnight-client"></div>
 
     <script src="@resolve("goodnight-client-jsdeps.js")"></script>
-    <script src="@resolve("goodnight-client-fastopt.js")"></script>
+    <script src="@resolve("goodnight-client-" + jsMode + ".js")"></script>
     <!-- Matomo -->
     <script type="text/javascript">
       var _paq = window._paq || [];

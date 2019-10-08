@@ -52,6 +52,7 @@ val setScalaOptions = Seq(
     "-deprecation",
     "-feature",
   ),
+  sources in (Compile, doc) := Seq.empty,
   publishArtifact in (Compile, packageDoc) := false
 )
 

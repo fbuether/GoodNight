@@ -12,8 +12,7 @@ release:
 	cat /dev/null | sbt dist || (echo "" && false)
 	cp server/target/universal/goodnight-server-*.zip docker/goodnight-server.zip
 	(cd docker && \
-		sudo docker build --compress -t goodnight:latest . && \
-		sudo docker save -o ../goodnight-latest-image.tar)
+		sudo docker build --compress -t goodnight:latest .)
 
 database:
 	(cd postgres && sudo docker build -t logging_postgres .)

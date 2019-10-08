@@ -133,7 +133,8 @@ class GoodnightComponents(context: Context)
   lazy val silhouette = new SilhouetteProvider(silhouetteEnvironment,
     securedAction, unsecuredAction, userAwareAction)
 
-  lazy val frontend = new Frontend(controllerComponents, assetsFinder)
+  lazy val frontend = new Frontend(controllerComponents, assetsFinder,
+    context.environment.mode)
   lazy val authentication = new Authentication(controllerComponents, silhouette)
   lazy val authSignUp = new SignUp(controllerComponents, database,
     silhouette, passwordHasherRegistry, authInfoRepository)
