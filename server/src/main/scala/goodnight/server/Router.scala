@@ -68,6 +68,7 @@ class Router(
     // Stories and Story Content.
     case ApiV1.Stories() => stories.showAll
     case ApiV1.Story(name) => stories.showOne(name)
+    case ApiV1.CreateStory() => stories.create
 
     // Profile data
     case ApiV1.Profile() => profile.show

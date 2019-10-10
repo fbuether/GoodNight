@@ -92,6 +92,7 @@ object ApiV1 {
 
   object Stories extends ApiPath("GET", p, C("stories"))
   object Story extends ApiPath("GET", p, C("story/"), S)
+  object CreateStory extends ApiPath("PUT", p, C("createStory"))
 
   object Profile extends ApiPath("GET", p, C("profile/"), S)
 }

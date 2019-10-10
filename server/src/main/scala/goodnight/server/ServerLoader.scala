@@ -142,7 +142,7 @@ class GoodnightComponents(context: Context)
     silhouette, credentialsProvider)
   lazy val profile = new Profile(controllerComponents, userService,
     database, silhouette)
-  lazy val stories = new Stories(controllerComponents, database)
+  lazy val stories = new Stories(controllerComponents, database, silhouette)
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
     authentication, authSignUp, authSignIn, profile, stories,
