@@ -25,9 +25,9 @@ package pages {
   case class Scene(world: String) extends Page
 
   // creation
-  case object Create extends Page
-  case class WriteWorld(name: String) extends Page
-  case class WriteStory(world: String, story: String) extends Page
+  case object CreateStory extends Page
+  case class EditStory(name: String) extends Page
+  case class WriteScene(world: String, story: String) extends Page
   case class WriteQuality(world: String, quality: String) extends Page
 }
 

@@ -3,7 +3,6 @@ package goodnight.stories
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
 
 import scala.util.{ Try, Success, Failure }
 import play.api.libs.json._
@@ -16,7 +15,7 @@ import goodnight.components.Shell
 import goodnight.components.Banner
 import goodnight.components.Loading
 
-import goodnight.model.Story
+import goodnight.model
 import goodnight.common.api.Story._
 
 object Stories {
@@ -25,18 +24,21 @@ object Stories {
 
   // type State = (Boolean, List[String])
 
+  def renderStory(router: pages.Router, story: model.Story) =
+    <.li(
+      router.link(pages.Story(story.urlname))(
+        <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
+          story.image).value),
+        <.div(story.name)))
+
+
   def loadStories(router: pages.Router) =
     Request.get("/api/v1/stories").send.forJson.
       map({
         case Reply(_, Success(JsArray(stories))) =>
           <.ul(^.className := "storyList",
             stories.map({ storyJson =>
-              val data = storyJson.as[Story]
-              <.li(
-                router.link(pages.Story(data.urlname))(
-                  <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
-                    data.image).value),
-                  <.div(data.name)))
+              renderStory(router, storyJson.as[model.Story])
             }).toTagMod)
         case Reply(_, f) =>
           <.p("got wrong reply: " + f)
@@ -55,9 +57,15 @@ object Stories {
           from the same world share a common theme, maybe even
           characters and locations. The following shows all worlds
           and the stories within."""),
-        <.h2("Common World"),
-        storyList(router)
-          )).
+        <.h2("All Stories"),
+        storyList(router),
+        <.h2("My Stories"),
+        <.ul(^.className := "storyList",
+          <.li(
+            router.link(pages.CreateStory)(
+              <.img(^.src := (router.baseUrl +
+                "assets/images/buuf/Alien World.png").value),
+              <.div("Create a new story")))))).
     build
 
   def render(router: pages.Router) =

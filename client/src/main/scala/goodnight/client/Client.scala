@@ -7,15 +7,10 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.html_<^._
 
-import goodnight.home.Home
-import goodnight.home.Profile
-import goodnight.home.About
-import goodnight.stories.Story
-import goodnight.stories.Stories
-import goodnight.community.Community
-import goodnight.home.authentication.Register
-import goodnight.home.authentication.SignIn
-import goodnight.home.authentication.PasswordReset
+import goodnight.home._
+import goodnight.home.authentication._
+import goodnight.stories._
+import goodnight.community._
 
 
 object Client {
@@ -35,6 +30,8 @@ object Client {
         renderR(PasswordReset.render)) |
       staticRoute("#profile", pages.Profile) ~> renderR(Profile.render) |
       // Worlds
+      {staticRoute("#createStory", pages.CreateStory) ~>
+        renderR(CreateStory.render)} |
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
       {val route = ("#story" / string("[^/]+")).caseClass[pages.Story]
         dynamicRouteCT(route) ~> dynRenderR(Story.render)}).

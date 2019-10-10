@@ -20,6 +20,7 @@ import monix.execution.Scheduler.Implicits.global
 import play.api.libs.json._
 import japgolly.scalajs.react._
 
+import goodnight.common.ApiV1
 
 case class Reply[T](statusCode: Int, body: T)
 
@@ -99,10 +100,21 @@ object Request {
   def get(url: String): Request =
     Request(HttpRequest(baseUrl + url).
       withMethod(GET).
-      withHeader("Accept", "text/json"))
+      withHeader("Accept", "application/json"))
 
   def post(url: String): Request =
     Request(HttpRequest(baseUrl + url).
       withMethod(POST).
-      withHeader("Accept", "text/json"))
+      withHeader("Accept", "application/json"))
+
+  def put(url: String): Request =
+    Request(HttpRequest(baseUrl + url).
+      withMethod(PUT).
+      withHeader("Accept", "application/json"))
+
+  // todo: fixme, wrong path.
+  def put(path: ApiV1.ApiPath): Request =
+    Request(HttpRequest(baseUrl + "---").
+      withMethod(PUT).
+      withHeader("Accept", "application/json"))
 }
