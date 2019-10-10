@@ -17,13 +17,13 @@ import goodnight.components.Input
 
 
 object Register {
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "Boring Envelope.png", "Register"),
       this.component(router))
 
 
-  type Props = RouterCtl[pages.Page]
+  type Props = pages.Router
 
   case class State(
     error: Option[String]

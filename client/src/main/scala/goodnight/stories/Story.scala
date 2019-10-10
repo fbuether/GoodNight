@@ -25,7 +25,7 @@ object Story {
         <.p("You have found the world \"" + name + "\"."))).
     build
 
-  def render(page: pages.Story, router: RouterCtl[pages.Page]) =
+  def render(page: pages.Story, router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "Alien World.png", "A world"),
       this.component(page.name))

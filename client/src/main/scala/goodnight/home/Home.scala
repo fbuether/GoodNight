@@ -11,7 +11,7 @@ import goodnight.components.Banner
 
 
 object Home {
-  val component = ScalaComponent.builder[RouterCtl[pages.Page]]("Home").
+  val component = ScalaComponent.builder[pages.Router]("Home").
     render_P(router =>
       <.div(
         <.h2("Welcome!"),
@@ -32,7 +32,7 @@ object Home {
     build
 
 
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "Cloudy Night.png", "Have a Good Night"),
       this.component(router))

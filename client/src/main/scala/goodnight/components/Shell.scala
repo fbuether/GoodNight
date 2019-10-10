@@ -12,7 +12,7 @@ import goodnight.service.AuthenticationService
 
 
 object Shell {
-  val footer = ScalaComponent.builder[RouterCtl[pages.Page]]("Footer").
+  val footer = ScalaComponent.builder[pages.Router]("Footer").
     render_P(router =>
       <.div(^.className := "schlussvermerk",
         "© " + Year.now.getValue + " ",
@@ -33,7 +33,7 @@ object Shell {
     build
 
 
-  type Props = (RouterCtl[pages.Page])
+  type Props = (pages.Router)
 
   val component = ScalaComponent.builder[Props]("Shell").
     render_PC((router, children) =>

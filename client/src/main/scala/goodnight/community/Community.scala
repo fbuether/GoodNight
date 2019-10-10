@@ -16,7 +16,7 @@ object Community {
     build
 
 
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router,
         "An esculator can never break, it can only become stairs..png",

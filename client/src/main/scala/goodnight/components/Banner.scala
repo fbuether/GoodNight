@@ -9,7 +9,7 @@ import goodnight.client.pages
 
 
 object Banner {
-  type Props = (RouterCtl[pages.Page], String, String)
+  type Props = (pages.Router, String, String)
 
   val component = ScalaComponent.builder[Props]("Banner").
     render_P({ case (router, icon, title) =>

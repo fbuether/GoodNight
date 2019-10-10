@@ -9,7 +9,7 @@ import goodnight.client.pages
 
 
 object Loading {
-  val component = ScalaComponent.builder[RouterCtl[pages.Page]]("Loading").
+  val component = ScalaComponent.builder[pages.Router]("Loading").
     render_P({ router =>
       <.div(^.className := "loadingBanner",
         <.img(^.src := (router.baseUrl +
@@ -19,7 +19,7 @@ object Loading {
     build
 
 
-  def suspend(router: RouterCtl[pages.Page], el: AsyncCallback[VdomElement]) =
+  def suspend(router: pages.Router, el: AsyncCallback[VdomElement]) =
     React.Suspense(component(router), el)
 }
 

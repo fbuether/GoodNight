@@ -11,7 +11,7 @@ import goodnight.components.Banner
 
 
 object PasswordReset {
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router,
         "applications-accessories.png", "Password Reset"),

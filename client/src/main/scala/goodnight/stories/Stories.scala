@@ -21,11 +21,11 @@ import goodnight.common.api.Story._
 
 object Stories {
 
-  // type Props = RouterCtl[pages.Page]
+  // type Props = pages.Router
 
   // type State = (Boolean, List[String])
 
-  def loadStories(router: RouterCtl[pages.Page]) =
+  def loadStories(router: pages.Router) =
     Request.get("/api/v1/stories").send.forJson.
       map({
         case Reply(_, Success(JsArray(stories))) =>
@@ -43,11 +43,11 @@ object Stories {
       })
 
 
-  def storyList(router: RouterCtl[pages.Page]): VdomElement =
+  def storyList(router: pages.Router): VdomElement =
     Loading.suspend(router, loadStories(router))
 
 
-  val component = ScalaComponent.builder[RouterCtl[pages.Page]]("Stories").
+  val component = ScalaComponent.builder[pages.Router]("Stories").
     render_P(router =>
       <.div(
         <.h2("Available Stories"),
@@ -60,7 +60,7 @@ object Stories {
           )).
     build
 
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "Alien World.png", "The Worlds"),
       this.component(router))

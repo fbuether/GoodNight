@@ -17,7 +17,7 @@ import goodnight.service.AuthenticationService
 
 
 object Menu {
-  type Props = RouterCtl[pages.Page]
+  type Props = pages.Router
 
   type State = Option[User]
 
@@ -32,14 +32,14 @@ object Menu {
         menu.className = cn + " expanded"
     })
 
-    def item(router: RouterCtl[pages.Page], page: pages.Page, icon: String,
+    def item(router: pages.Router, page: pages.Page, icon: String,
       title: String, linkClass: String = "") =
       <.li(^.className := linkClass,
         router.link(page)(
           <.span(^.className := icon),
           " " + title))
 
-    def doSignOut(router: RouterCtl[pages.Page]): Callback = {
+    def doSignOut(router: pages.Router): Callback = {
       AuthenticationService.removeAuthentication >>
       router.set(pages.Home)
     }

@@ -11,17 +11,17 @@ import goodnight.components.Banner
 
 
 object Profile {
-  // def render(router: RouterCtl[pages.Page]): VdomElement = {
+  // def render(router: pages.Router): VdomElement = {
   //   Shell.component(Shell.Props(router,
   //     ))(
   //     component(Props(router)))
   // }
 
 
-  // type Props = (RouterCtl[pages.Page])
+  // type Props = (pages.Router)
 
   case class Props(
-    router: RouterCtl[pages.Page]
+    router: pages.Router
   )
 
   case class State(
@@ -48,7 +48,7 @@ object Profile {
     renderBackend[Backend].
     build
 
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router,
         "Excuse me, that's just the Henny man....png", "Profile"),

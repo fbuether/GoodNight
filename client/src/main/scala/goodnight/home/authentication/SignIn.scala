@@ -20,14 +20,14 @@ import goodnight.components.Input
 
 
 object SignIn {
-  def render(router: RouterCtl[pages.Page]) =
+  def render(router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "A Proper Journal Icon.png", "Sign In"),
       this.component(Props(router)))
 
 
   case class Props(
-    router: RouterCtl[pages.Page]
+    router: pages.Router
   )
 
   case class State(

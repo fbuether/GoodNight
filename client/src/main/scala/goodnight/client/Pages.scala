@@ -1,6 +1,9 @@
 
 package goodnight.client
 
+import japgolly.scalajs.react.extra.router.RouterCtl
+
+
 
 package pages {
   sealed trait Page
@@ -26,4 +29,8 @@ package pages {
   case class WriteWorld(name: String) extends Page
   case class WriteStory(world: String, story: String) extends Page
   case class WriteQuality(world: String, quality: String) extends Page
+}
+
+package object pages {
+  type Router = RouterCtl[Page]
 }
