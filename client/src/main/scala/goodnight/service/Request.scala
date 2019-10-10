@@ -113,8 +113,8 @@ object Request {
       withHeader("Accept", "application/json"))
 
   // todo: fixme, wrong path.
-  def put(path: ApiV1.ApiPath): Request =
-    Request(HttpRequest(baseUrl + "---").
+  def put(path: ApiV1.ApiPath, params: String*): Request =
+    Request(HttpRequest(baseUrl + path.write(params : _*)).
       withMethod(PUT).
       withHeader("Accept", "application/json"))
 }
