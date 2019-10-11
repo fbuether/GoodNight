@@ -22,6 +22,7 @@ object AuthenticationService {
       LoginEvents.broadcast(None)
 
   def getAuthentication: CallbackTo[Option[String]] = CallbackTo {
+    // println("auth is: " + window.localStorage.getItem(authStore))
     window.localStorage.getItem(authStore) match {
       case null => None
       case token => Some(token)

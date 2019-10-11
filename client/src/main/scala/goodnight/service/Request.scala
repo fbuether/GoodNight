@@ -75,7 +75,9 @@ class Request(req: HttpRequest) {
       withHeader("Content-Type", "application/json"))
 
   def send: AsyncCallback[Reply[String]] =
-    performRequest.map({ case (status, body) => Reply(status, body) })
+    performRequest.map({ case (status, body) =>
+      println("wrgwrpioj")
+      Reply(status, body) })
 }
 
 
@@ -84,8 +86,14 @@ object Conversions {
     def forJson: AsyncCallback[Reply[Try[JsValue]]] =
       reply.map({ case Reply(code, body) =>
         Reply(code,
-          if (body.isEmpty) Success(JsNull)
-          else Try(Json.parse(body)))
+          if (body.isEmpty) {
+            println("wrgwrpioj222")
+            Success(JsNull)
+          }
+          else {
+      println("wrgwrpioj333333")
+            Try(Json.parse(body))
+          })
       })
   }
 }

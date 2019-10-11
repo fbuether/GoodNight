@@ -35,7 +35,8 @@ object Client {
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
       {val route = ("#story" / string("[^/]+")).caseClass[pages.Story]
         dynamicRouteCT(route) ~> dynRenderR(Story.render)}).
-      notFound(redirectToPage(pages.Home)(Redirect.Replace))
+      notFound(redirectToPage(pages.Home)(Redirect.Replace)).
+      logToConsole
   })
 
   def main(args: Array[String]): Unit = {
