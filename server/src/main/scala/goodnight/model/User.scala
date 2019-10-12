@@ -7,6 +7,8 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 
+import goodnight.model
+
 import com.mohiva.play.silhouette.api.Identity
 // import com.mohiva.play.silhouette.api.LoginInfo
 // import com.mohiva.play.silhouette.api.Authenticator
@@ -65,17 +67,6 @@ class LoginAuthTable(tag: Tag) extends Table[LoginAuth](tag, "login_auth") {
 object LoginAuthTable {
   def apply() = TableQuery[LoginAuthTable]
 }
-
-
-// stores actual user accounts.
-case class User(
-  id: UUID,
-  name: String,
-
-  // email: String,
-  // canCreateWorlds: Boolean,
-  // staySignedIn: Boolean
-) extends Identity
 
 
 class UserTable(tag: Tag) extends Table[User](tag, "users") {

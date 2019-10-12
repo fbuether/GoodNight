@@ -47,6 +47,8 @@ class SignUp(components: ControllerComponents,
 
   def doSignUp = silhouette.UnsecuredAction.async(parse.json)(
     withJsonAs((request: Request[JsValue], signUpData: SignUpData) => {
+      // todo: check if signUpData.username as a username already exists.
+
       val login = LoginInfo(CredentialsProvider.ID, signUpData.identity)
       silhouette.env.identityService.retrieve(login).flatMap({
         case Some(u) =>

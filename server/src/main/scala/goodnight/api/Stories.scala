@@ -62,7 +62,7 @@ class Stories(components: ControllerComponents,
       db.run(checkExistence).flatMap({
         case None =>
           val newStory = Story(UUID.randomUUID(),
-            request.identity.id,
+            request.identity.user.id,
             storyData.name,
             urlname,
             "",

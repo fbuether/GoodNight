@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
 import play.api.mvc._
+import play.api.libs.json.{ JsValue, Json, Reads, JsPath }
 
 import com.mohiva.play.silhouette.api.Silhouette
 
@@ -22,6 +23,8 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Database
 import play.api.db.slick.DbName
 
+import goodnight.common.api.User._
+
 
 class Profile(
   components: ControllerComponents,
@@ -31,10 +34,15 @@ class Profile(
     extends Controller(components) {
 
   def show(user: String) = silhouette.UserAwareAction.async { request =>
+    println(s"requesting $user for ${request.identity}")
+
     request.identity match {
-      case Some(id) => Future.successful(Ok("Hello " + id))
-      case None =>
-        Future.successful(Ok("Hello, unknown person"))
+      case Some(ident) if ident.user.name == user =>
+        Future.successful(Ok(Json.toJson(ident.user)))
+      case _ =>
+        val query = UserTable().filter(_.name === user).result
+        db.run(query).map(u =>
+          Ok(Json.toJson(u)))
     }
   }
 }

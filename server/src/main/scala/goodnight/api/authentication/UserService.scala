@@ -17,16 +17,17 @@ import goodnight.server.PostgresProfile.Database
 class UserService(
   db: Database)(
   implicit ec: ExecutionContext)
-    extends IdentityService[User] {
+    extends IdentityService[Id] {
 
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
+  def retrieve(loginInfo: LoginInfo): Future[Option[Id]] = {
     val getUserFromLogin = Compiled(
       LoginTable().
         join(UserTable()).on(_.user === _.id).
         filter({ case (l,u) => l.providerID === loginInfo.providerID &&
           l.providerKey === loginInfo.providerKey }).
         map({ case (l,u) => u }).
-        take(1)).result.headOption
+        take(1)).result.headOption.
+      map(_.map(Id(_)))
     db.run(getUserFromLogin)
   }
 }
