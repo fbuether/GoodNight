@@ -542,11 +542,9 @@ div#centre > img.left {
         line-height: @font-size * @line-height-factor * 1.2;
         text-decoration: none;
 
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
         box-shadow: none;
 
-        -moz-user-select: none;
+        user-select: none;
         display: inline-block;
         position: relative;
 
@@ -742,8 +740,6 @@ a.button:hover,
 div.a.button:hover {
   border: 1px solid @focus;
 
-  -webkit-box-shadow: inset 0 0 4px @focus-inner;
-  -moz-box-shadow: inset 0 0 4px @focus-inner;
   box-shadow: inset 0 0 4px @focus-inner;
 }
 
@@ -1392,10 +1388,7 @@ div.a.button.locked {
 
   &:hover {
     border: 1px solid hsv(0, 0, 0.8);
-
-    -webkit-box-shadow: inset 0 0 0 @focus-inner;
-    -moz-box-shadow:    inset 0 0 0 @focus-inner;
-    box-shadow:         inset 0 0 0 @focus-inner;
+    box-shadow: inset 0 0 0 @focus-inner;
   }
 }
 
