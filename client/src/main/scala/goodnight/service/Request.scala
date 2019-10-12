@@ -9,7 +9,7 @@ import scala.util.{Try, Failure, Success}
 import org.scalajs.dom.document
 
 import fr.hmil.roshttp.HttpRequest
-import fr.hmil.roshttp.Method._
+import fr.hmil.roshttp.Method
 import fr.hmil.roshttp.body.PlainTextBody
 import fr.hmil.roshttp.util.HeaderMap
 import fr.hmil.roshttp.response.SimpleHttpResponse
@@ -68,6 +68,9 @@ class Request(req: HttpRequest) {
       flatMap(treatResult)
 
 
+  def query(field: String, value: String = "") =
+    Request(req.
+      withQueryParameter(field, value))
 
   def withBody(body: JsValue) =
     Request(req.
@@ -105,24 +108,19 @@ object Request {
   def apply(request: HttpRequest) =
     new Request(request)
 
-  def get(url: String): Request =
+  private def createRequest(method: Method, url: String): Request =
     Request(HttpRequest(baseUrl + url).
-      withMethod(GET).
+      withMethod(method).
       withHeader("Accept", "application/json"))
 
-  def post(url: String): Request =
-    Request(HttpRequest(baseUrl + url).
-      withMethod(POST).
-      withHeader("Accept", "application/json"))
+  def get(url: String) = createRequest(Method.GET, url)
+  def post(url: String) = createRequest(Method.POST, url)
+  def put(url: String) = createRequest(Method.PUT, url)
 
-  def put(url: String): Request =
-    Request(HttpRequest(baseUrl + url).
-      withMethod(PUT).
-      withHeader("Accept", "application/json"))
-
-  // todo: fixme, wrong path.
-  def put(path: ApiV1.ApiPath, params: String*): Request =
-    Request(HttpRequest(baseUrl + path.write(params : _*)).
-      withMethod(PUT).
-      withHeader("Accept", "application/json"))
+  def get(path: ApiV1.ApiPath, params: String*) =
+    createRequest(Method.GET, path.write(params : _*))
+  def post(path: ApiV1.ApiPath, params: String*) =
+    createRequest(Method.POST, path.write(params : _*))
+  def put(path: ApiV1.ApiPath, params: String*) =
+    createRequest(Method.PUT, path.write(params : _*))
 }

@@ -58,14 +58,7 @@ object Stories {
           characters and locations. The following shows all worlds
           and the stories within."""),
         <.h2("All Stories"),
-        storyList(router),
-        <.h2("My Stories"),
-        <.ul(^.className := "storyList",
-          <.li(
-            router.link(pages.CreateStory)(
-              <.img(^.src := (router.baseUrl +
-                "assets/images/buuf/Alien World.png").value),
-              <.div("Create a new story")))))).
+        storyList(router))).
     build
 
   def render(router: pages.Router) =

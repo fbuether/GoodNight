@@ -3,11 +3,21 @@ package goodnight.home
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
+
+import scala.util.{ Try, Success, Failure }
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
+
+import goodnight.model
+import goodnight.common.ApiV1
+import goodnight.common.api.Story._
+import goodnight.service.{ Request, Reply }
+import goodnight.service.Conversions._
 
 import goodnight.client.pages
 import goodnight.components.Shell
 import goodnight.components.Banner
+import goodnight.components.Loading
 
 
 object Profile {
@@ -31,16 +41,37 @@ object Profile {
   class Backend(bs: BackendScope[Props, State]) {
     val changer = bs.modState(s => s.copy(i = s.i + 1))
 
+  def renderStory(router: pages.Router, story: model.Story) =
+    <.li(
+      router.link(pages.Story(story.urlname))(
+        <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
+          story.image).value),
+        <.div(story.name)))
+
+    def loadMyStories(router: pages.Router) =
+      Request.get(ApiV1.Stories).query("author", "me").send.forJson.
+        map({
+          case Reply(_, Success(JsArray(stories))) =>
+            <.ul(^.className := "storyList",
+              stories.map({ storyJson =>
+                renderStory(router, storyJson.as[model.Story])
+              }).toTagMod)
+          case Reply(_, f) =>
+            <.p("got wrong reply: " + f)
+        })
+
     def render(p: Props, s: State): VdomElement =
       <.div(
         <.h2("Profile"),
-        <.p(
-          p.router.link(pages.Profile)(
-            "go to your profile.")),
-        <.p("Hello there."),
-        <.p(
-          <.a(^.onClick --> changer,
-            "wooah")))
+        <.p("This area will show a bit of info about yourself, at some point."),
+        <.h2("My Stories"),
+        Loading.suspend(p.router, loadMyStories(p.router)),
+        <.ul(^.className := "storyList",
+          <.li(
+            p.router.link(pages.CreateStory)(
+              <.img(^.src := (p.router.baseUrl +
+                "assets/images/buuf/Alien World.png").value),
+              <.div("Create a new story")))))
   }
 
   val component = ScalaComponent.builder[Props]("Profile").
