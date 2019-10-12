@@ -20,6 +20,7 @@ import play.api.mvc.EssentialFilter
 import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.PlayBodyParsers
 import play.api.mvc.BodyParsers
+import play.api.cache.caffeine.CaffeineCacheComponents
 
 import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
@@ -34,6 +35,9 @@ import com.mohiva.play.silhouette.api.actions.DefaultUserAwareAction
 import com.mohiva.play.silhouette.api.actions.DefaultUserAwareRequestHandler
 import com.mohiva.play.silhouette.api.crypto.Base64AuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.persistence.repositories.CacheAuthenticatorRepository
+import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
+import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticatorService
@@ -44,7 +48,6 @@ import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 
 import goodnight.client.Frontend
-import goodnight.api.Authentication
 import goodnight.api.Profile
 import goodnight.api.Stories
 import goodnight.api.authentication.SignUp
@@ -71,6 +74,7 @@ class GoodnightComponents(context: Context)
     with SlickEvolutionsComponents
     with EvolutionsComponents
     with AssetsComponents
+    with CaffeineCacheComponents
     with CSRFComponents {
 
   // run the database evolution scripts
@@ -100,7 +104,8 @@ class GoodnightComponents(context: Context)
       JWTAuthenticatorSettings(
         issuerClaim = "goodnight",
         sharedSecret = jwtSharedSecret),
-      None, // repository: Option[AuthenticatorRepository[JWTAuthenticator]],
+      Some(new CacheAuthenticatorRepository[JWTAuthenticator](
+        new PlayCacheLayer(cacheApi("jwt-auth-cache")))),
       new Base64AuthenticatorEncoder(),
       new SecureRandomIDGenerator(),
       Clock()),
@@ -135,16 +140,15 @@ class GoodnightComponents(context: Context)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder,
     context.environment.mode)
-  lazy val authentication = new Authentication(controllerComponents, silhouette)
   lazy val authSignUp = new SignUp(controllerComponents, database,
     silhouette, passwordHasherRegistry, authInfoRepository)
   lazy val authSignIn = new SignIn(controllerComponents, database,
     silhouette, credentialsProvider)
-  lazy val profile = new Profile(controllerComponents, userService,
+  lazy val profile = new Profile(controllerComponents,
     database, silhouette)
   lazy val stories = new Stories(controllerComponents, database, silhouette)
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authentication, authSignUp, authSignIn, profile, stories,
+    authSignUp, authSignIn, profile, stories,
     assets)
 }

@@ -71,4 +71,15 @@ class SignIn(components: ControllerComponents,
 
   def socialAuthenticate(provider: String) =
     TODO
+
+  def signOut = silhouette.SecuredAction.async { request =>
+    val authServ = silhouette.env.authenticatorService
+    authServ.retrieve(request).flatMap({
+      case Some(authenticator) =>
+        println("discarding authenticator " + authenticator)
+        authServ.discard(authenticator, Ok)(request)
+      case None =>
+        Future.successful(Gone)
+    })
+  }
 }

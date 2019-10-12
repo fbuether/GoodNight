@@ -11,7 +11,6 @@ import play.api.routing.SimpleRouter
 import play.api.routing._
 
 import goodnight.client.Frontend
-import goodnight.api.Authentication
 import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
@@ -23,7 +22,6 @@ class Router(
   action: DefaultActionBuilder,
   parse: PlayBodyParsers,
   frontend: Frontend,
-  auth: Authentication,
   authSignUp: authentication.SignUp,
   authSignIn: authentication.SignIn,
   profile: Profile,
@@ -57,7 +55,7 @@ class Router(
       authSignIn.socialAuthenticate(provider)
 
     // Sign out, remove all current sessions.
-    case ApiV1.SignOut() => invalid
+    case ApiV1.SignOut() => authSignIn.signOut
 
     // Password reset step 1: Post reset information form.
     case ApiV1.RequestPasswordReset() => invalid
@@ -71,6 +69,6 @@ class Router(
     case ApiV1.CreateStory() => stories.create
 
     // Profile data
-    case ApiV1.Profile() => profile.show
+    case ApiV1.Profile(user) => profile.show(user)
   }
 }

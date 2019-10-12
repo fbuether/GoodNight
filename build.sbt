@@ -190,6 +190,8 @@ lazy val server = project.in(file("server")).
     ),
 
     libraryDependencies ++= Seq(
+      caffeine, // play cache
+
       "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
       "org.webjars.npm" % "fontawesome" % versions.fontawesome % Provided,
       // "org.webjars.npm" % "bootstrap" % versions.bootstrap % Provided,

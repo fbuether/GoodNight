@@ -25,16 +25,12 @@ import play.api.db.slick.DbName
 
 class Profile(
   components: ControllerComponents,
-  userService: UserService,
   db: Database,
   silhouette: Silhouette[JwtEnvironment])(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  // def getName(user: User) = user.name
-
-
-  def show = silhouette.UserAwareAction.async { request =>
+  def show(user: String) = silhouette.UserAwareAction.async { request =>
     request.identity match {
       case Some(id) => Future.successful(Ok("Hello " + id))
       case None =>
