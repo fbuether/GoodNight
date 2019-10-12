@@ -37,9 +37,12 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-  def showAll = Action.async {
-    val query = StoryTable().result
-    db.run(query).map(sl => Ok(Json.toJson(sl)))
+  def showAll(filters: Map[String, Seq[String]]) = Action.async {
+    val filterAuthor = filters.get("author").map(_.head).
+      map(StoryTable.filterCreator).
+      getOrElse((t: TableQuery[StoryTable]) => t)
+    val query = filterAuthor(StoryTable())
+    db.run(query.result).map(sl => Ok(Json.toJson(sl)))
   }
 
   def showOne(reqName: String) = Action.async {
