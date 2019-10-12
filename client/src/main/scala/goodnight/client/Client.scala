@@ -34,7 +34,10 @@ object Client {
         renderR(CreateStory.render)} |
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
       {val route = ("#story" / string("[^/]+")).caseClass[pages.Story]
-        dynamicRouteCT(route) ~> dynRenderR(Story.render)}).
+        dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
+      {dynamicRouteCT(("#edit/story" / string("[^/]+")).
+        caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)}
+    ).
       notFound(redirectToPage(pages.Home)(Redirect.Replace)).
       logToConsole
   })
