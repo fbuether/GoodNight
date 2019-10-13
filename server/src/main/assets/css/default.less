@@ -1242,23 +1242,23 @@ div#side {
 
 ul.storyList {
   list-style-type: none;
-  margin: @outer-right-border 8px @outer-left-border 8px;
-  padding: 0;
+  margin: (@font-size * 0.6) @outer-right-border
+          (@font-size * 0.4) @outer-left-border;
 
-  line-height: 0;
-  font-size: 0;
+  display: flex;
+  flex-wrap: wrap;
 
   li {
-    display: inline-block;
+    display: inline-flex;
     margin: 0;
     padding: 0;
     border: 0;
+    width: calc(100%/3 - 0.6rem);
 
     a {
-
       vertical-align: top;
-      width: 252px;
-      margin: 4px;
+      width: 100%;
+      margin: 0.3rem;
 
       border-radius: 0.3rem;
       border: 1px solid @horizontal-line;

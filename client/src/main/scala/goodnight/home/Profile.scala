@@ -52,10 +52,13 @@ object Profile {
       Request.get(ApiV1.Stories).query("author", "me").send.forJson.
         map({
           case Reply(_, Success(JsArray(stories))) =>
-            <.ul(^.className := "storyList",
-              stories.map({ storyJson =>
-                renderStory(router, storyJson.as[model.Story])
-              }).toTagMod)
+            if (stories.isEmpty)
+              <.p("You have not written any stories yet.")
+            else
+              <.ul(^.className := "storyList",
+                stories.map({ storyJson =>
+                  renderStory(router, storyJson.as[model.Story])
+                }).toTagMod)
           case Reply(_, f) =>
             <.p("got wrong reply: " + f)
         })
