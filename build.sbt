@@ -35,7 +35,6 @@ val versions = new {
   val slickPostgres = "0.18.0"
 
   val silhouette = "6.1.0"
-  val jwt = "2.0.5" // required by silhouette
 
   val playJson = "2.7.4"
 
@@ -203,8 +202,6 @@ lazy val server = project.in(file("server")).
       "com.github.tminglei" %% "slick-pg_play-json" % versions.slickPostgres,
 
       "com.mohiva" %% "play-silhouette" % versions.silhouette,
-      "com.atlassian.jwt" % "jwt-core" % versions.jwt,
-      "com.atlassian.jwt" % "jwt-api" % versions.jwt,
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
       // "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.0-RC2",

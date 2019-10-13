@@ -2,21 +2,15 @@
 package goodnight.api.authentication
 
 import java.util.UUID
-
-// import slick.lifted._
 import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-// import scala.reflect._
-
-// import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.AuthInfo
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 
 import goodnight.server.PostgresProfile.Database
-
 import goodnight.model.{ LoginAuth, LoginAuthTable }
 
 

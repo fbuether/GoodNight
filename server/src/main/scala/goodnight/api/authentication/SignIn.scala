@@ -15,10 +15,8 @@ import play.api.libs.json.{ Json, Reads, JsPath, JsSuccess, JsError, JsonValidat
 import play.api.libs.functional.syntax._
 import slick.jdbc.PostgresProfile.api._
 
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.Env
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.api.util.Credentials
@@ -35,7 +33,7 @@ import goodnight.model.{ Login, LoginTable }
 
 class SignIn(components: ControllerComponents,
   db: Database,
-  silhouette: Silhouette[JwtEnvironment],
+  silhouette: AuthService,
   credentialsProvider: CredentialsProvider)(
   implicit ec: ExecutionContext)
     extends Controller(components) {

@@ -37,11 +37,11 @@ import com.mohiva.play.silhouette.api.crypto.Base64AuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.persistence.repositories.CacheAuthenticatorRepository
 import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
+import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticatorService
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticatorSettings
+import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticatorService
+import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticatorSettings
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
@@ -53,7 +53,6 @@ import goodnight.api.Stories
 import goodnight.api.authentication.SignUp
 import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
-import goodnight.api.authentication.JwtEnvironment
 import goodnight.api.authentication.CredentialAuthInfoRepository
 
 
@@ -96,19 +95,15 @@ class GoodnightComponents(context: Context)
 
   lazy val userService = new UserService(database)
 
-  lazy val jwtSharedSecret =
-    "7e1d6bfe49f744c62096826006b8a8c2fe242cc3ca511f8bc850512f138c935d"
-  lazy val silhouetteEnvironment = Environment[JwtEnvironment](
+  lazy val silhouetteEnvironment = Environment[AuthEnvironment](
     userService,
-    new JWTAuthenticatorService(
-      JWTAuthenticatorSettings(
-        issuerClaim = "goodnight",
-        sharedSecret = jwtSharedSecret),
-      Some(new CacheAuthenticatorRepository[JWTAuthenticator](
-        new PlayCacheLayer(cacheApi("jwt-auth-cache")))),
-      new Base64AuthenticatorEncoder(),
-      new SecureRandomIDGenerator(),
-      Clock()),
+    new BearerTokenAuthenticatorService(
+      settings = new BearerTokenAuthenticatorSettings(),
+      repository = Some(
+        new CacheAuthenticatorRepository[BearerTokenAuthenticator](
+          new PlayCacheLayer(cacheApi("auth-token-cache")))),
+      idGenerator = new SecureRandomIDGenerator(),
+      clock = Clock()),
     Seq(), // requestProvidersImpl: Seq[RequestProvider]
     EventBus())
   lazy val defaultBodyParsers = new BodyParsers.Default(bodyParsers)

@@ -2,34 +2,27 @@
 package goodnight.api
 
 import java.util.UUID
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-
-import play.api.mvc.Request
+import play.api.db.slick.DbName
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{ JsValue, Json, Reads, JsPath }
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
-import play.api.libs.json.{ JsValue, Json, Reads, JsPath }
-import play.api.libs.functional.syntax._
-
-import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import goodnight.api.authentication.JwtEnvironment
-
+import play.api.mvc.Request
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
-import goodnight.server.PostgresProfile.Database
-import play.api.db.slick.DbName
 
+import goodnight.api.authentication.AuthService
+import goodnight.common.api.Story._
 import goodnight.model.{ Story, StoryTable }
 import goodnight.server.Controller
-
-import goodnight.common.api.Story._
+import goodnight.server.PostgresProfile.Database
 
 
 class Stories(components: ControllerComponents,
   db: Database,
-  silhouette: Silhouette[JwtEnvironment])(
+  auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
@@ -54,7 +47,7 @@ class Stories(components: ControllerComponents,
   implicit val storyDataReads: Reads[StoryData] =
     (JsPath \ "name").read[String].map(StoryData(_))
 
-  def create = silhouette.SecuredAction.async(parse.json)({ request =>
+  def create = auth.SecuredAction.async(parse.json)({ request =>
     parseJson[StoryData](request.body, { storyData =>
       val urlname = urlnameOf(storyData.name)
       val checkExistence = StoryTable().filter(s => s.urlname === urlname).

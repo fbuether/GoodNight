@@ -33,7 +33,7 @@ import goodnight.model.{ Login, LoginTable }
 
 class SignUp(components: ControllerComponents,
   db: Database,
-  silhouette: Silhouette[JwtEnvironment],
+  silhouette: AuthService,
   passwordRegistry: PasswordHasherRegistry,
   authInfoRepository: AuthInfoRepository)(
   implicit ec: ExecutionContext)
