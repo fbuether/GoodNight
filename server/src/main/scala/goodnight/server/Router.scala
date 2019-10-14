@@ -70,5 +70,6 @@ class Router(
 
     // Profile data
     case ApiV1.Profile(user) => profile.show(user)
+    case ApiV1.Self() => profile.showSelf
   }
 }

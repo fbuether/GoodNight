@@ -40,7 +40,7 @@ class Request(req: HttpRequest) {
 
   private def successResult(r: SimpleHttpResponse):
       CallbackTo[(Int, String)] = {
-    Callback { println(s"reply: ${r.statusCode} -> ${r.body}") } >>
+    Callback { println(s"reply: (${req.method.toString} ${req.longPath}) -> ${r.statusCode}: ${r.body}") } >>
     storeAuthentication(r.headers) >>
     CallbackTo((r.statusCode, r.body))
   }
@@ -77,8 +77,10 @@ class Request(req: HttpRequest) {
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
 
-  def send: AsyncCallback[Reply[String]] =
+  def send: AsyncCallback[Reply[String]] = {
+    println("sending...")
     performRequest.map({ case (status, body) => Reply(status, body) })
+  }
 }
 
 
@@ -109,8 +111,10 @@ object Request {
   def post(url: String) = createRequest(Method.POST, url)
   def put(url: String) = createRequest(Method.PUT, url)
 
-  def get(path: ApiV1.ApiPath, params: String*) =
+  def get(path: ApiV1.ApiPath, params: String*) = {
+    println("oh my!")
     createRequest(Method.GET, path.write(params : _*))
+  }
   def post(path: ApiV1.ApiPath, params: String*) =
     createRequest(Method.POST, path.write(params : _*))
   def put(path: ApiV1.ApiPath, params: String*) =

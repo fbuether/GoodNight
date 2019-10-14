@@ -1,19 +1,19 @@
 
 package goodnight.components
 
-import org.scalajs.dom.html
-
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
-
-import japgolly.scalajs.react.extra.OnUnmount
-import japgolly.scalajs.react.extra.Listenable
-import japgolly.scalajs.react.extra.Broadcaster
+import org.scalajs.dom.html
+import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
-import goodnight.service.User
+import goodnight.common.ApiV1
+import goodnight.common.api.User._
+import goodnight.model.User
 import goodnight.service.AuthenticationService
+import goodnight.service.Conversions._
+import goodnight.service.Storage
+import goodnight.service.{ Request, Reply }
 
 
 object Menu {
@@ -21,7 +21,38 @@ object Menu {
 
   type State = Option[User]
 
-  class Backend(bs: BackendScope[Props, State]) extends OnUnmount {
+  class Backend(bs: BackendScope[Props, State]) {
+    def loadUser: Callback = {
+      CallbackTo(Storage.get[User]("user")).flatMap({
+        case Some(user) =>
+          bs.setState(Some(user))
+        case None =>
+          CallbackTo(Storage.get[String]("auth-token")).flatMap({
+            case None => Callback(())
+            case Some(token) => Callback({
+              println("only got a token. request user?")
+            }).flatMap(_ => {
+              Request.get(ApiV1.Self).send.forJson.flatMap({
+                case Reply(200, Success(userJson)) =>
+                  val user = userJson.as[User]
+                  println("got user " + userJson)
+                  Storage.set("user", user)
+                  bs.setState(Some(user)).async
+                case r =>
+                  Callback({
+                    println("got bad reply :( => " + r)
+                  }).async
+              }).toCallback
+            })
+          })
+      })
+    }
+
+    def doSignOut(router: pages.Router): Callback = {
+      AuthenticationService.removeAuthentication >>
+      router.set(pages.Home)
+    }
+
     val menuRef = Ref[html.Div]
 
     def toggleExpandedMenu = menuRef.foreach({ menu =>
@@ -39,12 +70,8 @@ object Menu {
           <.span(^.className := icon),
           " " + title))
 
-    def doSignOut(router: pages.Router): Callback = {
-      AuthenticationService.removeAuthentication >>
-      router.set(pages.Home)
-    }
-
     def render(p: Props, user: State) = {
+      println(s"rendering menu from state $user")
       val userItems = user match {
         case None => Seq(
           item(p, pages.Register, "far fa-bookmark", "Register"),
@@ -52,8 +79,8 @@ object Menu {
           // otherwise, after logout, the new sign in link would also fire.
           <.span(),
           item(p, pages.SignIn, "far fa-check-square", "Sign in"))
-        case Some(User(name)) => Seq(
-          item(p, pages.Profile, "fa fa-user-astronaut", name),
+        case Some(user) => Seq(
+          item(p, pages.Profile, "fa fa-user-astronaut", user.name),
           <.li(<.a(^.onClick --> doSignOut(p),
             <.span(^.className := "far fa-times-circle"),
             " Sign out")))
@@ -73,14 +100,9 @@ object Menu {
     }
   }
 
-
-  def getUsername: CallbackTo[State] =
-    AuthenticationService.getUser
-
   val component = ScalaComponent.builder[Props]("Menu").
-    initialStateCallback(getUsername).
+    initialState[Option[User]](None).
     renderBackend[Backend].
-    configure(Listenable.listen(_ => AuthenticationService.LoginEvents,
-      cmu => cmu.setState)).
+    componentDidMount(_.backend.loadUser).
     build
 }

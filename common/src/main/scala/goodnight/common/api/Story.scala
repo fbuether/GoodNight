@@ -8,6 +8,7 @@ import play.api.libs.functional.syntax._
 
 import goodnight.model.{ Story => MStory }
 
+// todo: http://www.lihaoyi.com/upickle/
 
 object Story {
   implicit val storyReads: Reads[MStory] =

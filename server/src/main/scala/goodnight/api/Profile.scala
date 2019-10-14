@@ -38,4 +38,8 @@ class Profile(
           Ok(Json.toJson(u)))
     }
   }
+
+  def showSelf = auth.SecuredAction({ request =>
+    Ok(Json.toJson(request.identity.user))
+  })
 }
