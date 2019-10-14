@@ -54,6 +54,7 @@ import goodnight.api.authentication.SignUp
 import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
 import goodnight.api.authentication.CredentialAuthInfoRepository
+import goodnight.api.authentication.DatabaseAuthenticatorRepository
 import goodnight.api.authentication.AuthEnvironment
 
 class ServerLoader extends ApplicationLoader {
@@ -99,9 +100,9 @@ class GoodnightComponents(context: Context)
     userService,
     new BearerTokenAuthenticatorService(
       settings = new BearerTokenAuthenticatorSettings(),
-      repository =
-        new CacheAuthenticatorRepository[BearerTokenAuthenticator](
-          new PlayCacheLayer(cacheApi("auth-token-cache"))),
+      repository = new DatabaseAuthenticatorRepository(database),
+        // new CacheAuthenticatorRepository[BearerTokenAuthenticator](
+        //   new PlayCacheLayer(cacheApi("auth-token-cache"))),
       idGenerator = new SecureRandomIDGenerator(),
       clock = Clock()),
     Seq(), // requestProvidersImpl: Seq[RequestProvider]
