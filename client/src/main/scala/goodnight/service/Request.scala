@@ -22,6 +22,7 @@ import japgolly.scalajs.react._
 
 import goodnight.common.ApiV1
 
+
 case class Reply[T](statusCode: Int, body: T)
 
 
@@ -29,14 +30,20 @@ class Request(req: HttpRequest) {
   private val authHeader = "X-Auth-Token"
 
   private def storeAuthentication(headers: HeaderMap[String]): Callback =
-    headers.get(authHeader).
-      map(AuthenticationService.setAuthentication).
-      getOrElse(Callback(()))
+    Callback({
+      val header = headers.get(authHeader)
+      println(s"setting token from reply: $header")
+      header match {
+        case Some(token) => TokenStore.store(token)
+        case None => TokenStore.clear
+      }
+    })
 
   private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
-    AuthenticationService.getAuthentication.
-      map(t => t.map(t => req.withHeader(authHeader, t)).
-        getOrElse(req))
+    CallbackTo(
+      TokenStore.get.
+      map(token => req.withHeader(authHeader, token)).
+      getOrElse(req))
 
   private def successResult(r: SimpleHttpResponse):
       CallbackTo[(Int, String)] = {
@@ -119,4 +126,6 @@ object Request {
     createRequest(Method.POST, path.write(params : _*))
   def put(path: ApiV1.ApiPath, params: String*) =
     createRequest(Method.PUT, path.write(params : _*))
+  def delete(path: ApiV1.ApiPath, params: String*) =
+    createRequest(Method.DELETE, path.write(params : _*))
 }

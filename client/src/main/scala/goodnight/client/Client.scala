@@ -5,12 +5,14 @@ import org.scalajs.dom.document
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
-import japgolly.scalajs.react.vdom.html_<^._
+// import japgolly.scalajs.react.vdom.html_<^._
 
 import goodnight.home._
 import goodnight.home.authentication._
 import goodnight.stories._
 import goodnight.community._
+
+import goodnight.service.AuthenticationService
 
 
 object Client {

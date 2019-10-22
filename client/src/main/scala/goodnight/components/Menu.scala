@@ -22,34 +22,42 @@ object Menu {
   type State = Option[User]
 
   class Backend(bs: BackendScope[Props, State]) {
-    def loadUser: Callback = {
-      CallbackTo(Storage.get[User]("user")).flatMap({
-        case Some(user) =>
-          bs.setState(Some(user))
-        case None =>
-          CallbackTo(Storage.get[String]("auth-token")).flatMap({
-            case None => Callback(())
-            case Some(token) => Callback({
-              println("only got a token. request user?")
-            }).flatMap(_ => {
-              Request.get(ApiV1.Self).send.forJson.flatMap({
-                case Reply(200, Success(userJson)) =>
-                  val user = userJson.as[User]
-                  println("got user " + userJson)
-                  Storage.set("user", user)
-                  bs.setState(Some(user)).async
-                case r =>
-                  Callback({
-                    println("got bad reply :( => " + r)
-                  }).async
-              }).toCallback
-            })
-          })
+    def initialise: Callback = Callback {
+
+      AuthenticationService.onUserChange(newUser => {
+        println("setting new user in menu.")
+        bs.setState(newUser).runNow
       })
     }
 
+    // def loadUser: Callback = {
+    //   CallbackTo(Storage.get[User]("user")).flatMap({
+    //     case Some(user) =>
+    //       bs.setState(Some(user))
+    //     case None =>
+    //       CallbackTo(Storage.get[String]("auth-token")).flatMap({
+    //         case None => Callback(())
+    //         case Some(token) => Callback({
+    //           println("only got a token. request user?")
+    //         }).flatMap(_ => {
+    //           Request.get(ApiV1.Self).send.forJson.flatMap({
+    //             case Reply(200, Success(userJson)) =>
+    //               val user = userJson.as[User]
+    //               println("got user " + userJson)
+    //               Storage.set("user", user)
+    //               bs.setState(Some(user)).async
+    //             case r =>
+    //               Callback({
+    //                 println("got bad reply :( => " + r)
+    //               }).async
+    //           }).toCallback
+    //         })
+    //       })
+    //   })
+    // }
+
     def doSignOut(router: pages.Router): Callback = {
-      AuthenticationService.removeAuthentication >>
+      Callback(AuthenticationService.signOut) >>
       router.set(pages.Home)
     }
 
@@ -101,8 +109,8 @@ object Menu {
   }
 
   val component = ScalaComponent.builder[Props]("Menu").
-    initialState[Option[User]](None).
+    initialState[State](None).
     renderBackend[Backend].
-    componentDidMount(_.backend.loadUser).
+    componentWillMount(_.backend.initialise).
     build
 }
