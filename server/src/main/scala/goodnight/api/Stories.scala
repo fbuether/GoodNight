@@ -80,7 +80,7 @@ class Stories(components: ControllerComponents,
             request.identity.user.id,
             storyData.name,
             urlname,
-            "",
+            "Moon.png",
             "",
             None)
           val insert = StoryTable().insert(newStory)
