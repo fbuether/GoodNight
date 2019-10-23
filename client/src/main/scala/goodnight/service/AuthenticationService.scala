@@ -46,17 +46,15 @@ object AuthenticationService
 
   private def updateUser(token: Option[String]): Unit = token match {
     case Some(token) =>
-      println("requesting current user...")
       Request.get(ApiV1.Self).send.forJson.map({
         case Reply(200, Success(userJson)) =>
-          println(s"got new user: $userJson")
-          val user = userJson.as[User]
           LocalStorage.update(userKey, Json.stringify(userJson))
-          changeListener.foreach(listener => listener(Some(user)))
+          changeListener.foreach(listener => listener(Some(userJson.as[User])))
+        case Reply(401, _) =>
+          signOut
         case err =>
           println(s"an error occurred during user profile fetch: $err")
-          TokenStore.clear
-          LocalStorage.remove(userKey)
+          signOut
       }).toCallback.runNow
     case None =>
       LocalStorage.remove(userKey)
@@ -65,5 +63,6 @@ object AuthenticationService
 
   def signOut: Unit = {
     Request.delete(ApiV1.SignOut).send.toCallback.runNow
+    TokenStore.clear
   }
 }

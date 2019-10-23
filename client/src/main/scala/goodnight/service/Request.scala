@@ -31,12 +31,7 @@ class Request(req: HttpRequest) {
 
   private def storeAuthentication(headers: HeaderMap[String]): Callback =
     Callback({
-      val header = headers.get(authHeader)
-      println(s"setting token from reply: $header")
-      header match {
-        case Some(token) => TokenStore.store(token)
-        case None => TokenStore.clear
-      }
+      headers.get(authHeader).foreach({token => TokenStore.store(token) })
     })
 
   private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
@@ -84,10 +79,8 @@ class Request(req: HttpRequest) {
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
 
-  def send: AsyncCallback[Reply[String]] = {
-    println("sending...")
+  def send: AsyncCallback[Reply[String]] =
     performRequest.map({ case (status, body) => Reply(status, body) })
-  }
 }
 
 
@@ -118,10 +111,8 @@ object Request {
   def post(url: String) = createRequest(Method.POST, url)
   def put(url: String) = createRequest(Method.PUT, url)
 
-  def get(path: ApiV1.ApiPath, params: String*) = {
-    println("oh my!")
+  def get(path: ApiV1.ApiPath, params: String*) =
     createRequest(Method.GET, path.write(params : _*))
-  }
   def post(path: ApiV1.ApiPath, params: String*) =
     createRequest(Method.POST, path.write(params : _*))
   def put(path: ApiV1.ApiPath, params: String*) =

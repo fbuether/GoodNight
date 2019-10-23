@@ -40,8 +40,7 @@ object Client {
       {dynamicRouteCT(("#edit/story" / string("[^/]+")).
         caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)}
     ).
-      notFound(redirectToPage(pages.Home)(Redirect.Replace)).
-      logToConsole
+      notFound(redirectToPage(pages.Home)(Redirect.Replace))
   })
 
   def main(args: Array[String]): Unit = {

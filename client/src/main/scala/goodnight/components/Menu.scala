@@ -12,7 +12,6 @@ import goodnight.common.api.User._
 import goodnight.model.User
 import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
-import goodnight.service.Storage
 import goodnight.service.{ Request, Reply }
 
 
@@ -22,44 +21,13 @@ object Menu {
   type State = Option[User]
 
   class Backend(bs: BackendScope[Props, State]) {
-    def initialise: Callback = Callback {
+    def initialise: Callback = Callback({
+      AuthenticationService.onUserChange(newUser => bs.setState(newUser).runNow)
+    })
 
-      AuthenticationService.onUserChange(newUser => {
-        println("setting new user in menu.")
-        bs.setState(newUser).runNow
-      })
-    }
-
-    // def loadUser: Callback = {
-    //   CallbackTo(Storage.get[User]("user")).flatMap({
-    //     case Some(user) =>
-    //       bs.setState(Some(user))
-    //     case None =>
-    //       CallbackTo(Storage.get[String]("auth-token")).flatMap({
-    //         case None => Callback(())
-    //         case Some(token) => Callback({
-    //           println("only got a token. request user?")
-    //         }).flatMap(_ => {
-    //           Request.get(ApiV1.Self).send.forJson.flatMap({
-    //             case Reply(200, Success(userJson)) =>
-    //               val user = userJson.as[User]
-    //               println("got user " + userJson)
-    //               Storage.set("user", user)
-    //               bs.setState(Some(user)).async
-    //             case r =>
-    //               Callback({
-    //                 println("got bad reply :( => " + r)
-    //               }).async
-    //           }).toCallback
-    //         })
-    //       })
-    //   })
-    // }
-
-    def doSignOut(router: pages.Router): Callback = {
+    def doSignOut(router: pages.Router): Callback =
       Callback(AuthenticationService.signOut) >>
-      router.set(pages.Home)
-    }
+        router.set(pages.Home)
 
     val menuRef = Ref[html.Div]
 
@@ -79,7 +47,6 @@ object Menu {
           " " + title))
 
     def render(p: Props, user: State) = {
-      println(s"rendering menu from state $user")
       val userItems = user match {
         case None => Seq(
           item(p, pages.Register, "far fa-bookmark", "Register"),

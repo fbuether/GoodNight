@@ -21,13 +21,10 @@ object TokenStore
   private var changeListener: Buffer[Option[String] => Unit] = Buffer.empty
 
   def store(token: String): Unit = {
+    // only update token if it actually is different from before.
     if (get == Some(token) || get == None) {
-      println("got new token, updating every listener.")
       LocalStorage.update(tokenKey, token)
       changeListener.foreach(listener => listener(Some(token)))
-    }
-    else {
-      println("got token, but is the same as previous one.")
     }
   }
 
