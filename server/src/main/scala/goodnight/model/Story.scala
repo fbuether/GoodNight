@@ -31,7 +31,9 @@ class StoryTable(tag: Tag) extends Table[model.Story](tag, "story") {
 object StoryTable {
   def apply() = TableQuery[StoryTable]
 
-  def filterCreator(name: String)(base: TableQuery[StoryTable]) = {
+  type Q = Query[StoryTable, Story, Seq]
+
+  def filterCreator(name: String)(base: Q) = {
     base.join(UserTable().filter(_.name === name)).on(_.creator === _.id).
       map((su: (StoryTable, UserTable)) => su._1)
   }

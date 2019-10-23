@@ -14,6 +14,7 @@ import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
 import goodnight.api.authentication.AuthService
+import goodnight.api.authentication.Id
 import goodnight.common.api.Story._
 import goodnight.model.{ Story, StoryTable }
 import goodnight.server.Controller
@@ -30,13 +31,34 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-  def showAll(filters: Map[String, Seq[String]]) = Action.async {
-    val filterAuthor = filters.get("author").map(_.head).
-      map(StoryTable.filterCreator).
-      getOrElse((t: TableQuery[StoryTable]) => t)
-    val query = filterAuthor(StoryTable())
-    db.run(query.result).map(sl => Ok(Json.toJson(sl)))
+  private def storiesFilterAuthorMyself(
+    identity: Option[Id], filtersMyself: Boolean)(
+    query: StoryTable.Q): StoryTable.Q = {
+    println(s"well: $filtersMyself, $identity")
+    (filtersMyself, identity) match {
+      case (true, Some(ident)) => query.filter(_.creator === ident.user.id)
+      case _ => query
+    }
   }
+
+  private def storiesFilterAuthor(author: Option[String])(
+    query: StoryTable.Q): StoryTable.Q =
+    author match {
+      case Some(name) => StoryTable.filterCreator(name)(query)
+      case _ => query
+    }
+
+  def showAll(filters: Map[String, Seq[String]]) =
+    auth.UserAwareAction.async({request =>
+
+      val query =
+        storiesFilterAuthorMyself(request.identity,
+          filters.get("authorMyself").isDefined)(
+          storiesFilterAuthor(filters.get("author").map(_.head))(
+            StoryTable()))
+
+      db.run(query.result).map(sl => Ok(Json.toJson(sl)))
+    })
 
   def showOne(reqName: String) = Action.async {
     val query = StoryTable().filter(_.urlname === reqName).result.headOption

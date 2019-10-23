@@ -43,13 +43,13 @@ object Profile {
 
   def renderStory(router: pages.Router, story: model.Story) =
     <.li(
-      router.link(pages.Story(story.urlname))(
+      router.link(pages.EditStory(story.urlname))(
         <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
           story.image).value),
         <.div(story.name)))
 
     def loadMyStories(router: pages.Router) =
-      Request.get(ApiV1.Stories).query("author", "me").send.forJson.
+      Request.get(ApiV1.Stories).query("authorMyself").send.forJson.
         map({
           case Reply(_, Success(JsArray(stories))) =>
             if (stories.isEmpty)
