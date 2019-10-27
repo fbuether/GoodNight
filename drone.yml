@@ -12,3 +12,5 @@ steps:
     image: plugins/docker
     settings:
       repo: goodnight
+      dry_run: true
+      auto_tag: true
