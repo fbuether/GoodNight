@@ -10,9 +10,3 @@ steps:
       repo: goodnight
       dry_run: true
       auto_tag: true
-
-trigger:
-  branch:
-    - release
-  event:
-    - push
