@@ -8,8 +8,9 @@ steps:
     image: plugins/docker
     settings:
       repo: goodnight
-      dry_run: true
       auto_tag: true
       purge: false
-      debug: true
-      launch_debug: true
+      registry: docker.jasminefields.net
+      repo: docker.jasminefields.net/goodnight
+      username: registryuser
+      password: kTxvorKOpiydQ1pCZ9Lt
