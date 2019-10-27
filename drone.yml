@@ -10,3 +10,6 @@ steps:
       repo: goodnight
       dry_run: true
       auto_tag: true
+      purge: false
+      debug: true
+      launch_debug: true
