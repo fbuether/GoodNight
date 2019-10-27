@@ -3,9 +3,11 @@ kind: pipeline
 type: docker
 name: default
 
-trigger:
-  branch:
-    - release
+# trigger:
+#   branch:
+#     - release
+#   event:
+#     - tag
 
 steps:
   - name: build
