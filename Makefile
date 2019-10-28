@@ -33,3 +33,10 @@ sbt:
 clean:
 	sbt clean
 
+
+docker:
+	docker build -t goodnight .
+	docker tag goodnight docker.jasminefields.net/goodnight
+	docker login -u registryuser -p kTxvorKOpiydQ1pCZ9Lt \
+	  https://docker.jasminefields.net/
+	docker push docker.jasminefields.net/goodnight

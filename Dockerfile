@@ -27,33 +27,32 @@ RUN \
   chmod -R 755 /usr/share/scala && \
   ln -s /usr/share/scala/bin/scala /usr/local/bin/scala
 
-WORKDIR /goodnight/
+WORKDIR /build/
 
 # copy the build definition only, in order to provide a base for sbt to
 # detect which plugins and libs and all that to pull.
-COPY build.sbt /goodnight/
-RUN mkdir /goodnight/project
-COPY project/build.properties /goodnight/project/
-COPY project/plugins.sbt /goodnight/project/
+COPY build.sbt /build/
+RUN mkdir /build/project
+COPY project/build.properties /build/project/
+COPY project/plugins.sbt /build/project/
 
 # this causes sbt to update itself, and is a seperate step in order
 # to speed up the next, actual build step.
 RUN sbt update
 
-COPY . /goodnight/
+COPY . /build/
 
-RUN sbt dist:packageZipTarball
-RUN mv server/target/universal/goodnight-server-*.tar.gz \
-  /goodnight/goodnight-server.tar.gz
+RUN sbt universal:packageXzTarball
+
+WORKDIR /goodnight/
+RUN tar -xf /build/server/target/universal/goodnight-server-*.txz -C /goodnight/ \
+  && mv /goodnight/goodnight-server-*/* /goodnight/ \
+  && rmdir /goodnight/goodnight-server-*
 
 
 FROM openjdk:11-jre
 WORKDIR /goodnight/
-COPY --from=build /goodnight/goodnight-server.tar.gz .
-RUN tar xf goodnight-server.tar.gz \
-  && rm goodnight-server.tar.gz \
-  && mv goodnight-server-*/* . \
-  && rmdir goodnight-server-*
+COPY --from=build /goodnight/* .
 
 # valid environment variables:
 # APPLICATION_SECRET=12345678
