@@ -9,7 +9,6 @@ steps:
     settings:
       repo: goodnight
       auto_tag: true
-      purge: false
       registry: docker.jasminefields.net
       repo: docker.jasminefields.net/goodnight
       username: registryuser

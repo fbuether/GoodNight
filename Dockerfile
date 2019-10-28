@@ -42,15 +42,16 @@ RUN sbt update
 
 COPY . /goodnight/
 
-RUN sbt dist && mv server/target/universal/goodnight-server-*.zip \
-  /goodnight/goodnight-server.zip
+RUN sbt dist:packageZipTarball
+RUN mv server/target/universal/goodnight-server-*.tar.gz \
+  /goodnight/goodnight-server.tar.gz
 
 
 FROM openjdk:11-jre
 WORKDIR /goodnight/
-COPY --from=build /goodnight/goodnight-server.zip .
-RUN unzip goodnight-server.zip \
-  && rm goodnight-server.zip \
+COPY --from=build /goodnight/goodnight-server.tar.gz .
+RUN tar xf goodnight-server.tar.gz \
+  && rm goodnight-server.tar.gz \
   && mv goodnight-server-*/* . \
   && rmdir goodnight-server-*
 
