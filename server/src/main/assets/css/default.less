@@ -1420,3 +1420,52 @@ ul.sceneLocations li ul li {
 }
 
 
+//--------------------------------------
+// general editing in v2.
+
+.edit ul.tabs {
+  margin: (@font-size * 0.6) @outer-right-border
+          (@font-size * 0.4) @outer-left-border;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+
+  & > li {
+    flex: 1 1 0;
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    a {
+      vertical-align: top;
+      width: 100%;
+
+      margin: 0 0.05rem;
+      padding: 0.2rem 0.6rem;
+      background: hsv(0, 0, 0.9);
+
+      border-bottom: 1px solid @horizontal-line;
+
+      text-decoration: none;
+      color: @font;
+
+      &:hover {
+        background: @link-hover-background /* url("../images/menu-background.png") */;
+        color: @link;
+        border-bottom: 1px solid @link;
+      }
+
+      display: inline-flex;
+      align-items: center;
+
+      img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
+}
+
