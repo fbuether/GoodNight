@@ -15,6 +15,8 @@ import goodnight.components.Shell
 import goodnight.components.Banner
 import goodnight.components.Input
 
+import goodnight.common.ApiV1
+
 
 object Register {
   def render(router: pages.Router) =
@@ -41,7 +43,7 @@ object Register {
           passwordRef.get.flatMap(_.backend.get).map({ password =>
             (username, mail, password) }) }) }).asCallback.
         flatMap({ case Some((user, mail, password)) =>
-          Request.post("/api/v1/auth/signup").
+          Request.put(ApiV1.SignUp).
             withBody(Json.obj(
               "identity" -> mail,
               "username" -> user,

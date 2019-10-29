@@ -48,5 +48,3 @@ object Client {
     router().renderIntoDOM(document.getElementById("goodnight-client"))
   }
 }
-
-
