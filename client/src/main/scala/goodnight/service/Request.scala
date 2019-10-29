@@ -107,6 +107,18 @@ object Request {
   def apply(request: HttpRequest) =
     new Request(request)
 
+
+  def apply(target: ApiV1.ApiPath, params: String*) = {
+    val method = target.method match {
+      case "GET" => Method.GET
+      case "PUT" => Method.PUT
+      case "POST" => Method.POST
+      case "DELETE" => Method.DELETE
+      case _ => Method.GET
+    }
+    createRequest(method, target.write(params : _*))
+  }
+
   private def createRequest(method: Method, url: String): Request =
     Request(HttpRequest(baseUrl + url).
       withMethod(method).
