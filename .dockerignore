@@ -11,3 +11,11 @@
 /common/.jvm/target/
 
 /node_modules/
+
+/Dockerfile
+/readme.md
+/.dir-locals.el
+/docker-compose.el
+/.dockerignore
+/.gitignore
+/Makefile

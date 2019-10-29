@@ -40,3 +40,6 @@ docker:
 	docker login -u registryuser -p kTxvorKOpiydQ1pCZ9Lt \
 	  https://docker.jasminefields.net/
 	docker push docker.jasminefields.net/goodnight
+
+
+.PHONY: docker

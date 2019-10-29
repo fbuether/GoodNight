@@ -47,12 +47,14 @@ RUN sbt universal:packageXzTarball
 WORKDIR /goodnight/
 RUN tar -xf /build/server/target/universal/goodnight-server-*.txz -C /goodnight/ \
   && mv /goodnight/goodnight-server-*/* /goodnight/ \
-  && rmdir /goodnight/goodnight-server-*
+  && rmdir /goodnight/goodnight-server-* \
+  && ls -lah /goodnight/
 
 
 FROM openjdk:11-jre
 WORKDIR /goodnight/
-COPY --from=build /goodnight/* .
+COPY --from=build /goodnight /goodnight
+RUN ls -lah /goodnight/
 
 # valid environment variables:
 # APPLICATION_SECRET=12345678
