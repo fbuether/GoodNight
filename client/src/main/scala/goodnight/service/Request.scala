@@ -3,6 +3,7 @@ package goodnight.service
 
 import java.io.IOException
 
+
 import scala.concurrent.Future
 import scala.util.{Try, Failure, Success}
 
@@ -19,6 +20,7 @@ import monix.execution.Scheduler.Implicits.global
 
 import play.api.libs.json._
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.router.BaseUrl
 
 import goodnight.common.ApiV1
 
@@ -52,7 +54,10 @@ class Request(req: HttpRequest) {
     request match {
       case Success(r) => Success(r)
       case Failure(e) => e match {
-        case (e: HttpException[SimpleHttpResponse]) => Success(e.response)
+        case (e: HttpException[_]) => e.response match {
+          case r: SimpleHttpResponse => Success(r)
+          case _ => Failure(e)
+        }
         case _ => Failure(e)
       }
     }
@@ -97,7 +102,7 @@ object Conversions {
 
 
 object Request {
-  private val baseUrl = "http://localhost:9000"
+  private val baseUrl: String = BaseUrl.fromWindowOrigin.value
 
   def apply(request: HttpRequest) =
     new Request(request)
