@@ -19,9 +19,10 @@ case class Scene(
   // interpreted data, dependent on text.
   title: String,
   image: String,
-  location: UUID,
+  location: Option[UUID],
   text: String,
-  mandatory: Boolean
+  mandatory: Boolean,
+  urlname: String
 )
 
 
@@ -32,11 +33,12 @@ class SceneTable(tag: Tag) extends Table[Scene](tag, "story") {
   def raw = column[String]("raw")
   def title = column[String]("title")
   def image = column[String]("image")
-  def location = column[UUID]("location")
+  def location = column[Option[UUID]]("location")
   def text = column[String]("text")
   def mandatory = column[Boolean]("mandatory")
+  def urlname = column[String]("urlname")
 
-  def * = ((id, story, raw, title, image, location, text, mandatory) <>
+  def * = ((id, story, raw, title, image, location, text, mandatory, urlname) <>
     (Scene.tupled, Scene.unapply))
 
   def storyFk = foreignKey("scene_fk_story_story", story, StoryTable())(
@@ -44,7 +46,7 @@ class SceneTable(tag: Tag) extends Table[Scene](tag, "story") {
     onDelete = ForeignKeyAction.Cascade)
   def locationFk = foreignKey("scene_fk_location_location", location,
     LocationTable())(
-    _.id, onUpdate = ForeignKeyAction.Cascade,
+    _.id.?, onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
 }
 
