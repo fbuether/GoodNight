@@ -1423,6 +1423,7 @@ ul.sceneLocations li ul li {
 //--------------------------------------
 // general editing in v2.
 
+// a more general top menu, as a sub-menu to the overall top menu.
 .edit ul.tabs {
   margin: (@font-size * 0.6) @outer-right-border
           (@font-size * 0.4) @outer-left-border;
@@ -1469,3 +1470,120 @@ ul.sceneLocations li ul li {
   }
 }
 
+
+div.edit-canvas {
+
+  margin: (@font-size * 0.8) @outer-right-border
+   (@font-size * 0.6) @outer-left-border;
+
+  div.scene {
+    background: hsv(29, 0.02, 0.94);
+    border: 0.05em solid hsv(29, 0.12, 0.72);
+    &:hover {
+      background: hsv(29, 0.04, 0.96);
+      border: 0.05em solid hsv(29, 0.06, 0.76);
+    }
+  }
+
+  div.quality {
+    background: hsv(250, 0.02, 0.94);
+    border: 0.05em solid hsv(250, 0.12, 0.72);
+    &:hover {
+      background: hsv(250, 0.04, 0.97);
+      border: 0.05em solid hsv(250, 0.06, 0.76);
+    }
+  }
+
+  div.location {
+    background: hsv(137, 0.02, 0.94);
+    border: 0.05em solid hsv(137, 0.12, 0.72);
+    &:hover {
+      background: hsv(137, 0.04, 0.96);
+      border: 0.05em solid hsv(137, 0.06, 0.76);
+    }
+  }
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+
+  & > div {
+    width: 16em;
+    border-radius: 0.3em;
+
+    margin: 0.6em;
+    padding: 0.5em 0.5em;
+
+    &:hover > div:first-child a {
+      visibility: visible;
+    }
+
+    & > div:first-child {
+      display: flex;
+      align-items: center;
+
+      & > i:first-child {
+        margin-right: 0.3em;
+      }
+
+      & > span {
+        display: inline-block;
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex-grow: 1;
+      }
+
+      & > a {
+        display: inline-block;
+        visibility: collapse;
+        padding: 0.2em 0.3em;
+        border-radius: 0.3em;
+
+        &:hover {
+          background: hsv(30, 0.12, 0.92, 0.3);
+        }
+
+        &.danger {
+          color: @font-error;
+          &:hover {
+            background: hsv(0, 0.24, 0.86, 0.5);
+          }
+        }
+      }
+    }
+
+    & > p {
+      width: 100%;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      max-height: 2 * @line-height-factor * @font-size;
+
+      margin: 0;
+      text-indent: 0;
+      font-size: 0.85 * @font-size;
+      line-height: 0.85 * @font-size * @line-height-factor;
+      color: lighten(@font, 20%);
+    }
+
+    & > div.tags {
+      span {
+        font-size: 0.85 * @font-size;
+        line-height: 0.85 * @font-size * @line-height-factor;
+        display: inline-block;
+
+        border: 0.05em solid hsv(209, 0.08, 0.62);
+        background: hsv(0, 0, 0.9);
+        border-radius: 0.3em;
+        padding: 0 0.15em;
+      }
+
+      span ~ span {
+        margin-left: 0.2em;
+      }
+    }
+  }
+}

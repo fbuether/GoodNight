@@ -24,14 +24,66 @@ object EditStory {
   type Props = (pages.Router, String)
 
   val component = ScalaComponent.builder[Props]("EditStory").
-    render_P(p =>
-      <.div(
-        <.h2("Edit Story: " + p._2),
-        <.p("This is where you edit your story."),
-        <.h3("Edit Metadata"),
-        <.h3("Edit Locations"),
-        <.h3("Edit Qualities"),
-        <.h3("Edit Scenes"))).
+    render_P(p => <.div(
+      <.h2("Edit your story"),
+      <.div(^.className := "edit-canvas",
+        <.div(^.className := "scene",
+          <.div(
+            <.i(^.className := "fas fa-scroll"),
+            <.span("At the docks, there is but not a sound to hear"),
+            <.a(^.href := "#",
+              ^.alt := "Edit this scene",
+              <.i(^.className := "fas fa-pen-fancy")),
+            <.a(^.href := "#",
+              ^.alt := "Copy this scene",
+              <.i(^.className := "far fa-copy")),
+            <.a(^.className := "danger",
+              ^.href := "#",
+              ^.alt := "Delete this scene",
+              <.i(^.className := "far fa-trash-alt"))),
+          <.p(
+            """There is a certain atmosphere at the docks that seems to claw
+              at your nose like a hungry sewer rat. People bustle about"""),
+          <.div(^.className := "tags",
+            <.span("docks"), <.span("intro"), <.span("conflict"))),
+
+        <.div(^.className := "quality",
+          <.div(
+            <.i(^.className := "fas fa-thumbtack"),
+            <.span("Cold, hard cash"),
+            <.a(^.href := "#",
+              ^.alt := "Edit this quality",
+              <.i(^.className := "fas fa-pen-fancy")),
+            <.a(^.href := "#",
+              ^.alt := "Copy this quality",
+              <.i(^.className := "far fa-copy")),
+            <.a(^.className := "danger",
+              ^.href := "#",
+              ^.alt := "Delete this quality",
+              <.i(^.className := "far fa-trash-alt"))),
+          <.p("""You gotta pay for what you take. That's how it's always
+            been.""")),
+
+        <.div(^.className := "location",
+          <.div(
+            <.i(^.className := "fas fa-map-marked"),
+            <.span("The Docks"),
+            <.a(^.href := "#",
+              ^.alt := "Edit this scene",
+              <.i(^.className := "fas fa-pen-fancy")),
+            <.a(^.href := "#",
+              ^.alt := "Copy this scene",
+              <.i(^.className := "far fa-copy")),
+            <.a(^.className := "danger",
+              ^.href := "#",
+              ^.alt := "Delete this scene",
+              <.i(^.className := "far fa-trash-alt"))),
+          <.p("""The docks have been the hub of trading in this forsaken town.
+            They are not, anymore, and even the residents are forced to take
+            notice."""),
+          <.div(^.className := "tags",
+            <.span("docks")))
+      ))).
     build
 
   def loadStory(router: pages.Router, name: String): AsyncCallback[VdomElement] =
