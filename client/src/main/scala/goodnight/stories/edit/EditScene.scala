@@ -18,7 +18,7 @@ import goodnight.service.{ Request, Reply }
 
 
 object EditScene {
-  type Props = Unit
+  type Props = (String)
   type State = Unit
 
   class Backend(bs: BackendScope[Props, State]) {
@@ -35,15 +35,33 @@ object EditScene {
             el.className + " " + toggle
       })
 
-
     def toggleEnlarge =
       (toggleClass(overlayRef, "fullscreen") >>
         toggleClass(enlargeRef, "hidden") >>
         toggleClass(shrinkRef, "hidden"))
 
+    val editorRef = Editor.componentRef
+
+    def cancel = Callback({
+      println("canceling.")
+    })
+
+    def save: Callback =
+      bs.props.flatMap({ story =>
+        editorRef.get.flatMapCB(_.backend.get).flatMap({ content =>
+          Request(ApiV1.CreateScene, story).send.map({
+            case Reply(201, _) =>
+              println("great!")
+            case e =>
+              println("not so great: " + e)
+          }).toCallback
+        })
+      })
+
+
     def render(props: Props) = {
       <.div.withRef(overlayRef)(^.className := "edit-scene overlay",
-        <.h3("Edit Scene: whichever."),
+        <.h3("Add a new Scene"),
         <.a(^.className := "fullscreen-toggle",
           ^.onClick --> toggleEnlarge,
           <.i.withRef(enlargeRef)(
@@ -52,12 +70,14 @@ object EditScene {
           <.i.withRef(shrinkRef)(
             ^.className := "fas fa-compress-arrows-alt hidden",
             ^.title := "Return to regular display")),
-        Editor.component(),
+        editorRef.component("editor"),
         <.div(^.className := "buttons",
           <.button(^.className := "inline",
+            ^.onClick --> cancel,
             <.i(^.className := "fas fa-ban label"),
             "Cancel"),
           <.button(^.className := "inline",
+            ^.onClick --> save,
             <.i(^.className := "far fa-check-square label"),
             "Save")))
     }

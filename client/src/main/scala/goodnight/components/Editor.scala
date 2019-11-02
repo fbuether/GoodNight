@@ -3,23 +3,35 @@ package goodnight.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
+import org.scalajs.dom.html
 
 // inspiration:
 // https://github.com/amirkarimi/neptune/blob/master/src/main/scala/com/..
 // github/neptune/Main.scala
 
 object Editor {
-  type Props = Unit
+  type Props = String
   type State = Unit
 
   class Backend(bs: BackendScope[Props, State]) {
+    val contentRef = Ref[html.Div]
+
     def execute(e: ReactEventFromInput): Callback = Callback({
       print("action: " + e)
     })
 
+    def get: CallbackTo[String] = contentRef.get.
+      map(_.innerHTML).getOrElse("")
+
     def render(props: Props, state: State) = {
       <.div(^.className := "editor",
         <.div(^.className := "tools",
+          <.button("undo",
+            ^.onClick ==> execute,
+            ^.title := "Undo the previous editing step"),
+          <.button("redo",
+            ^.onClick ==> execute,
+            ^.title := "Redo the previously undone step"),
           <.button("B",
             ^.onClick ==> execute,
             ^.title := "Make selected text bold"),
@@ -36,7 +48,7 @@ object Editor {
             ^.onClick ==> execute,
             ^.title := "Turn selected paragraph into a list"),
         ),
-        <.div(^.className := "content",
+        <.div.withRef(contentRef)(^.className := "content",
           ^.contentEditable := "true",
             "This is a bit of content that, well, is editable."
         ))
@@ -47,4 +59,6 @@ object Editor {
     initialState[State](()).
     renderBackend[Backend].
     build
+
+  def componentRef = Ref.toScalaComponent(component)
 }

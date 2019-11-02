@@ -127,7 +127,7 @@ object EditStory {
 
       val editingOverlay: TagMod = edit match {
         case Overlay.None => List().toTagMod
-        case Overlay.AddScene => EditScene.component()
+        case Overlay.AddScene => EditScene.component(story)
       }
 
       <.div(
