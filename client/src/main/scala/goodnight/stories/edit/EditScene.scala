@@ -49,12 +49,14 @@ object EditScene {
     def save: Callback =
       bs.props.flatMap({ story =>
         editorRef.get.flatMapCB(_.backend.get).flatMap({ content =>
-          Request(ApiV1.CreateScene, story).send.map({
-            case Reply(201, _) =>
-              println("great!")
-            case e =>
-              println("not so great: " + e)
-          }).toCallback
+          Request(ApiV1.CreateScene, story).withBody(Json.obj(
+            "text" -> content)).
+            send.map({
+              case Reply(201, _) =>
+                println("great!")
+              case e =>
+                println("not so great: " + e)
+            }).toCallback
         })
       })
 
