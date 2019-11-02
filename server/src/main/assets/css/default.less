@@ -45,6 +45,7 @@
 
 @locked: hsv(0, 0.55, 0.55);
 
+@main-background: hsv(0, 0, 0.94);
 @horizontal-line: hsv(209, 0.12, 0.72);
 @horizontal-line-light: hsv(209, 0.06, 0.76);
 @vertical-line: hsv(209, 0.10, 0.78);
@@ -338,6 +339,25 @@ b {
   margin-left: @outer-left-border * 1;
 }
 
+
+.hidden {
+  visibility: collapse;
+  width: 0;
+  height: 0;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+
+i.fas, i.far {
+  font-size: inherit;
+}
+
+i.fas.label, i.far.label {
+  margin-right: 0.3em;
+}
 
 hr {
   margin: 0 (@outer-right-border + 2.5rem) 0 (@outer-left-border + 2.5rem);
@@ -729,7 +749,6 @@ a.button.locked {
   cursor: default;
 }
 
-
 textarea {
   height: 90px;
 }
@@ -927,6 +946,25 @@ input.small[type="text"] {
 }
 
 
+.overlay-anchor {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 1em;
+  bottom: 1em;
+  left: 1em;
+  right: 1em;
+  background: @main-background;
+  border: 0.05em solid @horizontal-line;
+  border-radius: 0.6em;
+  box-shadow: 0.2em 0.2em 2em hsv(0, 0, 0.6);
+}
+
+.overlay.fullscreen {
+  position: fixed;
+}
 
 
 //--------------------------------------
@@ -1479,6 +1517,10 @@ div.edit-canvas {
   margin: (@font-size * 0.8) @outer-right-border
    (@font-size * 0.6) @outer-left-border;
 
+  min-height: 20em;
+  resize: vertical;
+  overflow-y: auto;
+
   div.scene {
     background: hsv(29, 0.02, 0.94);
     border: 0.05em solid hsv(29, 0.12, 0.72);
@@ -1509,9 +1551,10 @@ div.edit-canvas {
   display: flex;
   flex-wrap: wrap;
   align-items: start;
+  align-content: flex-start;
 
   & > div {
-    width: 16em;
+    width: 15.7em;
     border-radius: 0.3em;
 
     margin: 0.6em;
@@ -1608,3 +1651,93 @@ div.edit-canvas {
     }
   }
 }
+
+div.edit-scene {
+  display: flex;
+  flex-direction: column;
+
+  & > h3 {
+    margin: 1.3em 1em 0.6em 1em;
+  }
+
+  & > a.fullscreen-toggle {
+    position: absolute;
+    right: 0.2em;
+    top: 0.2em;
+    padding: 0.25em;
+    border-radius: 0.3em;
+    font-size: 1.4 * @font-size;
+    color: @font;
+
+    &:hover {
+      color: @link-hover;
+      background: @link-hover-background;
+      cursor: pointer;
+    }
+  }
+
+  & > div.editor {
+    flex-grow: 1;
+    margin: 0 1em;
+  }
+
+  & > div.buttons {
+    margin: 0.6em 1em 1em 1em;
+    text-align: right;
+
+    & > * {
+      margin-left: 0.4em;
+    }
+  }
+}
+
+
+//--------------------------------------
+// wysiwyg editor.
+
+div.editor {
+  margin: 1em;
+  min-height: 4 * @font-size * @line-height-factor;
+  display: flex;
+  flex-direction: column;
+
+  & > div.tools {
+    border: 0.05em solid hsv(0, 0, 0.6);
+    border-bottom: 0;
+    margin: 0;
+
+    & > button {
+      display: inline-block;
+      width: 1.6 * @font-size * @line-height-factor;
+      height: @font-size * @line-height-factor;
+      margin: 0;
+      background: hsv(0, 0, 0.9);
+      padding: 0;
+      border: 0;
+      min-width: 0;
+      border-right: 0.05em solid hsv(0, 0, 0.6);
+      border-radius: 0;
+
+      &:hover {
+        border: 0;
+        box-shadow: none;
+        background: hsv(0, 0, 1);
+        text-decoration: none;
+        border-right: 0.05em solid hsv(0, 0, 0.6);
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
+  }
+
+  & > div.content {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0.4em;
+    border: 0.05em solid hsv(0, 0, 0.6);
+    background: hsv(0, 0, 0.98);
+  }
+}
+

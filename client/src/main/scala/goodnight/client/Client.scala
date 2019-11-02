@@ -40,6 +40,8 @@ object Client {
         dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
       {dynamicRouteCT(("#write/story" / anyName).
         caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)} |
+      {dynamicRouteCT(("#write/story" / anyName / "new-scene").
+        caseClass[pages.AddScene]) ~> dynRenderR(EditStory.addScene)} |
       {dynamicRouteCT(("#write/story" / anyName / "scene" / anyName).
         caseClass[pages.EditScene]) ~> dynRenderR(EditStory.editScene)} |
       {dynamicRouteCT(("#write/story" / anyName / "quality" / anyName).

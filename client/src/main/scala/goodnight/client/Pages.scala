@@ -28,9 +28,10 @@ package pages {
   case object CreateStory extends Page
   case class EditStory(story: String) extends Page
   case class EditScenes(story: String) extends Page
+  case class AddScene(story: String) extends Page
   case class EditScene(story: String, scene: String) extends Page
-  case class CopyScene(story: String, scene: String) extends Page
-  case class DeleteScene(story: String, scene: String) extends Page
+  // case class CopyScene(story: String, scene: String) extends Page
+  // case class DeleteScene(story: String, scene: String) extends Page
   case class EditQualities(story: String) extends Page
   case class EditQuality(story: String, quality: String) extends Page
 }
