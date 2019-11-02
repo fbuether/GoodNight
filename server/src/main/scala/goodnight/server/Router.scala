@@ -65,8 +65,9 @@ class Router(
 
     // Stories and Story Content.
     case ApiV1.Stories() => stories.showAll(header.target.queryMap)
-    case ApiV1.Story(name) => stories.showOne(name)
+    case ApiV1.Story(story) => stories.showOne(story)
     case ApiV1.CreateStory() => stories.create
+    case ApiV1.CreateScene(story) => stories.createScene(story)
 
     // Profile data
     case ApiV1.Profile(user) => profile.show(user)

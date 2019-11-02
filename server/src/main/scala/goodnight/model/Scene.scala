@@ -9,7 +9,7 @@ import goodnight.server.PostgresProfile.Table
 
 
 
-class SceneTable(tag: Tag) extends Table[Scene](tag, "story") {
+class SceneTable(tag: Tag) extends Table[Scene](tag, "scene") {
   def id = column[UUID]("id", O.PrimaryKey)
   def story = column[UUID]("story")
   def raw = column[String]("raw")

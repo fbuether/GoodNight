@@ -17,6 +17,7 @@ import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.Id
 import goodnight.common.api.Story._
 import goodnight.model.{ Story, StoryTable }
+import goodnight.model.{ Scene, SceneTable }
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 
@@ -94,4 +95,35 @@ class Stories(components: ControllerComponents,
           )))
       })
     })})
+
+  case class NewSceneData(text: String)
+  implicit val newSceneDataReads: Reads[NewSceneData] =
+    (JsPath \ "text").read[String].map(NewSceneData(_))
+
+  def createScene(storyName: String) =
+    auth.SecuredAction.async(parse.json)({ request =>
+      parseJson[NewSceneData](request.body, { scene =>
+        // val foo: String = StoryTable().filter(_.urlname === storyName).result
+        val getStory = StoryTable().filter(_.urlname === storyName).
+          result.headOption
+        db.run(getStory).flatMap({
+          case None =>
+            Future.successful(
+              NotFound("Story with this urlname does not exist."))
+          case Some(story) =>
+            val newScene = Scene(UUID.randomUUID(),
+              story.id,
+              scene.text,
+              "title",
+              "image",
+              None,
+              "text",
+              false,
+              "urlname")
+            db.run(SceneTable().insert(newScene)).map({ _ =>
+              Created
+            })
+        })
+      })
+    })
 }
