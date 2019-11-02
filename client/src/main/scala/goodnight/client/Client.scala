@@ -19,6 +19,7 @@ object Client {
 
   val routes = RouterConfigDsl[pages.Page].buildConfig({ dsl =>
     import dsl._
+    val anyName = string("[^/]+")
 
     (trimSlashes |
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
@@ -35,10 +36,18 @@ object Client {
       {staticRoute("#createStory", pages.CreateStory) ~>
         renderR(CreateStory.render)} |
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
-      {val route = ("#story" / string("[^/]+")).caseClass[pages.Story]
+      {val route = ("#story" / anyName).caseClass[pages.Story]
         dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
-      {dynamicRouteCT(("#edit/story" / string("[^/]+")).
-        caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)}
+      {dynamicRouteCT(("#write/story" / anyName).
+        caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)} |
+      {dynamicRouteCT(("#write/story" / anyName / "scene" / anyName).
+        caseClass[pages.EditScene]) ~> dynRenderR(EditStory.editScene)} |
+      {dynamicRouteCT(("#write/story" / anyName / "quality" / anyName).
+        caseClass[pages.EditQuality]) ~> dynRenderR(EditStory.editQuality)}
+      // {dynamicRouteCT(("#write/story" / anyName / "scenes").
+      //   caseClass[pages.EditScenes]) ~> dynRenderR(EditScenes.render)} |
+      // {dynamicRouteCT(("#write/story" / anyName / "qualities").
+      //   caseClass[pages.EditQualities]) ~> dynRenderR(EditQualities.render)}
     ).
       notFound(redirectToPage(pages.Home)(Redirect.Replace))
   })

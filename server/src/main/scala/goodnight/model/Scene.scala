@@ -9,24 +9,6 @@ import goodnight.server.PostgresProfile.Table
 
 
 
-case class Scene(
-  id: UUID,
-  story: UUID,
-
-  // the textual representation, uninterpreted.
-  raw: String,
-
-  // interpreted data, dependent on text.
-  title: String,
-  image: String,
-  location: Option[UUID],
-  text: String,
-  mandatory: Boolean,
-  urlname: String
-)
-
-
-
 class SceneTable(tag: Tag) extends Table[Scene](tag, "story") {
   def id = column[UUID]("id", O.PrimaryKey)
   def story = column[UUID]("story")

@@ -20,15 +20,19 @@ package pages {
 
   // playing worlds
   case object Stories extends Page
-  case class Story(name: String) extends Page
-  case class Inventory(world: String) extends Page
-  case class Scene(world: String) extends Page
+  case class Story(story: String) extends Page
+  case class Inventory(story: String) extends Page
+  case class Scene(story: String) extends Page
 
   // creation
   case object CreateStory extends Page
-  case class EditStory(name: String) extends Page
-  case class WriteScene(world: String, story: String) extends Page
-  case class WriteQuality(world: String, quality: String) extends Page
+  case class EditStory(story: String) extends Page
+  case class EditScenes(story: String) extends Page
+  case class EditScene(story: String, scene: String) extends Page
+  case class CopyScene(story: String, scene: String) extends Page
+  case class DeleteScene(story: String, scene: String) extends Page
+  case class EditQualities(story: String) extends Page
+  case class EditQuality(story: String, quality: String) extends Page
 }
 
 package object pages {

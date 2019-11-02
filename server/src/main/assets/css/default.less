@@ -134,6 +134,10 @@ a {
   color: @link;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 a:hover,
 button:hover {
   color: @link-hover;
@@ -1472,7 +1476,6 @@ ul.sceneLocations li ul li {
 
 
 div.edit-canvas {
-
   margin: (@font-size * 0.8) @outer-right-border
    (@font-size * 0.6) @outer-left-border;
 
@@ -1584,6 +1587,24 @@ div.edit-canvas {
       span ~ span {
         margin-left: 0.2em;
       }
+    }
+  }
+}
+
+.add-buttons {
+  margin: (@font-size * 0.8) @outer-right-border
+   (@font-size * 0.6) @outer-left-border;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > button {
+    margin: 0.3em 0.4em;
+    width: auto;
+
+    & > i {
+      margin-right: 0.3em;
     }
   }
 }

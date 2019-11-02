@@ -28,5 +28,5 @@ object Story {
   def render(page: pages.Story, router: pages.Router) =
     Shell.component(router)(
       Banner.component(router, "Alien World.png", "A world"),
-      this.component(page.name))
+      this.component(page.story))
 }
