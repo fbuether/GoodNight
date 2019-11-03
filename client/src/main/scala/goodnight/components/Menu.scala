@@ -57,7 +57,7 @@ object Menu {
         case Some(user) => Seq(
           item(p, pages.Profile, "fa fa-user-astronaut", user.name),
           <.li(<.a(^.onClick --> doSignOut(p),
-            <.span(^.className := "far fa-times-circle"),
+            <.i(^.className := "far fa-times-circle"),
             " Sign out")))
       }
 
@@ -69,7 +69,7 @@ object Menu {
         <.ul(
           <.li(^.className := "expander",
             <.a(^.onClick --> toggleExpandedMenu,
-              <.span(^.className := "fa fa-navicon"),
+              <.i(^.className := "fa fa-navicon"),
               " Menu")),
           userItems.toTagMod))
     }

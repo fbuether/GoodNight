@@ -70,7 +70,7 @@ object Register {
       <.form(^.className := "centered inset",
         ^.onSubmit ==> doRegister,
         <.h2(
-          <.span(^.className := "fa fa-plus-square"),
+          <.i(^.className := "fa fa-plus-square"),
           " Register"),
         usernameRef.component(Input.Props(
           "Username:", "username",
@@ -81,7 +81,7 @@ object Register {
           "Password:", "password",
           List(^.required := true), password = true)),
         <.button(^.tpe := "submit",
-          <.span(^.className := "fa fa-pencil-square-o"),
+          <.i(^.className := "fa fa-pencil-square-o"),
           " Register"),
         s.error.map(err =>
           <.p(^.className := "plain error",

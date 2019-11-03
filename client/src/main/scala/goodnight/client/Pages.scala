@@ -16,15 +16,16 @@ package pages {
   // authentication
   case object Register extends Page
   case object SignIn extends Page
+  case class SignInFor(page: String) extends Page
   case object RequestPasswordReset extends Page
 
-  // playing worlds
+  // Reading Stories
   case object Stories extends Page
   case class Story(story: String) extends Page
   case class Inventory(story: String) extends Page
   case class Scene(story: String) extends Page
 
-  // creation
+  // Creating stories
   case object CreateStory extends Page
   case class EditStory(story: String) extends Page
   case class EditScenes(story: String) extends Page

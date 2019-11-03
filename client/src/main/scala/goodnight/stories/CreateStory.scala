@@ -69,7 +69,7 @@ object CreateStory {
           case false =>
             <.button(^.tpe := "submit",
               ^.onClick --> doCreateStory,
-              <.span(^.className := "fas fa-pencil-alt"),
+              <.i(^.className := "fas fa-pencil-alt"),
               " Create a new story")
           case true =>
             Loading.component(router)

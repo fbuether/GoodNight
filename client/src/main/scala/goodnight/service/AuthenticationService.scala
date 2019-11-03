@@ -35,9 +35,12 @@ object AuthenticationService
   }
 
   def getUser: Option[User] = {
-    LocalStorage("auth-user").
+    LocalStorage(userKey).
       flatMap(json => Json.fromJson(Json.parse(json)).asOpt)
   }
+
+  def isSignedIn: CallbackTo[Boolean] =
+    CallbackTo(getUser.isDefined)
 
   def onUserChange(handler: Option[User] => Unit): Unit = {
     register
