@@ -9,25 +9,26 @@ import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import slick.sql.SqlAction
 
-import goodnight.model.{ Login, LoginTable }
-import goodnight.model.{ User, UserTable }
+import goodnight.db
+import goodnight.model.Login
+import goodnight.model.User
 import goodnight.server.PostgresProfile.Database
 
 
 class UserService(
-  db: Database)(
+  database: Database)(
   implicit ec: ExecutionContext)
     extends IdentityService[Id] {
 
   def retrieve(loginInfo: LoginInfo): Future[Option[Id]] = {
     val getUserFromLogin = Compiled(
-      LoginTable().
-        join(UserTable()).on(_.user === _.id).
+      db.Login().
+        join(db.User()).on(_.user === _.id).
         filter({ case (l,u) => l.providerID === loginInfo.providerID &&
           l.providerKey === loginInfo.providerKey }).
         map({ case (l,u) => u }).
         take(1)).result.headOption.
       map(_.map(Id(_)))
-    db.run(getUserFromLogin)
+    database.run(getUserFromLogin)
   }
 }

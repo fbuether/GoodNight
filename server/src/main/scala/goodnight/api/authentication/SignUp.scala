@@ -27,12 +27,13 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Controller
 
-import goodnight.model.{ User, UserTable }
-import goodnight.model.{ Login, LoginTable }
+import goodnight.model.User
+import goodnight.db
+import goodnight.model.Login
 
 
 class SignUp(components: ControllerComponents,
-  db: Database,
+  database: Database,
   silhouette: AuthService,
   passwordRegistry: PasswordHasherRegistry,
   authInfoRepository: AuthInfoRepository)(
@@ -64,8 +65,8 @@ class SignUp(components: ControllerComponents,
 
           authServ.create(login)(request).flatMap({ authenticator =>
             authServ.init(authenticator)(request) }).flatMap({ ident =>
-              db.run(UserTable().insert(User(userId, signUpData.username)).
-                andThen(LoginTable().insert(Login(UUID.randomUUID(),
+              database.run(db.User().insert(User(userId, signUpData.username)).
+                andThen(db.Login().insert(Login(UUID.randomUUID(),
                   userId, login.providerID, login.providerKey)))).
                 flatMap({ _ =>
                   authInfoRepository.add(login, authInfo).flatMap({ _ =>

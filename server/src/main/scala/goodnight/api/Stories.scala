@@ -16,14 +16,15 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.Id
 import goodnight.common.api.Story._
-import goodnight.model.{ Story, StoryTable }
-import goodnight.model.{ Scene, SceneTable }
+import goodnight.model.Story
+import goodnight.model.Scene
+import goodnight.db
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 
 
 class Stories(components: ControllerComponents,
-  db: Database,
+  database: Database,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
@@ -34,7 +35,7 @@ class Stories(components: ControllerComponents,
 
   private def storiesFilterAuthorMyself(
     identity: Option[Id], filtersMyself: Boolean)(
-    query: StoryTable.Q): StoryTable.Q = {
+    query: db.Story.Q): db.Story.Q = {
     println(s"well: $filtersMyself, $identity")
     (filtersMyself, identity) match {
       case (true, Some(ident)) => query.filter(_.creator === ident.user.id)
@@ -43,9 +44,9 @@ class Stories(components: ControllerComponents,
   }
 
   private def storiesFilterAuthor(author: Option[String])(
-    query: StoryTable.Q): StoryTable.Q =
+    query: db.Story.Q): db.Story.Q =
     author match {
-      case Some(name) => StoryTable.filterCreator(name)(query)
+      case Some(name) => db.Story.filterCreator(name)(query)
       case _ => query
     }
 
@@ -56,14 +57,14 @@ class Stories(components: ControllerComponents,
         storiesFilterAuthorMyself(request.identity,
           filters.get("authorMyself").isDefined)(
           storiesFilterAuthor(filters.get("author").map(_.head))(
-            StoryTable()))
+            db.Story()))
 
-      db.run(query.result).map(sl => Ok(Json.toJson(sl)))
+      database.run(query.result).map(sl => Ok(Json.toJson(sl)))
     })
 
   def showOne(reqName: String) = Action.async {
-    val query = StoryTable().filter(_.urlname === reqName).result.headOption
-    db.run(query).map(s => Ok(Json.toJson(s)))
+    val query = db.Story().filter(_.urlname === reqName).result.headOption
+    database.run(query).map(s => Ok(Json.toJson(s)))
   }
 
   case class StoryData(name: String)
@@ -73,9 +74,9 @@ class Stories(components: ControllerComponents,
   def create = auth.SecuredAction.async(parse.json)({ request =>
     parseJson[StoryData](request.body, { storyData =>
       val urlname = urlnameOf(storyData.name)
-      val checkExistence = StoryTable().filter(s => s.urlname === urlname).
+      val checkExistence = db.Story().filter(s => s.urlname === urlname).
         take(1).result.headOption
-      db.run(checkExistence).flatMap({
+      database.run(checkExistence).flatMap({
         case None =>
           val newStory = Story(UUID.randomUUID(),
             request.identity.user.id,
@@ -84,8 +85,8 @@ class Stories(components: ControllerComponents,
             "Moon.png",
             "",
             None)
-          val insert = StoryTable().insert(newStory)
-          db.run(insert).map({ _ =>
+          val insert = db.Story().insert(newStory)
+          database.run(insert).map({ _ =>
             Ok(Json.toJson(newStory))
           })
         case Some(_) =>
@@ -103,10 +104,10 @@ class Stories(components: ControllerComponents,
   def createScene(storyName: String) =
     auth.SecuredAction.async(parse.json)({ request =>
       parseJson[NewSceneData](request.body, { scene =>
-        // val foo: String = StoryTable().filter(_.urlname === storyName).result
-        val getStory = StoryTable().filter(_.urlname === storyName).
+        // val foo: String = db.Story().filter(_.urlname === storyName).result
+        val getStory = db.Story().filter(_.urlname === storyName).
           result.headOption
-        db.run(getStory).flatMap({
+        database.run(getStory).flatMap({
           case None =>
             Future.successful(
               NotFound("Story with this urlname does not exist."))
@@ -120,7 +121,7 @@ class Stories(components: ControllerComponents,
               "text",
               false,
               "urlname")
-            db.run(SceneTable().insert(newScene)).map({ _ =>
+            database.run(db.Scene().insert(newScene)).map({ _ =>
               Created
             })
         })

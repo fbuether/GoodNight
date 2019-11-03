@@ -26,13 +26,15 @@ import com.mohiva.play.silhouette.api.exceptions.SilhouetteException
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Controller
 
-import goodnight.model.{ User, UserTable }
-import goodnight.model.{ Login, LoginTable }
+import goodnight.model.User
+import goodnight.db.User
+import goodnight.model.Login
+import goodnight.db.Login
 
 
 
 class SignIn(components: ControllerComponents,
-  db: Database,
+  database: Database,
   silhouette: AuthService,
   credentialsProvider: CredentialsProvider)(
   implicit ec: ExecutionContext)

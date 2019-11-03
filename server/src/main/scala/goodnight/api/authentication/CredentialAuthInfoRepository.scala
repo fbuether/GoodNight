@@ -11,11 +11,13 @@ import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 
 import goodnight.server.PostgresProfile.Database
-import goodnight.model.{ LoginAuth, LoginAuthTable }
+import goodnight.model.Login
+import goodnight.model.LoginAuth
+import goodnight.db
 
 
 class CredentialAuthInfoRepository(
-  db: Database)(
+  database: Database)(
   implicit ec: ExecutionContext)
     extends DelegableAuthInfoDAO[PasswordInfo] {
 
@@ -28,35 +30,35 @@ class CredentialAuthInfoRepository(
     val auth = LoginAuth(UUID.randomUUID(),
       loginInfo.providerID, loginInfo.providerKey,
       authInfo.hasher, authInfo.password, authInfo.salt)
-    db.run(LoginAuthTable().insert(auth)).map({ _ =>
+    database.run(db.LoginAuth().insert(auth)).map({ _ =>
       authInfo })
   }
 
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
-    val findAuthInfo = LoginAuthTable().filter(la =>
+    val findAuthInfo = db.LoginAuth().filter(la =>
       la.providerID === loginInfo.providerID &&
         la.providerKey === loginInfo.providerKey).
       map(la => (la.hasher, la.password, la.salt)).
       take(1).result.headOption
-    db.run(findAuthInfo).map(_.map({ case (h,p,s) => PasswordInfo(h,p,s) }))
+    database.run(findAuthInfo).map(_.map({ case (h,p,s) => PasswordInfo(h,p,s) }))
   }
 
   def remove(loginInfo: LoginInfo): Future[Unit] = {
-    val remove = LoginAuthTable().filter(la =>
+    val remove = db.LoginAuth().filter(la =>
       la.providerID === loginInfo.providerID &&
         la.providerKey === loginInfo.providerKey).
       delete
-    db.run(remove).map(_ => ())
+    database.run(remove).map(_ => ())
   }
 
   def save(loginInfo: LoginInfo, authInfo: PasswordInfo):
       Future[PasswordInfo] = {
-    val findAuthInfo = LoginAuthTable().filter(la =>
+    val findAuthInfo = db.LoginAuth().filter(la =>
       la.providerID === loginInfo.providerID &&
         la.providerKey === loginInfo.providerKey).
       map(la => la.id).
       take(1).result.headOption
-    db.run(findAuthInfo).flatMap({
+    database.run(findAuthInfo).flatMap({
       case Some(rowid) => update(loginInfo, authInfo)
       case None => add(loginInfo, authInfo)
     })
@@ -64,12 +66,12 @@ class CredentialAuthInfoRepository(
 
   def update(loginInfo: LoginInfo, authInfo: PasswordInfo):
       Future[PasswordInfo] = {
-    val updateAuthInfo = LoginAuthTable().filter(la =>
+    val updateAuthInfo = db.LoginAuth().filter(la =>
       la.providerID === loginInfo.providerID &&
         la.providerKey === loginInfo.providerKey).
       take(1).
       map(la => (la.hasher, la.password, la.salt)).
       update((authInfo.hasher, authInfo.password, authInfo.salt))
-    db.run(updateAuthInfo).map({ _ => authInfo })
+    database.run(updateAuthInfo).map({ _ => authInfo })
   }
 }

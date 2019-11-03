@@ -11,7 +11,7 @@ import goodnight.server.PostgresProfile.Database
 
 // todo: extend this class to have actual database connectivity.
 class DatabaseAuthenticatorRepository(
-  db: Database)(
+  database: Database)(
   implicit ec: ExecutionContext)
     extends AuthenticatorRepository[BearerTokenAuthenticator] {
 

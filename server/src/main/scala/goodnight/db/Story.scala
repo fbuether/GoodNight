@@ -1,16 +1,15 @@
 
-package goodnight.model
+package goodnight.db
 
 import java.util.UUID
-
 import slick.jdbc.PostgresProfile.api._
+
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
-
 import goodnight.model
 
 
-class StoryTable(tag: Tag) extends Table[model.Story](tag, "story") {
+class Story(tag: Tag) extends Table[model.Story](tag, "story") {
   def id = column[UUID]("id", O.PrimaryKey)
   def creator = column[UUID]("creator")
   def name = column[String]("name")
@@ -22,19 +21,19 @@ class StoryTable(tag: Tag) extends Table[model.Story](tag, "story") {
   def * = ((id, creator, name, urlname, image, description, startLocation) <>
     (model.Story.tupled, model.Story.unapply))
 
-  def userFk = foreignKey("story_fk_users_user", creator, UserTable())(
-    _.id, onUpdate = ForeignKeyAction.Cascade,
+  def userFk = foreignKey("story_fk_users_user", creator, User())(_.id,
+    onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade)
 }
 
 
-object StoryTable {
-  def apply() = TableQuery[StoryTable]
+object Story {
+  def apply() = TableQuery[Story]
 
-  type Q = Query[StoryTable, Story, Seq]
+  type Q = Query[Story, model.Story, Seq]
 
   def filterCreator(name: String)(base: Q) = {
-    base.join(UserTable().filter(_.name === name)).on(_.creator === _.id).
-      map((su: (StoryTable, UserTable)) => su._1)
+    base.join(User().filter(_.name === name)).on(_.creator === _.id).
+      map((su: (Story, User)) => su._1)
   }
 }

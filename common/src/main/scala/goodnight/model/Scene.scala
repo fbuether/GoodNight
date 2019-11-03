@@ -4,7 +4,6 @@ package goodnight.model
 import java.util.UUID
 
 
-
 case class Scene(
   id: UUID,
   story: UUID,
