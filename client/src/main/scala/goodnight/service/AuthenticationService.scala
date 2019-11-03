@@ -29,7 +29,7 @@ object AuthenticationService
   private var changeListener: Buffer[Option[User] => Unit] = Buffer.empty
 
   private def register: Unit = {
-    TokenStore.onChange(updateUser(_))
+    TokenStore.onChange(updateUser(_).toCallback.runNow)
     updateUser(TokenStore.get)
     registered = true
   }
@@ -47,7 +47,9 @@ object AuthenticationService
     changeListener += handler
   }
 
-  private def updateUser(token: Option[String]): Unit = token match {
+  // private
+  def updateUser(token: Option[String]): AsyncCallback[Unit] =
+    token match {
     case Some(token) =>
       Request.get(ApiV1.Self).send.forJson.map({
         case Reply(200, Success(userJson)) =>
@@ -58,10 +60,11 @@ object AuthenticationService
         case err =>
           println(s"an error occurred during user profile fetch: $err")
           signOut
-      }).toCallback.runNow
-    case None =>
+      })
+    case None => Callback({
       LocalStorage.remove(userKey)
       changeListener.foreach(listener => listener(None))
+    }).asAsyncCallback
   }
 
   def signOut: Unit = {
