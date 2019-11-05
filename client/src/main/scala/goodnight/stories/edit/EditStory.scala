@@ -1,5 +1,5 @@
 
-package goodnight.stories
+package goodnight.stories.edit
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -19,7 +19,7 @@ import goodnight.components.Loading
 import goodnight.common.ApiV1
 import goodnight.model
 import goodnight.common.api.Story._
-import goodnight.stories.edit.EditScene
+
 
 object EditStory {
   // Items that show on the edit canvas.

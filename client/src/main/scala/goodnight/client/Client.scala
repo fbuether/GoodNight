@@ -10,6 +10,7 @@ import japgolly.scalajs.react.extra.router._
 import goodnight.home._
 import goodnight.home.authentication._
 import goodnight.stories._
+import goodnight.stories.edit._
 import goodnight.community._
 
 import goodnight.service.AuthenticationService
