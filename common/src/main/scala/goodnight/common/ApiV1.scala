@@ -120,6 +120,7 @@ object ApiV1 {
   object CreateStory extends ApiPath("PUT", p, C("createStory"))
 
   object CreateScene extends ApiPath("PUT", p, C("story/"), S, C("/scenes"))
+  object EditScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
 
   object Profile extends ApiPath("GET", p, C("profile/"), S)
   object Self extends ApiPath("GET", p, C("self"))

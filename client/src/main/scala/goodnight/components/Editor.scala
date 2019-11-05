@@ -50,7 +50,7 @@ object Editor {
         ),
         <.div.withRef(contentRef)(^.className := "content",
           ^.contentEditable := "true",
-            "This is a bit of content that, well, is editable."
+          props
         ))
     }
   }

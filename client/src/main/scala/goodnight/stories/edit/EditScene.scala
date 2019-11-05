@@ -18,10 +18,56 @@ import goodnight.service.{ Request, Reply }
 
 
 object EditScene {
-  type Props = (String)
-  type State = Unit
+  type Props = (pages.Router, model.Story, Option[model.Scene])
+  // stores if the scene has been changed since we mounted.
+  type State = (Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
+
+    def cancel = bs.props.zip(bs.state).flatMap({ (props, state) =>
+      val (router, story, _) = props
+      val changed = state
+      // todo: ask for confirmation if (changed)
+      router.set(pages.EditStory(story.urlname))
+    })
+
+    def save: Callback =
+      bs.props.zip(bs.state).flatMap({ (props, state) =>
+        val (router, story, scene) = props
+        val changed = state
+        val isNew = story.isEmpty
+
+        editorRef.get.flatMapCB(_.backend.get).flatMap({ raw =>
+
+          val target =
+            if (isNew) Request(ApiV1.CreateScene, story.urlname)
+            else Request(ApiV1.EditScene, story.urlname, scene.urlname)
+
+          target.
+            withBody(Json.obj("text" -> content)).
+            send.map({
+              case Reply(201, _
+
+
+          Request(ApiV1.Create
+
+
+        .flatMap({ content =>
+          Request(ApiV1.CreateScene, story).withBody(Json.obj(
+            "text" -> content)).
+            send.map({
+              case Reply(201, _) =>
+                println("great!")
+              case e =>
+                println("not so great: " + e)
+            }).toCallback
+        })
+      })
+
+
+    val editorRef = Editor.componentRef
+
+    // resizing of overall scene editor.
     val overlayRef = Ref[HTMLElement]
     val enlargeRef = Ref[HTMLElement]
     val shrinkRef = Ref[HTMLElement]
@@ -40,30 +86,15 @@ object EditScene {
         toggleClass(enlargeRef, "hidden") >>
         toggleClass(shrinkRef, "hidden"))
 
-    val editorRef = Editor.componentRef
-
-    def cancel = Callback({
-      println("canceling.")
-    })
-
-    def save: Callback =
-      bs.props.flatMap({ story =>
-        editorRef.get.flatMapCB(_.backend.get).flatMap({ content =>
-          Request(ApiV1.CreateScene, story).withBody(Json.obj(
-            "text" -> content)).
-            send.map({
-              case Reply(201, _) =>
-                println("great!")
-              case e =>
-                println("not so great: " + e)
-            }).toCallback
-        })
-      })
-
-
     def render(props: Props) = {
+      val (router, story, scene) = props
+      val isNew = scene.isEmpty
+
+      val title = if (isNew) "Write a new Scene" else "Edit: " + scene.get.title
+      var content = if (isNew) "# New Scene" else scene.get.raw
+
       <.div.withRef(overlayRef)(^.className := "edit-scene overlay",
-        <.h3("Add a new Scene"),
+        <.h3(title),
         <.a(^.className := "fullscreen-toggle",
           ^.onClick --> toggleEnlarge,
           <.i.withRef(enlargeRef)(
@@ -72,7 +103,7 @@ object EditScene {
           <.i.withRef(shrinkRef)(
             ^.className := "fas fa-compress-arrows-alt hidden",
             ^.title := "Return to regular display")),
-        editorRef.component("editor"),
+        editorRef.component(content),
         <.div(^.className := "buttons",
           <.button(^.className := "inline",
             ^.onClick --> cancel,
@@ -82,12 +113,12 @@ object EditScene {
             ^.onClick --> save,
             <.i(^.className := "far fa-check-square label"),
             "Save")))
-    }
+      }
   }
 
 
   val component = ScalaComponent.builder[Props]("EditScene").
-    initialState[State](()).
+    initialState[State](false).
     renderBackend[Backend].
     build
 }
