@@ -131,9 +131,9 @@ object EditStory {
             props.router, props.story, None, onSaveScene(None)))
         case Overlay.EditScene(sceneUrlname) =>
           Loading.suspend(props.router,
-            Loader.loadScene(sceneUrlname).map({
+            Loader.loadScene(props.story.urlname, sceneUrlname).map({
               case Failure(error) =>
-                Error.component(error)
+                Error.component(error, true)
               case Success(scene) =>
                 EditScene.component(EditScene.Props(
                   props.router, props.story, Some(scene),
@@ -180,7 +180,7 @@ object EditStory {
       Loading.suspend(router,
         Loader.loadStory(page.story).map({
           case Failure(error) =>
-            Error.component(error)
+            Error.component(error, false)
           case Success(story) =>
             component(Props(router, story, Overlay.None))
         })))
@@ -198,7 +198,7 @@ object EditStory {
       Loading.suspend(router,
         Loader.loadStory(page.story).map({
           case Failure(error) =>
-            Error.component(error)
+            Error.component(error, false)
           case Success(story) =>
             component(Props(router, story, Overlay.EditScene(page.scene)))
         })))

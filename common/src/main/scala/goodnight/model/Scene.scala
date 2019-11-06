@@ -13,10 +13,10 @@ case class Scene(
 
   // interpreted data, dependent on text.
   title: String,
+  urlname: String,
   image: String,
   location: Option[UUID],
   text: String,
   mandatory: Boolean,
-  urlname: String
 )
 

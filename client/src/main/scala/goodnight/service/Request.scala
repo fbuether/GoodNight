@@ -42,12 +42,9 @@ class Request(req: HttpRequest) {
       map(token => req.withHeader(authHeader, token)).
       getOrElse(req))
 
-  private def successResult(r: SimpleHttpResponse):
-      CallbackTo[(Int, String)] = {
-    Callback { println(s"reply: (${req.method.toString} ${req.longPath}) -> ${r.statusCode}: ${r.body}") } >>
+  private def successResult(r: SimpleHttpResponse): CallbackTo[(Int, String)] =
     storeAuthentication(r.headers) >>
     CallbackTo((r.statusCode, r.body))
-  }
 
   private def catchErrors(request: Try[SimpleHttpResponse]):
   Try[SimpleHttpResponse] = {

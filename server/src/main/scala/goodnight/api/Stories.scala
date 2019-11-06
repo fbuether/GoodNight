@@ -16,6 +16,7 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.Id
 import goodnight.common.api.Story._
+import goodnight.common.api.Scene._
 import goodnight.model.Story
 import goodnight.model.Scene
 import goodnight.db
@@ -62,8 +63,16 @@ class Stories(components: ControllerComponents,
       database.run(query.result).map(sl => Ok(Json.toJson(sl)))
     })
 
-  def showOne(reqName: String) = Action.async {
+  def showOne(reqName: String) = auth.SecuredAction.async {
     val query = db.Story().filter(_.urlname === reqName).result.headOption
+    database.run(query).map(s => Ok(Json.toJson(s)))
+  }
+
+  def showOneScene(story: String, scene: String) = auth.SecuredAction.async {
+    val query = db.Scene().filter(_.urlname === scene).
+      join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
+      map(_._1).
+      result.headOption
     database.run(query).map(s => Ok(Json.toJson(s)))
   }
 
@@ -116,11 +125,11 @@ class Stories(components: ControllerComponents,
               story.id,
               scene.text,
               "title",
+              "urlname",
               "image",
               None,
               "text",
-              false,
-              "urlname")
+              false)
             database.run(db.Scene().insert(newScene)).map({ _ =>
               Created
             })

@@ -20,7 +20,7 @@ class Scene(tag: Tag) extends Table[model.Scene](tag, "scene") {
   def mandatory = column[Boolean]("mandatory")
   def urlname = column[String]("urlname")
 
-  def * = ((id, story, raw, title, image, location, text, mandatory, urlname) <>
+  def * = ((id, story, raw, title, urlname, image, location, text, mandatory) <>
     (model.Scene.tupled, model.Scene.unapply))
 
   def storyFk = foreignKey("scene_fk_story_story", story, Story())(_.id,
