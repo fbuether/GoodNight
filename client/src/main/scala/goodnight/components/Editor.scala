@@ -10,8 +10,8 @@ import org.scalajs.dom.html
 // github/neptune/Main.scala
 
 object Editor {
-  type Props = String
-  type State = Unit
+  case class Props(content: String, onFirstChange: Callback = Callback.empty)
+  case class State(sentFirstChange: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
     val contentRef = Ref[html.Div]
@@ -22,6 +22,10 @@ object Editor {
 
     def get: CallbackTo[String] = contentRef.get.
       map(_.innerHTML).getOrElse("")
+
+    def onFirstChange: Callback =
+      bs.modState(_.copy(sentFirstChange = true)) >>
+      bs.props.flatMap(_.onFirstChange)
 
     def render(props: Props, state: State) = {
       <.div(^.className := "editor",
@@ -50,13 +54,14 @@ object Editor {
         ),
         <.div.withRef(contentRef)(^.className := "content",
           ^.contentEditable := "true",
-          props
+          ^.onInput --> onFirstChange,
+          props.content
         ))
     }
   }
 
   val component = ScalaComponent.builder[Props]("Editor").
-    initialState[State](()).
+    initialState[State](State(false)).
     renderBackend[Backend].
     build
 

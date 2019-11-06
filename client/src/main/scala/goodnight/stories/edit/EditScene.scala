@@ -18,51 +18,61 @@ import goodnight.service.{ Request, Reply }
 
 
 object EditScene {
-  type Props = (pages.Router, model.Story, Option[model.Scene])
-  // stores if the scene has been changed since we mounted.
-  type State = (Boolean)
+  case class Props(router: pages.Router, story: model.Story,
+    scene: Option[model.Scene], onSave: String => Callback)
+
+  case class State(changed: Boolean, saving: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
 
-    def cancel = bs.props.zip(bs.state).flatMap({ (props, state) =>
-      val (router, story, _) = props
-      val changed = state
-      // todo: ask for confirmation if (changed)
-      router.set(pages.EditStory(story.urlname))
+    def cancel = bs.props.zip(bs.state).flatMap({ case (props, state) =>
+      // todo: ask for confirmation if (state.changed)
+      props.router.set(pages.EditStory(props.story.urlname))
     })
 
-    def save: Callback =
-      bs.props.zip(bs.state).flatMap({ (props, state) =>
-        val (router, story, scene) = props
-        val changed = state
-        val isNew = story.isEmpty
-
-        editorRef.get.flatMapCB(_.backend.get).flatMap({ raw =>
-
-          val target =
-            if (isNew) Request(ApiV1.CreateScene, story.urlname)
-            else Request(ApiV1.EditScene, story.urlname, scene.urlname)
-
-          target.
-            withBody(Json.obj("text" -> content)).
-            send.map({
-              case Reply(201, _
-
-
-          Request(ApiV1.Create
-
-
-        .flatMap({ content =>
-          Request(ApiV1.CreateScene, story).withBody(Json.obj(
-            "text" -> content)).
-            send.map({
-              case Reply(201, _) =>
-                println("great!")
-              case e =>
-                println("not so great: " + e)
-            }).toCallback
-        })
+    def save =
+      bs.modState(_.copy(saving = true)) >>
+      bs.props.zip(bs.state).flatMap({ case (props, state) =>
+      editorRef.get.flatMapCB(_.backend.get).flatMap({ rawText =>
+        props.onSave(rawText) >>
+        bs.modState(_.copy(saving = true, changed = false))
       })
+    })
+
+    //     val (router, story, scene) = props
+    //     val changed = state
+    //     val isNew = story.isEmpty
+
+    //     editorRef.get.flatMapCB(_.backend.get).flatMap({ raw =>
+
+    //       val target =
+    //         if (isNew) Request(ApiV1.CreateScene, story.urlname)
+    //         else Request(ApiV1.EditScene, story.urlname, scene.urlname)
+
+    //       target.
+    //         withBody(Json.obj("text" -> content)).
+    //         send.map({
+    //           case Reply(201, _
+
+
+    //       Request(ApiV1.Create
+
+
+    //     .flatMap({ content =>
+    //       Request(ApiV1.CreateScene, story).withBody(Json.obj(
+    //         "text" -> content)).
+    //         send.map({
+    //           case Reply(201, _) =>
+    //             println("great!")
+    //           case e =>
+    //             println("not so great: " + e)
+    //         }).toCallback
+    //     })
+    //   })
+
+    def setChanged =
+      Callback.log("setting raw text to changed.") >>
+      bs.modState(_.copy(changed = true)).void
 
 
     val editorRef = Editor.componentRef
@@ -86,12 +96,12 @@ object EditScene {
         toggleClass(enlargeRef, "hidden") >>
         toggleClass(shrinkRef, "hidden"))
 
-    def render(props: Props) = {
-      val (router, story, scene) = props
-      val isNew = scene.isEmpty
-
-      val title = if (isNew) "Write a new Scene" else "Edit: " + scene.get.title
-      var content = if (isNew) "# New Scene" else scene.get.raw
+    def render(props: Props, state: State) = {
+      val isNew = props.scene.isEmpty
+      val title =
+        if (isNew) "Write a new Scene"
+        else "Edit: " + props.scene.get.title
+      var content = if (isNew) "# New Scene" else props.scene.get.raw
 
       <.div.withRef(overlayRef)(^.className := "edit-scene overlay",
         <.h3(title),
@@ -102,8 +112,8 @@ object EditScene {
             ^.title := "Switch to fullscreen view"),
           <.i.withRef(shrinkRef)(
             ^.className := "fas fa-compress-arrows-alt hidden",
-            ^.title := "Return to regular display")),
-        editorRef.component(content),
+            ^.title := "Return to regular view")),
+        editorRef.component(Editor.Props(content, setChanged)),
         <.div(^.className := "buttons",
           <.button(^.className := "inline",
             ^.onClick --> cancel,
@@ -111,14 +121,19 @@ object EditScene {
             "Cancel"),
           <.button(^.className := "inline",
             ^.onClick --> save,
-            <.i(^.className := "far fa-check-square label"),
+            (^.className := "loading").when(state.saving),
+            (^.disabled := true).when(state.saving),
+            <.i(
+              (^.className := "far fa-spin fa-compass label").
+                when(state.saving),
+              (^.className := "fa fa-check-square label").when(!state.saving)),
             "Save")))
       }
   }
 
 
   val component = ScalaComponent.builder[Props]("EditScene").
-    initialState[State](false).
+    initialState[State](State(false, false)).
     renderBackend[Backend].
     build
 }

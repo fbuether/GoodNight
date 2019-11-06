@@ -3,22 +3,18 @@ package goodnight.stories.edit
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-
-import scala.util.{ Try, Success, Failure }
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
-import goodnight.service.{ Request, Reply }
-import goodnight.service.Conversions._
-import goodnight.components.Input
-import goodnight.components.Shell
-import goodnight.components.Banner
-import goodnight.components.Loading
-
 import goodnight.common.ApiV1
-import goodnight.model
 import goodnight.common.api.Story._
+import goodnight.components._
+import goodnight.model
+import goodnight.service.Conversions._
+import goodnight.service.Loader
+import goodnight.service.{ Request, Reply }
 
 
 object EditStory {
@@ -83,11 +79,11 @@ object EditStory {
   }
 
 
-  type Props = (pages.Router, String, Overlay.Overlay)
+  case class Props(router: pages.Router, story: model.Story,
+    edit: Overlay.Overlay)
   type State = Unit
 
   class Backend(bs: BackendScope[Props, State]) {
-
     def copyItem(urlname: String): Callback = Callback {
       println("copying " + urlname)
     }
@@ -122,28 +118,42 @@ object EditStory {
             forced to take notice.""", List("docks")))
       }).async
 
-    def render(p: Props) = {
-      val (router, story, edit) = p
+    def onSaveScene(scene: Option[model.Scene])(rawText: String) =
+      Callback.log("well, trying to save this.")
 
-      val editingOverlay: TagMod = edit match {
+
+
+    def render(props: Props) = {
+      val editingOverlay: TagMod = props.edit match {
         case Overlay.None => List().toTagMod
-        case Overlay.AddScene => EditScene.component(router, story, None)
-        case Overlay.EditScene(scene) =>
-          EditScene.component(router, story, Some(scene))
+        case Overlay.AddScene =>
+          EditScene.component(EditScene.Props(
+            props.router, props.story, None, onSaveScene(None)))
+        case Overlay.EditScene(sceneUrlname) =>
+          Loading.suspend(props.router,
+            Loader.loadScene(sceneUrlname).map({
+              case Failure(error) =>
+                Error.component(error)
+              case Success(scene) =>
+                EditScene.component(EditScene.Props(
+                  props.router, props.story, Some(scene),
+                  onSaveScene(Some(scene))))
+            }))
       }
 
       <.div(
         <.h2("Edit your story"),
-        Loading.suspend(router, loadItems.map(items =>
+        Loading.suspend(props.router, loadItems.map(items =>
           <.div(^.className := "overlay-anchor",
             <.div(^.className := "edit-canvas",
               items.map(it =>
-                editItem(ItemProps(router, copyItem, deleteItem, story, it))).
+                editItem(ItemProps(props.router, copyItem, deleteItem,
+                  props.story.urlname, it))).
                 toTagMod
             ),
             <.div(^.className := "add-buttons",
               <.button(
-                p._1.setOnClick(pages.AddScene(p._2)),
+                props.router.setOnClick(pages.AddScene(props.story.urlname)),
                 <.i(^.className := "fas fa-plus-circle"),
                 "New Scene"),
               <.button(
@@ -166,22 +176,36 @@ object EditStory {
   def render(page: pages.EditStory, router: pages.Router) =
     Shell.component(router)(
       Banner.component((router, "Alien World.png", "World:"+page.story)),
-      component((router, page.story, Overlay.None)))
 
-  def addScene(page: pages.AddScene, router: pages.Router) =
-    Shell.component(router)(
-      Banner.component((router, "Alien World.png", "World:"+page.story+"/add")),
-      component((router, page.story, Overlay.AddScene)))
+      Loading.suspend(router,
+        Loader.loadStory(page.story).map({
+          case Failure(error) =>
+            Error.component(error)
+          case Success(story) =>
+            component(Props(router, story, Overlay.None))
+        })))
+
+  // def addScene(page: pages.AddScene, router: pages.Router) =
+  //   Shell.component(router)(
+  //     Banner.component((router, "Alien World.png", "World:"+page.story+"/add")),
+  //     component((router, page.story, Overlay.AddScene)))
 
   def editScene(page: pages.EditScene, router: pages.Router) =
     Shell.component(router)(
       Banner.component((router, "Alien World.png",
         "World:" + page.story + "/" + page.scene)),
-      component((router, page.story, Overlay.EditScene(page.scene))))
 
-  def editQuality(page: pages.EditQuality, router: pages.Router) =
-    Shell.component(router)(
-      Banner.component((router, "Alien World.png",
-        "World:" + page.story + "/~/" + page.quality)),
-      component((router, page.story, Overlay.EditQuality(page.quality))))
+      Loading.suspend(router,
+        Loader.loadStory(page.story).map({
+          case Failure(error) =>
+            Error.component(error)
+          case Success(story) =>
+            component(Props(router, story, Overlay.EditScene(page.scene)))
+        })))
+
+  // def editQuality(page: pages.EditQuality, router: pages.Router) =
+  //   Shell.component(router)(
+  //     Banner.component((router, "Alien World.png",
+  //       "World:" + page.story + "/~/" + page.quality)),
+  //     component((router, page.story, Overlay.EditQuality(page.quality))))
 }
