@@ -142,7 +142,7 @@ object EditStory {
       }
 
       <.div(
-        <.h2("Edit your story"),
+        <.h2("Edit Story: ", props.story.name),
         Loading.suspend(props.router, loadItems.map(items =>
           <.div(^.className := "overlay-anchor",
             <.div(^.className := "edit-canvas",
