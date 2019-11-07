@@ -27,7 +27,11 @@ object Client {
     val publicPages = (
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
-      staticRoute("#about", pages.About) ~> renderR(About.render) |
+      staticRoute("#about", pages.About) ~> renderR(About.render)
+    )
+
+    // pages that require no valid authentication (as opposed to any state).
+    val unauthenticatedPages = (
       //
       // Authentication
       //
@@ -87,6 +91,9 @@ object Client {
       authenticatedPages.
       addCondition(AuthenticationService.isSignedIn)(
         requireSignIn(finalRoute)) |
+      unauthenticatedPages.
+      addCondition(AuthenticationService.isSignedIn.map(!_))(
+        _ => redirectToPage(pages.Profile)(Redirect.Push)) |
       publicPages)
 
     finalRoute.
