@@ -1,35 +1,29 @@
 
 package goodnight.api.authentication
 
+import com.mohiva.play.silhouette.api.Env
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.exceptions.SilhouetteException
+import com.mohiva.play.silhouette.api.services.IdentityService
+import com.mohiva.play.silhouette.api.util.Credentials
+import com.mohiva.play.silhouette.impl.exceptions.InvalidPasswordException
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import java.util.UUID
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-
-import play.api.mvc.Request
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
-import play.api.libs.json.JsValue
-import play.api.libs.json.{ Json, Reads, JsPath, JsSuccess, JsError, JsonValidationError }
-import play.api.libs.functional.syntax._
+import play.api.mvc.Request
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
-import com.mohiva.play.silhouette.api.Env
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.services.IdentityService
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import com.mohiva.play.silhouette.api.util.Credentials
-import com.mohiva.play.silhouette.impl.exceptions.InvalidPasswordException
-import com.mohiva.play.silhouette.api.exceptions.SilhouetteException
-
-import goodnight.server.PostgresProfile.Database
+import goodnight.common.api.User._
+import goodnight.db
+import goodnight.model
 import goodnight.server.Controller
-
-import goodnight.model.User
-import goodnight.db.User
-import goodnight.model.Login
-import goodnight.db.Login
+import goodnight.server.PostgresProfile.Database
 
 
 
@@ -57,7 +51,8 @@ class SignIn(components: ControllerComponents,
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                authServ.embed(ident, Accepted)(request)
+                val reply = Accepted(Json.toJson(user.user))
+                authServ.embed(ident, reply)(request)
               })
           case None =>
             Future.successful(Unauthorized)
