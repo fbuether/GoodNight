@@ -1,43 +1,71 @@
 
 package goodnight.api.authentication
 
-import scala.collection.mutable.{ Map => MMap }
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
+import org.joda.time.DateTime
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.duration.{FiniteDuration, MILLISECONDS}
+import slick.jdbc.PostgresProfile.api._
 
+import goodnight.db
+import goodnight.model
 import goodnight.server.PostgresProfile.Database
 
-// todo: extend this class to have actual database connectivity.
+
+// todo: improve performance by a weak-referenced, size-limited cache map.
+// todo: remove deprecated entries from database, if silhouette does not
+// make sure of that. (i.e. expiration < now)
 class DatabaseAuthenticatorRepository(
   database: Database)(
   implicit ec: ExecutionContext)
     extends AuthenticatorRepository[BearerTokenAuthenticator] {
 
-  private type A = BearerTokenAuthenticator
+  private def btaOfBt(bt: model.BearerToken) =
+    BearerTokenAuthenticator(bt.id,
+      LoginInfo(bt.provider, bt.key),
+      new DateTime(bt.lastUsed),
+      new DateTime(bt.expiration),
+      bt.timeout.map(t => FiniteDuration(t, MILLISECONDS)))
 
-  private var m = MMap[String, A]()
+  private def btOfBta(bta: BearerTokenAuthenticator) =
+    model.BearerToken(bta.id,
+      bta.loginInfo.providerID,
+      bta.loginInfo.providerKey,
+      bta.lastUsedDateTime.getMillis,
+      bta.expirationDateTime.getMillis,
+      bta.idleTimeout.map(_.toMillis))
 
-  def add(a: A): Future[A] = {
-    m.put(a.id, a)
-    println(s"storing authenticator ${a.id} -> $a")
-    Future.successful(a)
+  def add(bta: BearerTokenAuthenticator): Future[BearerTokenAuthenticator] = {
+    // println(s"storing authenticator ${bta.id} -> $bta")
+    database.run(db.BearerToken().insert(btOfBta(bta))).map(_ => bta)
   }
 
-  def find(id: String): Future[Option[A]] = {
-    println(s"finding authenticator $id")
-    Future.successful(m.get(id))
+  def find(id: String): Future[Option[BearerTokenAuthenticator]] = {
+    // println(s"finding authenticator $id")
+    val query = db.BearerToken().
+      filter(_.id === id).
+      take(1).result.headOption
+    database.run(query).map(_.map(btaOfBt))
   }
 
   def remove(id: String): Future[Unit] = {
-    println(s"removing authenticator $id")
-    Future.successful(m.remove(id).map(_ => ()))
+    // println(s"removing authenticator $id")
+    val query = db.BearerToken().
+      filter(_.id === id).
+      delete
+    database.run(query).map(_ => ())
   }
 
-  def update(a: A): Future[A] = {
-    m.put(a.id, a)
-    println(s"updating authenticator ${a.id} -> $a")
-    Future.successful(a)
+  def update(bta: BearerTokenAuthenticator):
+      Future[BearerTokenAuthenticator] = {
+    // println(s"updating authenticator ${bta.id} -> $bta")
+    val query = db.BearerToken().
+      filter(_.id === bta.id).
+      take(1).
+      update(btOfBta(bta))
+    database.run(query).map(_ => bta)
   }
 }
