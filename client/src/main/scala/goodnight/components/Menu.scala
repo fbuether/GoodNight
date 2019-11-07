@@ -26,7 +26,7 @@ object Menu {
     })
 
     def doSignOut(router: pages.Router): Callback =
-      Callback(AuthenticationService.signOut) >>
+      AuthenticationService.signOut >>
         router.set(pages.Home)
 
     val menuRef = Ref[html.Div]

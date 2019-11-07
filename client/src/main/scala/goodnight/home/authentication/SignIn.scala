@@ -1,14 +1,12 @@
 
 package goodnight.home.authentication
 
-import play.api.libs.json.Json
-
-import org.scalajs.dom.html
-
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router._
-
+import japgolly.scalajs.react.vdom.html_<^._
+import org.scalajs.dom.html
+import play.api.libs.json.Json
+import scala.util.{Try, Failure, Success}
 
 import goodnight.client.pages
 import goodnight.service.{ Request, Reply }
@@ -42,8 +40,25 @@ object SignIn {
   )
 
   class Backend(bs: BackendScope[Props, State]) {
-    private val usernameRef = Ref.toScalaComponent(Input.component)
-    private val passwordRef = Ref.toScalaComponent(Input.component)
+    def redirectBack: Callback =
+      bs.props.flatMap(props => props.target match {
+        case Some(target) => props.router.byPath.set(Path(target))
+        case None => props.router.set(pages.Profile)
+      })
+
+    def doSignIn(e: ReactEventFromInput): Callback =
+      e.preventDefaultCB >>
+      bs.modState(_.copy(loading = true)) >>
+        getFormData.flatMapCB(up =>
+          AuthenticationService.loginWith(up._1, up._2).completeWith({
+            case Success(_) =>
+              redirectBack
+            case Failure(e) =>
+              bs.modState(_.copy(
+                loading = false,
+                loginError = Some(e.getMessage)))
+          }))
+
 
     def getEmpty: Option[(String, String)] = None
     def reportMissingData: CallbackOption[(String, String)] =
@@ -58,103 +73,12 @@ object SignIn {
         passwordRef.get.flatMap(_.backend.get).map({ password =>
           (username, password) }) })
 
-
-    def redirectBack: AsyncCallback[Unit] = {
-      bs.props.flatMap(props => props.target match {
-        case Some(target) =>
-          println("*** redirecting back.")
-          props.router.byPath.set(Path(target))
-        case None =>
-          println("*** redirecting back.")
-          props.router.set(pages.Profile)
-      }).asAsyncCallback
-    }
-
-
-
-    // def handleReply(reply: Reply[String]) = {
-    //   println("SignIn.handleReply("+reply+")")
-    //   reply match {
-    //   case Reply(202, _) => // Accepted
-    //     Callback.log("got 202 reply for authentication.") >>
-    //     AuthenticationService.loadUser >>
-    //     Callback.log("loaded user, redirecting.")
-    //     redirectBack
-    //   case Reply(403, body) => // Unauthorized
-    //     bs.modState(_.copy(
-    //       loginError =
-    //         Some("Error: Email or Password is wrong. Please try again."),
-    //       loading = false))
-    //   case Reply(status, body) =>
-    //     Callback(println(s"got ($status) $body")) >>
-    //     bs.modState(_.copy(
-    //       loginError = Some("An unknown error occured."),
-    //       loading = false))
-    // }
-    // }
-
-
-
-    def sendAuthenticate(user: String, pass: String):
-        AsyncCallback[Reply[String]] =
-      Request(ApiV1.Authenticate).withBody(Json.obj(
-        "identity" -> user,
-        "password" -> pass)).
-        send.map({
-          case e =>
-            println("*** authenticate reply received.");
-            e
-        })
-
-
-
-
-
-    def performSignIn(userpass: (String, String)):
-        AsyncCallback[Unit] = {
-      userpass match {
-        case ((user, pass)) =>
-          Callback.log("*** sending request.").asAsyncCallback >>
-          sendAuthenticate(user, pass) >>
-          Callback.log("*** request sent.").asAsyncCallback
-        // case _ =>
-        //   Callback.log("*** invalid user/pass: " + userpass).asAsyncCallback
-      }
-    }
-
-    def loadUser(e: Unit): AsyncCallback[Unit] =
-      AuthenticationService.updateUser(TokenStore.get) >>
-        Callback.log("** Finished loading user.").asAsyncCallback
-
-
-    def optionally[A,B](next: A => AsyncCallback[B]):
-        (Option[A] => AsyncCallback[Option[B]])
-    = (prev: Option[A]) => prev match {
-      case Some(a) => next(a).map(r => Some(r))
-      case None => AsyncCallback.pure(None)
-    }
-
-    def optionallyD[A,B](next: AsyncCallback[B]):
-        (Option[A] => AsyncCallback[Option[B]])
-    = (prev: Option[A]) => prev match {
-      case Some(_) => next.map(r => Some(r))
-      case None => AsyncCallback.pure(None)
-    }
-
-
-    def doSignIn(e: ReactEventFromInput): Callback = {
-      e.preventDefaultCB >>
-      bs.modState(_.copy(loading = true)) >>
-      ((getFormData.asCallback.asAsyncCallback >>=
-        optionally(performSignIn) >>=
-        optionally(loadUser) >>=
-        optionallyD(redirectBack)) >>
-        bs.modState(_.copy(loading = false)).asAsyncCallback).toCallback
-    }
+    private val usernameRef = Ref.toScalaComponent(Input.component)
+    private val passwordRef = Ref.toScalaComponent(Input.component)
 
 
     def render(p: Props, s: State): VdomElement = {
-      println("rendering with " + p + "/" + s)
+      println("rendering with (" + p.target + ")/" + s)
       <.div(^.className := "withColumns",
         <.div(
           <.h2("Register"),
@@ -212,4 +136,3 @@ object SignIn {
     renderBackend[Backend].
     build
 }
-

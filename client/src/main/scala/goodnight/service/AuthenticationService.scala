@@ -3,11 +3,10 @@ package goodnight.service
 
 import japgolly.scalajs.react._
 import org.scalajs.dom.ext.LocalStorage
-import org.scalajs.dom.window
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import scala.collection.mutable.Buffer
-import scala.util.{Try, Failure, Success}
+import scala.util.{Try, Success, Failure}
 
 import goodnight.common.ApiV1
 import goodnight.common.api.User._
@@ -15,24 +14,9 @@ import goodnight.model.User
 import goodnight.service.Conversions._
 
 
-trait AuthenticationService {
-  def getUser: Option[User]
-  def onUserChange(handler: Option[User] => Unit): Unit
-  def signOut: Unit
-}
-
-
-object AuthenticationService
-    extends AuthenticationService {
+object AuthenticationService {
   private val userKey = "auth-user"
-  private var registered = false
   private var changeListener: Buffer[Option[User] => Unit] = Buffer.empty
-
-  private def register: Unit = {
-    TokenStore.onChange(updateUser(_).toCallback.runNow)
-    updateUser(TokenStore.get)
-    registered = true
-  }
 
   def getUser: Option[User] = {
     LocalStorage(userKey).
@@ -43,32 +27,41 @@ object AuthenticationService
     CallbackTo(getUser.isDefined)
 
   def onUserChange(handler: Option[User] => Unit): Unit = {
-    register
+    // register
     changeListener += handler
   }
 
-  // private
-  def updateUser(token: Option[String]): AsyncCallback[Unit] =
-    token match {
-    case Some(token) =>
-      Request.get(ApiV1.Self).send.forJson.map({
-        case Reply(200, Success(userJson)) =>
+  def loginWith(identity: String, password: String):
+      AsyncCallback[User] = {
+    Request(ApiV1.Authenticate).withBody(Json.obj(
+      "identity" -> identity,
+      "password" -> password)).
+      noAuth.
+      send.forJson.
+      flatMap({
+        case Reply(202, Success(userJson)) =>
+          val user = userJson.as[User]
           LocalStorage.update(userKey, Json.stringify(userJson))
-          changeListener.foreach(listener => listener(Some(userJson.as[User])))
-        case Reply(401, _) =>
-          signOut
-        case err =>
-          println(s"an error occurred during user profile fetch: $err")
-          signOut
+          changeListener.foreach(_(Some(user)))
+          AsyncCallback.pure(user)
+        case Reply(401, b) =>
+          signOut.asAsyncCallback >>
+          AsyncCallback.throwException(new Error(
+            "Could not authenticate with the given email and password."))
+        case Reply(c, b) =>
+          println(s"an error occurred during user profile fetch: $c / $b")
+          signOut.asAsyncCallback >>
+          AsyncCallback.throwException(new Error("Error: " + c + " ~ " + b))
       })
-    case None => Callback({
-      LocalStorage.remove(userKey)
-      changeListener.foreach(listener => listener(None))
-    }).asAsyncCallback
   }
 
-  def signOut: Unit = {
-    Request.delete(ApiV1.SignOut).send.toCallback.runNow
-    TokenStore.clear
+  def signOut: Callback = {
+    Callback({
+      TokenStore.clear
+      LocalStorage.remove(userKey)
+      changeListener.foreach(_(None))
+    }) >>
+    getUser.map(_ => Request(ApiV1.SignOut).send.toCallback).
+      getOrElse(Callback.empty)
   }
 }

@@ -28,7 +28,7 @@ import goodnight.common.ApiV1
 case class Reply[T](statusCode: Int, body: T)
 
 
-class Request(req: HttpRequest) {
+class Request(req: HttpRequest, authenticated: Boolean = true) {
   private val authHeader = "X-Auth-Token"
 
   private def storeAuthentication(headers: HeaderMap[String]): Callback =
@@ -37,10 +37,13 @@ class Request(req: HttpRequest) {
     })
 
   private def attachAuthentication(req: HttpRequest): CallbackTo[HttpRequest] =
-    CallbackTo(
-      TokenStore.get.
-      map(token => req.withHeader(authHeader, token)).
-      getOrElse(req))
+    if (authenticated)
+      CallbackTo(
+        TokenStore.get.
+          map(token => req.withHeader(authHeader, token)).
+          getOrElse(req))
+    else
+      CallbackTo.pure(req)
 
   private def successResult(r: SimpleHttpResponse): CallbackTo[(Int, String)] =
     storeAuthentication(r.headers) >>
@@ -81,6 +84,9 @@ class Request(req: HttpRequest) {
       withBody(PlainTextBody(Json.stringify(body))).
       withHeader("Content-Type", "application/json"))
 
+  def noAuth: Request =
+    Request(req, false)
+
   def send: AsyncCallback[Reply[String]] =
     performRequest.map({ case (status, body) => Reply(status, body) })
 }
@@ -101,8 +107,8 @@ object Conversions {
 object Request {
   private val baseUrl: String = BaseUrl.fromWindowOrigin.value
 
-  def apply(request: HttpRequest) =
-    new Request(request)
+  def apply(request: HttpRequest, authorized: Boolean = true) =
+    new Request(request, authorized)
 
 
   def apply(target: ApiV1.ApiPath, params: String*) = {
