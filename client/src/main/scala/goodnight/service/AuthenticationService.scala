@@ -27,8 +27,8 @@ object AuthenticationService {
     CallbackTo(getUser.isDefined)
 
   def onUserChange(handler: Option[User] => Unit): Unit = {
-    // register
     changeListener += handler
+    handler(getUser)
   }
 
   def loginWith(identity: String, password: String):

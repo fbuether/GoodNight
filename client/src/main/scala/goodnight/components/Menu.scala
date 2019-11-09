@@ -21,9 +21,8 @@ object Menu {
   type State = Option[User]
 
   class Backend(bs: BackendScope[Props, State]) {
-    def initialise: Callback = Callback({
-      AuthenticationService.onUserChange(newUser => bs.setState(newUser).runNow)
-    })
+    def initialise = Callback(AuthenticationService.onUserChange(
+      bs.setState(_).runNow))
 
     def doSignOut(router: pages.Router): Callback =
       AuthenticationService.signOut >>
