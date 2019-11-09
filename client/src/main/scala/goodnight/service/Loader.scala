@@ -27,4 +27,11 @@ object Loader {
       case Reply(200, Success(storyJson)) =>
         storyJson.as[model.Story]
     }).attemptTry
+
+  def loadScenes(storyUrlname: String): AsyncCallback[Try[List[model.Scene]]] =
+    Request(ApiV1.Scenes, storyUrlname).send.forJson.map({
+      case Reply(200, Success(scenesJson)) =>
+        scenesJson.as[List[model.Scene]]
+    }).attemptTry
+
 }

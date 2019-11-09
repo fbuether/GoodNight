@@ -82,8 +82,11 @@ object EditStory {
 
   case class Props(router: pages.Router, story: String,
     edit: Overlay.Overlay)
-  case class State(story: Option[model.Story],
+
+  case class State(
+    story: Option[model.Story],
     scenes: Option[List[model.Scene]],
+    loading: Boolean,
     overlay: Overlay.Overlay)
 
   class Backend(bs: BackendScope[Props, State]) {
@@ -96,6 +99,22 @@ object EditStory {
     }
 
 
+    def loadState(storyUrlname: String): AsyncCallback[Unit] = {
+      Loader.loadStory(storyUrlname).flatMap({
+        case Failure(error) =>
+          AsyncCallback.pure(println("well, that was a pitty: " + error))
+        case Success(story) =>
+          bs.modState(_.copy(story = Some(story))).async
+      }).flatMap(_ =>
+        Loader.loadScenes(storyUrlname).flatMap({
+          case Failure(error) =>
+            AsyncCallback.pure(println("well, another pitty; " + error))
+          case Success(scenes) =>
+            bs.modState(_.copy(scenes = Some(scenes))).async
+        }))
+    }
+
+
     def loadStoryOnUpdate(state: State, nextProps: Props,
       modState: ((State => State) => CallbackTo[Unit])): CallbackTo[Unit] = {
       val refresh = state.story.
@@ -103,44 +122,30 @@ object EditStory {
         getOrElse(true)
 
       if (refresh) {
-        Loader.loadStory(nextProps.story).flatMap({
-          case Failure(error) =>
-            AsyncCallback.pure(println("well, that was a pitty: " + error))
-          case Success(story) =>
-            bs.modState(_.copy(story = Some(story))).async
-        }).toCallback
+        loadState(nextProps.story).toCallback
       }
       else {
         println("reuse!")
-        modState(_.copy(story = state.story))
+        modState(_.copy(story = state.story, scenes = state.scenes))
       }
     }
 
-  // def loadStory(router: pages.Router, name: String): AsyncCallback[VdomElement] =
-  //   Request(ApiV1.Story, name).send.forJson.map({
-  //     case Reply(200, Success(storyJson)) =>
-  //       this.component(router, name)
-  //     case e =>
-  //       <.div("Error :( -> " + e)
-  //   })
+      // CallbackTo({
+      //   List(
+      //     ItemData(SceneItem, "at-the-docks",
+      //       "At the docks, there is but not a sound to hear",
+      //       """There is a certain atmosphere at the docks that seems to claw
+      //       at your nose like a hungry sewer rat. People bustle about""",
+      //       List("docks", "intro", "conflict")),
+      //     ItemData(QualityItem, "cold-hard-cash",
+      //       "Cold, hard cash", """You gotta pay for what you take. That's how
+      //       it's always been.""", List()),
+      //     ItemData(LocationItem, "the-docks",
+      //       "The Docks", """The docks have been the hub of trading in this
+      //       forsaken town. They are not, anymore, and even the residents are
+      //       forced to take notice.""", List("docks")))
+      // }).async
 
-
-    def loadItems: AsyncCallback[Seq[ItemData]] =
-      CallbackTo({
-        List(
-          ItemData(SceneItem, "at-the-docks",
-            "At the docks, there is but not a sound to hear",
-            """There is a certain atmosphere at the docks that seems to claw
-            at your nose like a hungry sewer rat. People bustle about""",
-            List("docks", "intro", "conflict")),
-          ItemData(QualityItem, "cold-hard-cash",
-            "Cold, hard cash", """You gotta pay for what you take. That's how
-            it's always been.""", List()),
-          ItemData(LocationItem, "the-docks",
-            "The Docks", """The docks have been the hub of trading in this
-            forsaken town. They are not, anymore, and even the residents are
-            forced to take notice.""", List("docks")))
-      }).async
 
     def onSaveScene(scene: Option[model.Scene])(rawText: String) =
       Callback.log("well, trying to save this.")
@@ -166,12 +171,10 @@ object EditStory {
       <.div()
     }
 
-    def renderItem(router: pages.Router, storyUrlname: String, item: ItemData) =
-      editItem(ItemProps(router, copyItem, deleteItem, storyUrlname, item))
+
+
 
     def render(props: Props, state: State) = {
-      println("rendering with: " + props + " ~ " + state)
-
       <.div(^.className := "overlay-anchor",
         Banner.component(props.router, "Alien World.png", "World:"+props.story),
         <.div(^.className := "add-buttons",
@@ -187,23 +190,23 @@ object EditStory {
             props.router.setOnClick(pages.AddLocation(props.story)),
             <.i(^.className := "fas fa-plus-circle"),
             "New Location")),
-        <.div(
-          Loading.suspend(props.router, loadItems.map(items =>
-            <.div(^.className := "edit-canvas",
-              items.map(item =>
-                renderItem(props.router, props.story, item)).
-                toTagMod)))),
+        <.div(^.className := "edit-canvas",
+          state.scenes.getOrElse(List()).map(scene =>
+            editItem(ItemProps(props.router, copyItem, deleteItem,
+              props.story,
+              ItemData(SceneItem, scene.urlname,
+                scene.title, scene.text, List())))).
+            toTagMod),
         renderOverlay(props, state))
     }
   }
 
   val component = ScalaComponent.builder[Props]("EditStory").
-    initialState(State(None, None, Overlay.None)).
+    initialState(State(None, None, false, Overlay.None)).
     renderBackend[Backend].
-    shouldComponentUpdate({ s =>
-      Callback.log("shouldComponentUpdate") >>
-      CallbackTo.pure(true)
-    }).
+    // (re-)load story/scenes on navigating here.
+    componentDidMount(component =>
+      component.backend.loadState(component.props.story).toCallback).
     componentWillReceiveProps(update => update.backend.loadStoryOnUpdate(
       update.state, update.nextProps, update.modState)).
     build
@@ -224,41 +227,4 @@ object EditStory {
   def editQuality(page: pages.EditQuality, router: pages.Router) =
     Shell.component(router)(
       component(Props(router, page.story, Overlay.None)))
-
-
-//   def render(page: pages.EditStory, router: pages.Router) =
-//     Shell.component(router)(
-//       Banner.component((router, "Alien World.png", "World:"+page.story)),
-
-//       Loading.suspend(router,
-//         Loader.loadStory(page.story).map({
-//           case Failure(error) =>
-//             Error.component(error, false)
-//           case Success(story) =>
-//             component(Props(router, story, Overlay.None))
-//         })))
-
-//   // def addScene(page: pages.AddScene, router: pages.Router) =
-//   //   Shell.component(router)(
-//   //     Banner.component((router, "Alien World.png", "World:"+page.story+"/add")),
-//   //     component((router, page.story, Overlay.AddScene)))
-
-//   def editScene(page: pages.EditScene, router: pages.Router) =
-//     Shell.component(router)(
-//       Banner.component((router, "Alien World.png",
-//         "World:" + page.story + "/" + page.scene)),
-
-//       Loading.suspend(router,
-//         Loader.loadStory(page.story).map({
-//           case Failure(error) =>
-//             Error.component(error, false)
-//           case Success(story) =>
-//             component(Props(router, story, Overlay.EditScene(page.scene)))
-//         })))
-
-//   // def editQuality(page: pages.EditQuality, router: pages.Router) =
-//   //   Shell.component(router)(
-//   //     Banner.component((router, "Alien World.png",
-//   //       "World:" + page.story + "/~/" + page.quality)),
-//   //     component((router, page.story, Overlay.EditQuality(page.quality))))
 }
