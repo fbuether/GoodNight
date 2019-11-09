@@ -39,37 +39,6 @@ object EditScene {
       })
     })
 
-    //     val (router, story, scene) = props
-    //     val changed = state
-    //     val isNew = story.isEmpty
-
-    //     editorRef.get.flatMapCB(_.backend.get).flatMap({ raw =>
-
-    //       val target =
-    //         if (isNew) Request(ApiV1.CreateScene, story.urlname)
-    //         else Request(ApiV1.EditScene, story.urlname, scene.urlname)
-
-    //       target.
-    //         withBody(Json.obj("text" -> content)).
-    //         send.map({
-    //           case Reply(201, _
-
-
-    //       Request(ApiV1.Create
-
-
-    //     .flatMap({ content =>
-    //       Request(ApiV1.CreateScene, story).withBody(Json.obj(
-    //         "text" -> content)).
-    //         send.map({
-    //           case Reply(201, _) =>
-    //             println("great!")
-    //           case e =>
-    //             println("not so great: " + e)
-    //         }).toCallback
-    //     })
-    //   })
-
     def setChanged =
       Callback.log("setting raw text to changed.") >>
       bs.modState(_.copy(changed = true)).void

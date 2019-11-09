@@ -121,58 +121,46 @@ object EditStory {
         map(_.urlname != nextProps.story).
         getOrElse(true)
 
-      if (refresh) {
-        loadState(nextProps.story).toCallback
-      }
-      else {
-        println("reuse!")
-        modState(_.copy(story = state.story, scenes = state.scenes))
-      }
+      if (refresh) loadState(nextProps.story).toCallback
+      else modState(_.copy(story = state.story, scenes = state.scenes))
     }
 
-      // CallbackTo({
-      //   List(
-      //     ItemData(SceneItem, "at-the-docks",
-      //       "At the docks, there is but not a sound to hear",
-      //       """There is a certain atmosphere at the docks that seems to claw
-      //       at your nose like a hungry sewer rat. People bustle about""",
-      //       List("docks", "intro", "conflict")),
-      //     ItemData(QualityItem, "cold-hard-cash",
-      //       "Cold, hard cash", """You gotta pay for what you take. That's how
-      //       it's always been.""", List()),
-      //     ItemData(LocationItem, "the-docks",
-      //       "The Docks", """The docks have been the hub of trading in this
-      //       forsaken town. They are not, anymore, and even the residents are
-      //       forced to take notice.""", List("docks")))
-      // }).async
+    // CallbackTo({
+    //   List(
+    //     ItemData(SceneItem, "at-the-docks",
+    //       "At the docks, there is but not a sound to hear",
+    //       """There is a certain atmosphere at the docks that seems to claw
+    //       at your nose like a hungry sewer rat. People bustle about""",
+    //       List("docks", "intro", "conflict")),
+    //     ItemData(QualityItem, "cold-hard-cash",
+    //       "Cold, hard cash", """You gotta pay for what you take. That's how
+    //       it's always been.""", List()),
+    //     ItemData(LocationItem, "the-docks",
+    //       "The Docks", """The docks have been the hub of trading in this
+    //       forsaken town. They are not, anymore, and even the residents are
+    //       forced to take notice.""", List("docks")))
+    // }).async
 
 
     def onSaveScene(scene: Option[model.Scene])(rawText: String) =
       Callback.log("well, trying to save this.")
 
 
-    def renderOverlay(props: Props, state: State) = {
-      // val editingOverlay: TagMod = props.edit match {
-      //   case Overlay.None => List().toTagMod
-      //   case Overlay.AddScene =>
-      //     EditScene.component(EditScene.Props(
-      //       props.router, props.story, None, onSaveScene(None)))
-      //   case Overlay.EditScene(sceneUrlname) =>
-      //     Loading.suspend(props.router,
-      //       Loader.loadScene(props.story.urlname, sceneUrlname).map({
-      //         case Failure(error) =>
-      //           Error.component(error, true)
-      //         case Success(scene) =>
-      //           EditScene.component(EditScene.Props(
-      //             props.router, props.story, Some(scene),
-      //             onSaveScene(Some(scene))))
-      //       }))
-      // }
-      <.div()
-    }
-
-
-
+    def renderOverlay(props: Props, state: State): TagMod =
+      (state.story, props.edit) match {
+        case (Some(story), Overlay.AddScene) =>
+          EditScene.component(EditScene.Props(
+            props.router, story, None, onSaveScene(None)))
+        case (Some(story), Overlay.EditScene(sceneUrlname)) =>
+          state.scenes.flatMap(_.find(_.urlname == sceneUrlname)) match {
+            case Some(scene) =>
+              EditScene.component(EditScene.Props(
+                props.router, story, Some(scene), onSaveScene(Some(scene))))
+            case None =>
+              TagMod.empty
+          }
+        case _ => TagMod.empty
+      }
 
     def render(props: Props, state: State) = {
       <.div(^.className := "overlay-anchor",
@@ -211,20 +199,20 @@ object EditStory {
       update.state, update.nextProps, update.modState)).
     build
 
+  def showWith(router: pages.Router, story: String, overlay: Overlay.Overlay) =
+    Shell.component(router)(
+      component(Props(router, story, overlay)))
+
 
   def render(page: pages.EditStory, router: pages.Router) =
-    Shell.component(router)(
-      component(Props(router, page.story, Overlay.None)))
+    showWith(router, page.story, Overlay.None)
 
   def addScene(page: pages.AddScene, router: pages.Router) =
-    Shell.component(router)(
-      component(Props(router, page.story, Overlay.None)))
+    showWith(router, page.story, Overlay.AddScene)
 
   def editScene(page: pages.EditScene, router: pages.Router) =
-    Shell.component(router)(
-      component(Props(router, page.story, Overlay.EditScene(page.scene))))
+    showWith(router, page.story, Overlay.EditScene(page.scene))
 
-  def editQuality(page: pages.EditQuality, router: pages.Router) =
-    Shell.component(router)(
-      component(Props(router, page.story, Overlay.None)))
+  // def editQuality(page: pages.EditQuality, router: pages.Router) =
+  //   showWith(router, page.story, Overlay.EditQuality(page.quality))
 }
