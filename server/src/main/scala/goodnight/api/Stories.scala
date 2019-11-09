@@ -4,7 +4,7 @@ package goodnight.api
 import java.util.UUID
 import play.api.db.slick.DbName
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{ JsValue, Json, Reads, JsPath }
+import play.api.libs.json.{ JsValue, Json, Reads, JsPath, JsArray }
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
@@ -74,6 +74,15 @@ class Stories(components: ControllerComponents,
       map(_._1).
       result.headOption
     database.run(query).map(s => Ok(Json.toJson(s)))
+  }
+
+  def showScenes(story: String) = auth.SecuredAction.async {
+    val query = db.Scene().
+      join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
+      map(_._1).
+      result
+    database.run(query).map(scenes =>
+        Ok(JsArray(scenes.map((s: Scene) => Json.toJson(s)))))
   }
 
   case class StoryData(name: String)
