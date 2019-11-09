@@ -19,7 +19,7 @@ import goodnight.service.{ Request, Reply }
 
 object EditScene {
   case class Props(router: pages.Router, story: model.Story,
-    scene: Option[model.Scene], onSave: String => Callback)
+    scene: Option[model.Scene], onSave: String => AsyncCallback[Unit])
 
   case class State(changed: Boolean, saving: Boolean)
 
@@ -34,15 +34,14 @@ object EditScene {
       bs.modState(_.copy(saving = true)) >>
       bs.props.zip(bs.state).flatMap({ case (props, state) =>
       editorRef.get.flatMapCB(_.backend.get).flatMap({ rawText =>
-        props.onSave(rawText) >>
-        bs.modState(_.copy(saving = true, changed = false))
+        (props.onSave(rawText) >>
+          bs.modState(_.copy(saving = false, changed = false)).async).
+          toCallback
       })
     })
 
     def setChanged =
-      Callback.log("setting raw text to changed.") >>
       bs.modState(_.copy(changed = true)).void
-
 
     val editorRef = Editor.componentRef
 

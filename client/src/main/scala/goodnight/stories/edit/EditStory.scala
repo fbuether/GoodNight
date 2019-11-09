@@ -142,20 +142,37 @@ object EditStory {
     // }).async
 
 
-    def onSaveScene(scene: Option[model.Scene])(rawText: String) =
-      Callback.log("well, trying to save this.")
-
+    def onSaveScene(storyUrlname: String, scene: Option[model.Scene])(
+      rawText: String) = scene match {
+      case Some(scene) =>
+        Request(ApiV1.EditScene, storyUrlname, scene.urlname).
+          withBody(Json.obj(
+            "text" -> rawText)).send.
+          map({
+            case Reply(200, _) => println("okay, updated!")
+            case e => println("error while saving: " + e)
+          })
+      case None =>
+        Request(ApiV1.CreateScene, storyUrlname).
+          withBody(Json.obj(
+            "text" -> rawText)).send.
+          map({
+            case Reply(201, _) => println("okay, created!")
+            case e => println("error while saving: " + e)
+          })
+    }
 
     def renderOverlay(props: Props, state: State): TagMod =
       (state.story, props.edit) match {
         case (Some(story), Overlay.AddScene) =>
           EditScene.component(EditScene.Props(
-            props.router, story, None, onSaveScene(None)))
+            props.router, story, None, onSaveScene(story.urlname, None)))
         case (Some(story), Overlay.EditScene(sceneUrlname)) =>
           state.scenes.flatMap(_.find(_.urlname == sceneUrlname)) match {
             case Some(scene) =>
               EditScene.component(EditScene.Props(
-                props.router, story, Some(scene), onSaveScene(Some(scene))))
+                props.router, story, Some(scene),
+                onSaveScene(story.urlname, Some(scene))))
             case None =>
               TagMod.empty
           }
