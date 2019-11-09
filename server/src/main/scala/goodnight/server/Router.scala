@@ -70,6 +70,7 @@ class Router(
     case ApiV1.Scene(story, scene) => stories.showOneScene(story, scene)
     case ApiV1.CreateStory() => stories.create
     case ApiV1.CreateScene(story) => stories.createScene(story)
+    case ApiV1.EditScene(story, scene) => stories.updateScene(story, scene)
 
     // Profile data
     case ApiV1.Profile(user) => profile.show(user)

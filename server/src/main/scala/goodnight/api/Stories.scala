@@ -122,7 +122,6 @@ class Stories(components: ControllerComponents,
   def createScene(storyName: String) =
     auth.SecuredAction.async(parse.json)({ request =>
       parseJson[NewSceneData](request.body, { scene =>
-        // val foo: String = db.Story().filter(_.urlname === storyName).result
         val getStory = db.Story().filter(_.urlname === storyName).
           result.headOption
         database.run(getStory).flatMap({
@@ -141,6 +140,33 @@ class Stories(components: ControllerComponents,
               false)
             database.run(db.Scene().insert(newScene)).map({ _ =>
               Created
+            })
+        })
+      })
+    })
+
+  def updateScene(storyUrlname: String, sceneUrlname: String) =
+    auth.SecuredAction.async(parse.json)({ request =>
+      parseJson[NewSceneData](request.body, { sceneJson =>
+        val getStory = db.Story().filter(_.urlname === storyUrlname).
+          result.headOption
+        database.run(getStory).flatMap({
+          case None =>
+            Future.successful(
+              NotFound("Story with this urlname does not exist."))
+          case Some(story) =>
+            val getScene = db.Scene().filter(_.urlname === sceneUrlname).
+              result.headOption
+            database.run(getScene).flatMap({
+              case None =>
+                Future.successful(
+                  NotFound("Scene with this urlname does not exist."))
+              case Some(scene) =>
+                val updatedScene = scene.copy(raw = sceneJson.text)
+                database.run(db.Scene().filter(_.urlname === sceneUrlname).
+                  update(updatedScene)).map({ _ =>
+                    Ok
+                  })
             })
         })
       })
