@@ -3,13 +3,11 @@ package goodnight.service
 
 import japgolly.scalajs.react._
 import org.scalajs.dom.ext.LocalStorage
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
 import scala.collection.mutable.Buffer
 import scala.util.{Try, Success, Failure}
 
 import goodnight.common.ApiV1
-import goodnight.common.api.User._
+import goodnight.common.Serialise._
 import goodnight.model.User
 import goodnight.service.Conversions._
 

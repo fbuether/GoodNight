@@ -1,29 +1,23 @@
 
 package goodnight.service
 
+import fr.hmil.roshttp.HttpRequest
+import fr.hmil.roshttp.Method
+import fr.hmil.roshttp.body.Implicits._
+import fr.hmil.roshttp.body.PlainTextBody
+import fr.hmil.roshttp.exceptions.HttpException
+import fr.hmil.roshttp.response.SimpleHttpResponse
+import fr.hmil.roshttp.util.HeaderMap
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.router.BaseUrl
 import java.io.IOException
-
-
+import monix.execution.Scheduler.Implicits.global
+import org.scalajs.dom.document
 import scala.concurrent.Future
 import scala.util.{Try, Failure, Success}
 
-import org.scalajs.dom.document
-
-import fr.hmil.roshttp.HttpRequest
-import fr.hmil.roshttp.Method
-import fr.hmil.roshttp.body.PlainTextBody
-import fr.hmil.roshttp.util.HeaderMap
-import fr.hmil.roshttp.response.SimpleHttpResponse
-import fr.hmil.roshttp.body.Implicits._
-import fr.hmil.roshttp.exceptions.HttpException
-import monix.execution.Scheduler.Implicits.global
-
-import play.api.libs.json._
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.BaseUrl
-
-import goodnight.common.ApiV1
 import goodnight.common.ApiPath
+import goodnight.common.ApiV1
 
 
 case class Reply[T](statusCode: Int, body: T)

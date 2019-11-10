@@ -8,7 +8,7 @@ import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
 import goodnight.common.ApiV1
-import goodnight.common.api.User._
+import goodnight.common.Serialise._
 import goodnight.model.User
 import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._

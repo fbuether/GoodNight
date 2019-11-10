@@ -5,7 +5,6 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom.html
-import play.api.libs.json.Json
 import scala.util.{Try, Failure, Success}
 
 import goodnight.client.pages

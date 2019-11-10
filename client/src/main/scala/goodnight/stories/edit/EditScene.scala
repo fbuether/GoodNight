@@ -5,8 +5,6 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.HTMLElement
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
 import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages

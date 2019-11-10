@@ -1,21 +1,18 @@
 
 package goodnight.home.authentication
 
-import scala.util.{ Try, Success, Failure }
-import play.api.libs.json.Json
-
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
+import japgolly.scalajs.react.vdom.html_<^._
+import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
-import goodnight.service.{ Request, Reply }
-import goodnight.service.Conversions._
-import goodnight.components.Shell
+import goodnight.common.ApiV1
 import goodnight.components.Banner
 import goodnight.components.Input
-
-import goodnight.common.ApiV1
+import goodnight.components.Shell
+import goodnight.service.Conversions._
+import goodnight.service.{ Request, Reply }
 
 
 object Register {
