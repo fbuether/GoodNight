@@ -78,7 +78,7 @@ object Register {
           "Password:", "password",
           List(^.required := true), password = true)),
         <.button(^.tpe := "submit",
-          <.i(^.className := "fa fa-pencil-square-o"),
+          <.i(^.className := "far fa-check-square"),
           " Register"),
         s.error.map(err =>
           <.p(^.className := "plain error",

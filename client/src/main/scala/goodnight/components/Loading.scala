@@ -17,7 +17,6 @@ object Loading {
     }).
     build
 
-
   def suspend(router: pages.Router, el: AsyncCallback[VdomElement]) =
     React.Suspense(component(router), el)
 }

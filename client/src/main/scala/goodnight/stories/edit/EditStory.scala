@@ -12,7 +12,6 @@ import goodnight.common.Serialise._
 import goodnight.components._
 import goodnight.model
 import goodnight.service.Conversions._
-import goodnight.service.Loader
 import goodnight.service.{ Request, Reply }
 
 

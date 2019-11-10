@@ -9,26 +9,39 @@ object ApiV1 {
   // Xhr Api
   private val p = C("/api/v1/")
 
+  //
+  // Authentication
+  //
   object SignUp extends ApiPath("PUT", p, C("auth"))
   object EmailConfirm extends ApiPath("POST", p, C("auth/confirm"), S)
   object Authenticate extends ApiPath("POST", p, C("auth/authenticate"))
-  object SocialAuthenticate
-      extends ApiPath("POST", p, C("auth/authenticate/social"), S)
+  object SocialAuthenticate extends ApiPath("POST", p,
+    C("auth/authenticate/social"), S)
   object SignOut extends ApiPath("DELETE", p, C("auth"))
   object RequestPasswordReset extends ApiPath("POST", p, C("auth/reset"))
   object ConfirmPasswordReset extends ApiPath("POST", p, C("auth/reset"), S)
+  object Self extends ApiPath("GET", p, C("self"))
 
+  //
+  // Profile
+  //
+  object Profile extends ApiPath("GET", p, C("profile/"), S)
+
+  //
+  // Reading Stories
+  //
   object Stories extends ApiPath("GET", p, C("stories"))
   object Story extends ApiPath("GET", p, C("story/"), S)
-  object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
-  object CreateStory extends ApiPath("PUT", p, C("createStory"))
   object CreatePlayer extends ApiPath("PUT", p,
     C("story/"), S, C("/new-player"))
   object Scene extends ApiPath("GET", p, C("story/"), S, C("/scene/"), S)
 
+  //
+  // Editing Stories
+  //
+  object CreateStory extends ApiPath("PUT", p, C("createStory"))
   object CreateScene extends ApiPath("PUT", p, C("story/"), S, C("/scenes"))
   object EditScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
+  object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
 
-  object Profile extends ApiPath("GET", p, C("profile/"), S)
-  object Self extends ApiPath("GET", p, C("self"))
 }
