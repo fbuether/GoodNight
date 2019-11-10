@@ -1,12 +1,14 @@
 import sbt.Keys._
 import sbt.Project.projectToRef
-
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+
+import java.util.Date
+import java.text.SimpleDateFormat
 
 
 def setProject(projName: String) = Seq(
   name := "GoodNight " + projName,
-  version := "0.0.4",
+  // version := "0.0.5",
   maintainer := "fbuether@jasminefields.net",
 )
 
@@ -76,7 +78,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
 
 
 lazy val client: Project = project.in(file("client")).
-  enablePlugins(ScalaJSPlugin, ScalaJSWeb).
+  enablePlugins(ScalaJSPlugin, ScalaJSWeb, BuildInfoPlugin, GitVersioning).
   dependsOn(common.js.settings(name := "commonJS")).
   settings(
     setProject("Client"),
@@ -85,6 +87,16 @@ lazy val client: Project = project.in(file("client")).
     // by default, do not elide anything, i.e. keep everything.
     elideOptions := Seq(),
     scalacOptions ++= elideOptions.value,
+    buildInfoKeys := Seq[BuildInfoKey](
+      name, version, scalaVersion, sbtVersion,
+      BuildInfoKey.action("buildTime")(
+        new SimpleDateFormat("yyyy-MM-dd HH:mm z").format(new Date())),
+      git.gitHeadCommit,
+      git.baseVersion,
+    ),
+    git.useGitDescribe := true,
+    // git.formattedShaVersion := git.gitHeadCommit.value.map(_.substring(0,7)),
+    buildInfoPackage := "goodnight.version",
 
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := true,
@@ -151,7 +163,7 @@ lazy val client: Project = project.in(file("client")).
 
 
 lazy val server = project.in(file("server")).
-  enablePlugins(PlayScala).
+  enablePlugins(PlayScala, GitVersioning).
   disablePlugins(PlayLayoutPlugin).
   aggregate(projectToRef(client)).
   dependsOn(common.jvm.settings(name := "commonJVM")).

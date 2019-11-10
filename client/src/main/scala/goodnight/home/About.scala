@@ -8,6 +8,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import goodnight.client.pages
 import goodnight.components.Shell
 import goodnight.components.Banner
+import goodnight.version.BuildInfo
 
 
 object About {
@@ -31,7 +32,21 @@ object About {
         <.div(
           <.img(^.className := "nyan centered",
             ^.src := (router.baseUrl +
-              "assets/images/nyannyannyannyan.gif").value)))).
+              "assets/images/nyannyannyannyan.gif").value)),
+        <.h4("Technical Information"),
+        // info acquired from BuildInfoPlugin.
+        <.p(
+          "Goodnight Version: " + BuildInfo.version + ", " +
+            "commit " + BuildInfo.gitHeadCommit.getOrElse("missing").
+            substring(0, 7) + ", " +
+            "built at " + BuildInfo.buildTime,
+          <.br(),
+          "Scala Version: " + BuildInfo.scalaVersion + ", " +
+          "Sbt Version: " + BuildInfo.sbtVersion,
+          <.br(),
+          BuildInfo.toString
+        ),
+      )).
     build
 
 
