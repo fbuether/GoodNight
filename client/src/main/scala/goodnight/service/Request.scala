@@ -23,6 +23,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.BaseUrl
 
 import goodnight.common.ApiV1
+import goodnight.common.ApiPath
 
 
 case class Reply[T](statusCode: Int, body: T)
@@ -111,7 +112,7 @@ object Request {
     new Request(request, authorized)
 
 
-  def apply(target: ApiV1.ApiPath, params: String*) = {
+  def apply(target: ApiPath, params: String*) = {
     val method = target.method match {
       case "GET" => Method.GET
       case "PUT" => Method.PUT
@@ -131,12 +132,12 @@ object Request {
   def post(url: String) = createRequest(Method.POST, url)
   def put(url: String) = createRequest(Method.PUT, url)
 
-  def get(path: ApiV1.ApiPath, params: String*) =
+  def get(path: ApiPath, params: String*) =
     createRequest(Method.GET, path.write(params : _*))
-  def post(path: ApiV1.ApiPath, params: String*) =
+  def post(path: ApiPath, params: String*) =
     createRequest(Method.POST, path.write(params : _*))
-  def put(path: ApiV1.ApiPath, params: String*) =
+  def put(path: ApiPath, params: String*) =
     createRequest(Method.PUT, path.write(params : _*))
-  def delete(path: ApiV1.ApiPath, params: String*) =
+  def delete(path: ApiPath, params: String*) =
     createRequest(Method.DELETE, path.write(params : _*))
 }
