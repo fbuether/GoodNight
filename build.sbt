@@ -31,14 +31,13 @@ val versions = new {
   // val bootstrap = "4.3.1"
   // val chartjs = "2.6.0"
   val roshttp = "2.2.4"
+  val upickle = "0.8.0"
 
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
   val slickPostgres = "0.18.0"
 
   val silhouette = "6.1.0"
-
-  val playJson = "2.7.4"
 
   val scalajsScripts = "1.1.2"
 }
@@ -72,7 +71,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %%% "play-json" % versions.playJson,
+      "com.lihaoyi" %%% "upickle" % versions.upickle
     )
   )
 
@@ -114,7 +113,6 @@ lazy val client: Project = project.in(file("client")).
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
 
-      "com.typesafe.play" %%% "play-json" % versions.playJson,
       // "io.suzaku" %%% "diode" % versions.diode,
       // "io.suzaku" %%% "diode-react" % versions.diodeReact,
 
