@@ -67,7 +67,7 @@ object Editor {
           // ^.contentEditable := "true",
           // suppressContentEditableWarning := "true",
           ^.onInput --> onFirstChange,
-          props.content
+          ^.defaultValue := props.content
         ))
 
         // <.div.withRef(contentRef)(^.className := "content",

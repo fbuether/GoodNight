@@ -97,19 +97,22 @@ object EditStory {
     }
 
 
-    def loadState(storyUrlname: String): AsyncCallback[Unit] = {
-      Loader.loadStory(storyUrlname).flatMap({
+    def loadState(storyUrlname: String): Callback = {
+      val story = Request(ApiV1.Story, storyUrlname).send.
+        forStatus(200).forJson[(model.Story, Option[model.Player])].
+        body.map(_._1)
+      val scenes = Request(ApiV1.Scenes, storyUrlname).send.
+        forStatus(200).forJson[List[model.Scene]].
+        body
+
+      story.zip(scenes).completeWith({
         case Failure(error) =>
-          AsyncCallback.pure(println("well, that was a pitty: " + error))
-        case Success(story) =>
-          bs.modState(_.copy(story = Some(story))).async
-      }).flatMap(_ =>
-        Loader.loadScenes(storyUrlname).flatMap({
-          case Failure(error) =>
-            AsyncCallback.pure(println("well, another pitty; " + error))
-          case Success(scenes) =>
-            bs.modState(_.copy(scenes = Some(scenes))).async
-        }))
+          Callback.log("well, that was a pitty: " + error +
+            "/" + error.getClass)
+        case Success((story, scenes)) =>
+          bs.modState(_.copy(story = Some(story),
+            scenes = Some(scenes)))
+      })
     }
 
 
@@ -119,7 +122,7 @@ object EditStory {
         map(_.urlname != nextProps.story).
         getOrElse(true)
 
-      if (refresh) loadState(nextProps.story).toCallback
+      if (refresh) loadState(nextProps.story)
       else modState(_.copy(story = state.story, scenes = state.scenes))
     }
 
@@ -143,16 +146,18 @@ object EditStory {
     def onSaveScene(storyUrlname: String, scene: Option[model.Scene])(
       rawText: String) = scene match {
       case Some(scene) =>
-        Request(ApiV1.EditScene, storyUrlname, scene.urlname).
-          withBody(Json.obj(
+        println("saving existing scene.")
+      Request(ApiV1.EditScene, storyUrlname, scene.urlname).
+          withBody(ujson.Obj(
             "text" -> rawText)).send.
           map({
             case Reply(200, _) => println("okay, updated!")
             case e => println("error while saving: " + e)
           })
       case None =>
+        println("saving new scene.")
         Request(ApiV1.CreateScene, storyUrlname).
-          withBody(Json.obj(
+          withBody(ujson.Obj(
             "text" -> rawText)).send.
           map({
             case Reply(201, _) => println("okay, created!")
@@ -209,7 +214,7 @@ object EditStory {
     renderBackend[Backend].
     // (re-)load story/scenes on navigating here.
     componentDidMount(component =>
-      component.backend.loadState(component.props.story).toCallback).
+      component.backend.loadState(component.props.story)).
     componentWillReceiveProps(update => update.backend.loadStoryOnUpdate(
       update.state, update.nextProps, update.modState)).
     build

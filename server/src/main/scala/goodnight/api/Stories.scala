@@ -72,9 +72,7 @@ class Stories(components: ControllerComponents,
           player.user === request.identity.user.id).
           result.headOption
         database.run(getPlayer).map({ player =>
-          Ok(write(
-            "story" -> story,
-            "player" -> player))
+          Ok(write((story, player)))
         })
     })
   }
@@ -165,7 +163,9 @@ class Stories(components: ControllerComponents,
             Future.successful(
               NotFound("Story with this urlname does not exist."))
           case Some(story) =>
-            val getScene = db.Scene().filter(_.urlname === sceneUrlname).
+            val getScene = db.Scene().filter(scene =>
+              scene.urlname === sceneUrlname &&
+                scene.story === story.id).
               result.headOption
             database.run(getScene).flatMap({
               case None =>
@@ -173,10 +173,8 @@ class Stories(components: ControllerComponents,
                   NotFound("Scene with this urlname does not exist."))
               case Some(scene) =>
                 val updatedScene = scene.copy(raw = sceneJson.text)
-                database.run(db.Scene().filter(_.urlname === sceneUrlname).
-                  update(updatedScene)).map({ _ =>
-                    Ok
-                  })
+                database.run(db.Scene().filter(_.id === scene.id).
+                  update(updatedScene)).map(_ => Ok)
             })
         })
       })

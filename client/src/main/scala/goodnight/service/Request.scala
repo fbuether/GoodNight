@@ -99,9 +99,7 @@ object Conversions {
       })
 
     def forJson[A](implicit ev: Serialisable[A]): AsyncCallback[Reply[A]] =
-      reply.map({ reply =>
-        Reply(reply.statusCode, read[A](reply.body))
-      })
+      reply.map(reply => reply.copy(body = read[A](reply.body)))
   }
 
   implicit class OfAnyReply[A](reply: AsyncCallback[Reply[A]]) {
