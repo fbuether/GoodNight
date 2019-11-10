@@ -24,15 +24,15 @@ object CreateStory {
     private val nameRef = Input.componentRef
 
 
-    def createCreateRequest(name: String): AsyncCallback[Reply[Try[JsValue]]] =
+    def createCreateRequest(name: String): AsyncCallback[Reply[model.Story]] =
       Request.put(ApiV1.CreateStory).
-        withBody(Json.obj("name" -> name)).
-        send.forJson
+        withBody(ujson.Obj("name" -> name)).
+        send.
+        forJson[model.Story]
 
-    def handleReply(repl: Reply[Try[JsValue]]): AsyncCallback[Unit] = {
+    def handleReply(repl: Reply[model.Story]): AsyncCallback[Unit] = {
       repl match {
-        case Reply(200, Success(storyJson)) =>
-          val story = storyJson.as[model.Story]
+        case Reply(200, story) =>
           (bs.props >>= (r => r.set(pages.EditStory(story.urlname)))).async
       }
     }

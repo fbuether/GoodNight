@@ -8,38 +8,38 @@ import scala.util.{Try, Success, Failure}
 
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
-import goodnight.model.User
+import goodnight.model
 import goodnight.service.Conversions._
 
 
 object AuthenticationService {
   private val userKey = "auth-user"
-  private var changeListener: Buffer[Option[User] => Unit] = Buffer.empty
+  private var changeListener: Buffer[Option[model.User] => Unit] = Buffer.empty
 
-  def getUser: Option[User] = {
+  def getUser: Option[model.User] = {
     LocalStorage(userKey).
-      flatMap(json => Json.fromJson(Json.parse(json)).asOpt)
+      flatMap(json => read[Option[model.User]](json))
   }
 
   def isSignedIn: CallbackTo[Boolean] =
     CallbackTo(getUser.isDefined)
 
-  def onUserChange(handler: Option[User] => Unit): Unit = {
+  def onUserChange(handler: Option[model.User] => Unit): Unit = {
     changeListener += handler
     handler(getUser)
   }
 
   def loginWith(identity: String, password: String):
-      AsyncCallback[User] = {
-    Request(ApiV1.Authenticate).withBody(Json.obj(
+      AsyncCallback[model.User] = {
+    Request(ApiV1.Authenticate).withBody(ujson.Obj(
       "identity" -> identity,
       "password" -> password)).
       noAuth.
-      send.forJson.
+      send.
+      forJson[model.User].
       flatMap({
-        case Reply(202, Success(userJson)) =>
-          val user = userJson.as[User]
-          LocalStorage.update(userKey, Json.stringify(userJson))
+        case Reply(202, user) =>
+          LocalStorage.update(userKey, write(user))
           changeListener.foreach(_(Some(user)))
           AsyncCallback.pure(user)
         case Reply(401, b) =>

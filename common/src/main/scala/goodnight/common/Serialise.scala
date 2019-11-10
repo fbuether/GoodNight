@@ -8,15 +8,17 @@ import upickle.default.macroRW
 import goodnight.model
 
 
-
 object Serialise {
-  implicit val location: ReadWriter[model.Location] = macroRW
-  implicit val player: ReadWriter[model.Player] = macroRW
-  implicit val story: ReadWriter[model.Story] = macroRW
-  implicit val user: ReadWriter[model.User] = macroRW
+  type Serialisable[A] = ReadWriter[A]
 
-  def write[A](a: A)(implicit rw: ReadWriter[A]): String =
+  implicit val serialise_location: Serialisable[model.Location] = macroRW
+  implicit val serialise_player: Serialisable[model.Player] = macroRW
+  implicit val serialise_story: Serialisable[model.Story] = macroRW
+  implicit val serialise_scene: Serialisable[model.Scene] = macroRW
+  implicit val serialise_user: Serialisable[model.User] = macroRW
+
+  def write[A](a: A)(implicit rw: Serialisable[A]): String =
     default.write(a)
-  def read[A](input: String)(implicit rw: ReadWriter[A]): A =
+  def read[A](input: String)(implicit rw: Serialisable[A]): A =
     default.read[A](input)
 }

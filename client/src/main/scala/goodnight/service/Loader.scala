@@ -11,26 +11,22 @@ import goodnight.service.Conversions._
 
 
 object Loader {
-
-
   def loadScene(storyUrlname: String, urlname: String):
-      AsyncCallback[Try[model.Scene]] =
-    Request(ApiV1.Scene, storyUrlname, urlname).send.forJson.map({
-      case Reply(200, Success(sceneJson)) =>
-        sceneJson.as[model.Scene]
-    }).attemptTry
+      AsyncCallback[model.Scene] =
+    Request(ApiV1.Scene, storyUrlname, urlname).send.
+      forStatus(200).
+      forJson[model.Scene].
+      body
 
+  def loadStory(urlname: String): AsyncCallback[model.Story] =
+    Request(ApiV1.Story, urlname).send.
+      forStatus(200).
+      forJson[model.Story].
+      body
 
-  def loadStory(urlname: String): AsyncCallback[Try[model.Story]] =
-    Request(ApiV1.Story, urlname).send.forJson.map({
-      case Reply(200, Success(storyJson)) =>
-        storyJson.as[model.Story]
-    }).attemptTry
-
-  def loadScenes(storyUrlname: String): AsyncCallback[Try[List[model.Scene]]] =
-    Request(ApiV1.Scenes, storyUrlname).send.forJson.map({
-      case Reply(200, Success(scenesJson)) =>
-        scenesJson.as[List[model.Scene]]
-    }).attemptTry
-
+  def loadScenes(storyUrlname: String): AsyncCallback[List[model.Scene]] =
+    Request(ApiV1.Scenes, storyUrlname).send.
+      forStatus(200).
+      forJson[List[model.Scene]].
+      body
 }

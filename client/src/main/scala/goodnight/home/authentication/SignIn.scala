@@ -77,7 +77,6 @@ object SignIn {
 
 
     def render(p: Props, s: State): VdomElement = {
-      println("rendering with (" + p.target + ")/" + s)
       <.div(^.className := "withColumns",
         <.div(
           <.h2("Register"),

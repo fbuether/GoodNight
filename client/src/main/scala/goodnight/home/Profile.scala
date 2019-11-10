@@ -46,15 +46,16 @@ object Profile {
         <.div(story.name)))
 
     def loadMyStories(router: pages.Router) =
-      Request.get(ApiV1.Stories).query("authorMyself").send.forJson.
+      Request.get(ApiV1.Stories).query("authorMyself").send.
+        forJson[List[model.Story]].
         map({
-          case Reply(_, Success(JsArray(stories))) =>
+          case Reply(_, stories) =>
             if (stories.isEmpty)
               <.p("You have not written any stories yet.")
             else
               <.ul(^.className := "storyList",
-                stories.map({ storyJson =>
-                  renderStory(router, storyJson.as[model.Story])
+                stories.map({ story =>
+                  renderStory(router, story)
                 }).toTagMod)
           case Reply(_, f) =>
             <.p("got wrong reply: " + f)

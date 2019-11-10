@@ -18,7 +18,7 @@ import scala.util.{Try, Failure, Success}
 
 import goodnight.common.ApiPath
 import goodnight.common.ApiV1
-
+import goodnight.common.Serialise._
 
 case class Reply[T](statusCode: Int, body: T)
 
@@ -74,9 +74,9 @@ class Request(req: HttpRequest, authenticated: Boolean = true) {
     Request(req.
       withQueryParameter(field, value))
 
-  def withBody(body: JsValue) =
+  def withBody[A](body: A)(implicit ev: Serialisable[A]) =
     Request(req.
-      withBody(PlainTextBody(Json.stringify(body))).
+      withBody(PlainTextBody(write(body))).
       withHeader("Content-Type", "application/json"))
 
   def noAuth: Request =
@@ -89,12 +89,30 @@ class Request(req: HttpRequest, authenticated: Boolean = true) {
 
 object Conversions {
   implicit class OfReply(reply: AsyncCallback[Reply[String]]) {
-    def forJson: AsyncCallback[Reply[Try[JsValue]]] =
-      reply.map({ case Reply(code, body) =>
-        Reply(code,
-          if (body.isEmpty) Success(JsNull)
-          else Try(Json.parse(body)))
+    def forStatus(code: Int): AsyncCallback[Reply[String]] =
+      reply.flatMap({ reply =>
+        if (reply.statusCode == code)
+          AsyncCallback.pure(reply)
+        else
+          AsyncCallback.throwException(new Error(
+            "unexpected status code: " + reply.statusCode))
       })
+
+    def forJson[A](implicit ev: Serialisable[A]): AsyncCallback[Reply[A]] =
+      reply.map({ reply =>
+        Reply(reply.statusCode, read[A](reply.body))
+      })
+  }
+
+  implicit class OfAnyReply[A](reply: AsyncCallback[Reply[A]]) {
+    def body: AsyncCallback[A] =
+      reply.map({ reply => reply.body })
+
+    // def withError[A](display: Throwable => A): AsyncCallback[Reply[A]] =
+    //   reply.attemptTry.map({
+    //     case Success(a) => a
+    //     case Failure(e) => display(e)
+    //   })
   }
 }
 

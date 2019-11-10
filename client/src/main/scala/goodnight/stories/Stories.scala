@@ -30,12 +30,13 @@ object Stories {
 
 
   def loadStories(router: pages.Router) =
-    Request.get("/api/v1/stories").send.forJson.
+    Request.get("/api/v1/stories").send.
+      forJson[List[model.Story]].
       map({
-        case Reply(_, Success(JsArray(stories))) =>
+        case Reply(_, stories) =>
           <.ul(^.className := "storyList",
-            stories.map({ storyJson =>
-              renderStory(router, storyJson.as[model.Story])
+            stories.map({ story =>
+              renderStory(router, story)
             }).toTagMod)
         case Reply(_, f) =>
           <.p("got wrong reply: " + f)

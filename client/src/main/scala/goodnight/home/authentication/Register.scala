@@ -41,11 +41,11 @@ object Register {
             (username, mail, password) }) }) }).asCallback.
         flatMap({ case Some((user, mail, password)) =>
           Request.put(ApiV1.SignUp).
-            withBody(Json.obj(
+            withBody(ujson.Obj(
               "identity" -> mail,
               "username" -> user,
               "password" -> password)).
-            send.forJson.map({
+            send.map({
               case Reply(201, reply) => // success.
                 bs.props.flatMap(_.set(pages.Home))
 
