@@ -1,6 +1,7 @@
 
 package goodnight.home
 
+import java.lang.System
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -23,7 +24,7 @@ object About {
           (see the community), or by mail via """,
           <.a(^.href := "mailto:goodnight@jasminefields.net",
             "goodnight@jasminefields.net"),
-           """. As we do have daytime jobs, please understand that we might
+          """. As we do have daytime jobs, please understand that we might
            not reply right away. We however do try to answer every mail as
            fast as possible."""),
         <.h3("Closing Thoughts"),
@@ -37,14 +38,12 @@ object About {
         // info acquired from BuildInfoPlugin.
         <.p(
           "Goodnight Version: " + BuildInfo.version + ", " +
-            "commit " + BuildInfo.gitHeadCommit.getOrElse("missing").
-            substring(0, 7) + ", " +
             "built at " + BuildInfo.buildTime,
           <.br(),
           "Scala Version: " + BuildInfo.scalaVersion + ", " +
-          "Sbt Version: " + BuildInfo.sbtVersion,
-          <.br(),
-          BuildInfo.toString
+            "Sbt Version: " + BuildInfo.sbtVersion + ", " +
+            "Java Version: " + System.getProperties().
+            getProperty("java.version")
         ),
       )).
     build
