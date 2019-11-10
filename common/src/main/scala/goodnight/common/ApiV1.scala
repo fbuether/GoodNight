@@ -22,6 +22,8 @@ object ApiV1 {
   object Story extends ApiPath("GET", p, C("story/"), S)
   object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
   object CreateStory extends ApiPath("PUT", p, C("createStory"))
+  object CreatePlayer extends ApiPath("PUT", p,
+    C("story/"), S, C("/new-player"))
   object Scene extends ApiPath("GET", p, C("story/"), S, C("/scene/"), S)
 
   object CreateScene extends ApiPath("PUT", p, C("story/"), S, C("/scenes"))

@@ -3,12 +3,16 @@ package goodnight.stories
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
+import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
 import goodnight.common.ApiV1
+import goodnight.common.Serialise._
 import goodnight.components._
 import goodnight.model
-import goodnight.service.Loader
+import goodnight.service.Request
+import goodnight.service.AuthenticationService
+import goodnight.service.Conversions._
 
 
 object Story {
@@ -22,23 +26,54 @@ object Story {
 
   class Backend(bs: BackendScope[Props, State]) {
     def loadState =
-      Callback.log("loading")
+      bs.props.flatMap({ props =>
+        Request(ApiV1.Story, props.storyUrlname).send.
+          forStatus(200).forJson[(model.Story, Option[model.Player])].
+          body.completeWith({
+            case Success((story, playerOpt)) =>
+              bs.modState(_.copy(story = Some(story),
+                player = playerOpt,
+                loading = false))
+            case Failure(e) =>
+              Callback.log("well, something's wrong." + e)
+          })
+      })
 
-    def render(props: Props, state: State) = {
-      <.div(
-        Banner.component(props.router, "Alien World.png", "A world"),
-        <.h2("Welcome!"),
-        <.p("""Worlds in GoodNight exist within a universe. Worlds
-          from the same universe share a common theme, maybe even
-          characters and locations. The following shows all universes
-          and the worlds within."""),
-        <.h3("The World"),
-        <.p("You have found the world \"" + props.storyUrlname + "\"."))
+    def saveNewPlayer(player: model.Player): Callback =
+      bs.state.flatMap({ state =>
+        Request(ApiV1.CreatePlayer, state.story.get.urlname).
+          withBody(player).send.
+          forStatus(201).
+          completeWith({
+            case Failure(e) =>
+              Callback.log("oh my, an error: " + e)
+            case Success(_) =>
+              bs.modState(_.copy(player = Some(player)))
+          })
+      })
+
+    def render(props: Props, state: State): VdomElement = state match {
+      case State(_, _, true) =>
+        <.div(
+          Banner.component(props.router, "Alien World.png", "Loading story..."),
+          Loading.component(props.router))
+      case State(Some(story), None, _) =>
+        <.div(
+          Banner.component(props.router, story.image, story.name),
+          CreatePlayer.component(CreatePlayer.Props(props.router, story,
+            AuthenticationService.getUser.get,
+            saveNewPlayer)))
+      case State(Some(story), Some(player), _) =>
+        <.div(
+          Banner.component(props.router, story.image, story.name),
+          <.p("Return to play."))
+      case _ =>
+        Error.component(new Error("somethings wrong."), false)
     }
   }
 
   val component = ScalaComponent.builder[Props]("ReadStory").
-    initialState(State(None, None, false)).
+    initialState(State(None, None, true)).
     renderBackend[Backend].
     componentDidMount(_.backend.loadState).
     build
