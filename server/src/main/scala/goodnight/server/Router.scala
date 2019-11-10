@@ -15,7 +15,7 @@ import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
 
-import goodnight.common.ApiV1
+import goodnight.common.ApiV1._
 
 
 class Router(
@@ -35,45 +35,52 @@ class Router(
   def routes: Routes = (header: RequestHeader) =>
   (header.method, header.target.path) match {
     // static content: the html page, as well as all assets
-    case ApiV1.Frontend() => frontend.html
-    case ApiV1.Asset(file) => assets.versioned(file)
+    case Frontend() => frontend.html
+    case Asset(file) => assets.versioned(file)
 
     // Authentication, Registration, Sign in and out
     //
     // Registration step 1: Post data of sign-up form.
-    case ApiV1.SignUp() => authSignUp.doSignUp
+    case SignUp() => authSignUp.doSignUp
 
     // Registration step 2: Confirmation of email via token.
     // -- is this required? How about social signup?
-    case ApiV1.EmailConfirm(token) => invalid
+    case EmailConfirm(token) => invalid
 
     // Confirm user data, request authentication token
-    case ApiV1.Authenticate() => authSignIn.authenticate
+    case Authenticate() => authSignIn.authenticate
 
     // Confirm sign in via a social authentication provider
-    case ApiV1.SocialAuthenticate(provider) =>
+    case SocialAuthenticate(provider) =>
       authSignIn.socialAuthenticate(provider)
 
     // Sign out, remove all current sessions.
-    case ApiV1.SignOut() => authSignIn.signOut
+    case SignOut() => authSignIn.signOut
 
     // Password reset step 1: Post reset information form.
-    case ApiV1.RequestPasswordReset() => invalid
+    case RequestPasswordReset() => invalid
 
     // Password reset step 2: Post refreshed password information.
-    case ApiV1.ConfirmPasswordReset(token) => invalid
-
-    // Stories and Story Content.
-    case ApiV1.Stories() => stories.showAll(header.target.queryMap)
-    case ApiV1.Story(story) => stories.showOne(story)
-    case ApiV1.Scenes(story) => stories.showScenes(story)
-    case ApiV1.Scene(story, scene) => stories.showOneScene(story, scene)
-    case ApiV1.CreateStory() => stories.create
-    case ApiV1.CreateScene(story) => stories.createScene(story)
-    case ApiV1.EditScene(story, scene) => stories.updateScene(story, scene)
+    case ConfirmPasswordReset(token) => invalid
 
     // Profile data
-    case ApiV1.Profile(user) => profile.show(user)
-    case ApiV1.Self() => profile.showSelf
+    case Profile(user) => profile.show(user)
+    case Self() => profile.showSelf
+
+    //
+    // Reading Stories
+    //
+    case Stories() => stories.showAll(header.target.queryMap)
+    case Story(story) => stories.showOne(story)
+    case Scenes(story) => stories.showScenes(story)
+    case Scene(story, scene) => stories.showOneScene(story, scene)
+
+    //
+    // Editing Stories
+    //
+    case CreateStory() => stories.create
+    case CreateScene(story) => stories.createScene(story)
+    case EditScene(story, scene) => stories.updateScene(story, scene)
+
   }
 }
