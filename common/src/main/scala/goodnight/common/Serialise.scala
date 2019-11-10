@@ -4,6 +4,7 @@ package goodnight.common
 import upickle.default
 import upickle.default.ReadWriter
 import upickle.default.macroRW
+import ujson.ParseException
 
 import goodnight.model
 
@@ -19,6 +20,11 @@ object Serialise {
 
   def write[A](a: A)(implicit rw: Serialisable[A]): String =
     default.write(a)
+
   def read[A](input: String)(implicit rw: Serialisable[A]): A =
     default.read[A](input)
+
+  def readMaybe[A](input: String)(implicit rw: Serialisable[A]): Option[A] =
+    try Some(default.read[A](input))
+    catch { case (_: ParseException) => None }
 }

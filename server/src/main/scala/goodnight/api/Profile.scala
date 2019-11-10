@@ -11,7 +11,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.UserService
-import goodnight.common.api.User._
+import goodnight.common.Serialise._
 import goodnight.model.Login
 import goodnight.model.User
 import goodnight.db
@@ -32,15 +32,15 @@ class Profile(
 
     request.identity match {
       case Some(ident) if ident.user.name == user =>
-        Future.successful(Ok(Json.toJson(ident.user)))
+        Future.successful(Ok(write(ident.user)))
       case _ =>
         val query = db.User().filter(_.name === user).result
         database.run(query).map(u =>
-          Ok(Json.toJson(u)))
+          Ok(write(u)))
     }
   }
 
   def showSelf = auth.SecuredAction({ request =>
-    Ok(Json.toJson(request.identity.user))
+    Ok(write(request.identity.user))
   })
 }

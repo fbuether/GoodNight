@@ -14,6 +14,8 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsonValidationError
 
+import goodnight.common.Serialise._
+
 
 class Controller(
   components: ControllerComponents)
@@ -31,15 +33,15 @@ class Controller(
     request.body.validate[A] match {
       case JsSuccess(data, _) => innerAction(request, data)
       case JsError(errors) =>
-        val errorMessage = Json.obj(
+        val errorMessage = ujson.Obj(
           "success" -> false,
           "errors" -> errors.map({ case (p,ves) =>
-            Json.obj(
+            ujson.Obj(
               "path" -> p.toString,
               "errors" -> ves.map({ case JsonValidationError(a) =>
                 a}))}))
         Future.successful(
-          BadRequest(errorMessage))
+          BadRequest(write(errorMessage)))
     }
   }
 
@@ -48,15 +50,15 @@ class Controller(
     body.validate[A] match {
       case JsSuccess(data, _) => innerAction(data)
       case JsError(errors) =>
-        val errorMessage = Json.obj(
+        val errorMessage = ujson.Obj(
           "success" -> false,
           "errors" -> errors.map({ case (p,ves) =>
-            Json.obj(
+            ujson.Obj(
               "path" -> p.toString,
               "errors" -> ves.map({ case JsonValidationError(a) =>
                 a}))}))
         Future.successful(
-          BadRequest(errorMessage))
+          BadRequest(write(errorMessage)))
     }
   }
 }

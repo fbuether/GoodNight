@@ -18,7 +18,7 @@ object AuthenticationService {
 
   def getUser: Option[model.User] = {
     LocalStorage(userKey).
-      flatMap(json => read[Option[model.User]](json))
+      flatMap(readMaybe[model.User])
   }
 
   def isSignedIn: CallbackTo[Boolean] =

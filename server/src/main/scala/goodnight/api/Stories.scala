@@ -15,11 +15,9 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.Id
-import goodnight.common.api.Story._
-import goodnight.common.api.Scene._
-import goodnight.model.Story
-import goodnight.model.Scene
+import goodnight.common.Serialise._
 import goodnight.db
+import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 
@@ -60,12 +58,25 @@ class Stories(components: ControllerComponents,
           storiesFilterAuthor(filters.get("author").map(_.head))(
             db.Story()))
 
-      database.run(query.result).map(sl => Ok(Json.toJson(sl)))
+      database.run(query.result).map(sl => Ok(write(sl)))
     })
 
-  def showOne(reqName: String) = auth.SecuredAction.async {
-    val query = db.Story().filter(_.urlname === reqName).result.headOption
-    database.run(query).map(s => Ok(Json.toJson(s)))
+  def showOne(reqName: String) = auth.SecuredAction.async { request =>
+    val getStory = db.Story().filter(_.urlname === reqName).result.headOption
+    database.run(getStory).flatMap({
+      case None =>
+        Future.successful(NotFound)
+      case Some(story) =>
+        val getPlayer = db.Player().filter(player =>
+          player.story === story.id &&
+          player.user === request.identity.user.id).
+          result.headOption
+        database.run(getPlayer).map({ player =>
+          Ok(write(
+            "story" -> story,
+            "player" -> player))
+        })
+    })
   }
 
   def showOneScene(story: String, scene: String) = auth.SecuredAction.async {
@@ -73,7 +84,7 @@ class Stories(components: ControllerComponents,
       join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
       map(_._1).
       result.headOption
-    database.run(query).map(s => Ok(Json.toJson(s)))
+    database.run(query).map(s => Ok(write(s)))
   }
 
   def showScenes(story: String) = auth.SecuredAction.async {
@@ -81,8 +92,7 @@ class Stories(components: ControllerComponents,
       join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
       map(_._1).
       result
-    database.run(query).map(scenes =>
-        Ok(JsArray(scenes.map((s: Scene) => Json.toJson(s)))))
+    database.run(query).map(scenes => Ok(write(scenes)))
   }
 
   case class StoryData(name: String)
@@ -96,7 +106,7 @@ class Stories(components: ControllerComponents,
         take(1).result.headOption
       database.run(checkExistence).flatMap({
         case None =>
-          val newStory = Story(UUID.randomUUID(),
+          val newStory = model.Story(UUID.randomUUID(),
             request.identity.user.id,
             storyData.name,
             urlname,
@@ -105,10 +115,10 @@ class Stories(components: ControllerComponents,
             None)
           val insert = db.Story().insert(newStory)
           database.run(insert).map({ _ =>
-            Ok(Json.toJson(newStory))
+            Ok(write(newStory))
           })
         case Some(_) =>
-          Future.successful(Conflict(Json.obj(
+          Future.successful(Conflict(write(
             "successful" -> false,
             "error" -> "A story with the same reduced name already exists."
           )))
@@ -129,7 +139,7 @@ class Stories(components: ControllerComponents,
             Future.successful(
               NotFound("Story with this urlname does not exist."))
           case Some(story) =>
-            val newScene = Scene(UUID.randomUUID(),
+            val newScene = model.Scene(UUID.randomUUID(),
               story.id,
               scene.text,
               "title",

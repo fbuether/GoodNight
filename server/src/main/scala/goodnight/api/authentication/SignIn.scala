@@ -19,8 +19,8 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
-import goodnight.common.api.User._
 import goodnight.db
+import goodnight.common.Serialise._
 import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
@@ -51,14 +51,14 @@ class SignIn(components: ControllerComponents,
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                val reply = Accepted(Json.toJson(user.user))
+                val reply = Accepted(write(user.user))
                 authServ.embed(ident, reply)(request)
               })
           case None =>
             Future.successful(Unauthorized)
         })
       }).recoverWith({ case (e: SilhouetteException) =>
-        Future.successful(Unauthorized(Json.obj(
+        Future.successful(Unauthorized(write(
           "success" -> false,
           "error" -> e.getMessage())))
       })

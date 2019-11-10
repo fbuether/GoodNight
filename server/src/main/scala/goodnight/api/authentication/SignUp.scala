@@ -1,35 +1,32 @@
 
 package goodnight.api.authentication
 
+import com.mohiva.play.silhouette.api.Env
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.services.IdentityService
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import java.util.UUID
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-
-import play.api.mvc.Request
-import play.api.mvc.Result
+import play.api.libs.functional.syntax._
+import play.api.libs.json.JsValue
+import play.api.libs.json.{ Json, Reads, JsPath, JsSuccess, JsError, JsonValidationError }
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
-import play.api.libs.json.JsValue
-import play.api.libs.json.{ Json, Reads, JsPath, JsSuccess, JsError, JsonValidationError }
-import play.api.libs.functional.syntax._
+import play.api.mvc.Request
+import play.api.mvc.Result
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 
-import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.Env
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.services.IdentityService
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
-import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-
-import goodnight.server.PostgresProfile.Database
-import goodnight.server.Controller
-
-import goodnight.model.User
+import goodnight.common.Serialise._
 import goodnight.db
 import goodnight.model.Login
+import goodnight.model.User
+import goodnight.server.Controller
+import goodnight.server.PostgresProfile.Database
 
 
 class SignUp(components: ControllerComponents,
@@ -53,7 +50,7 @@ class SignUp(components: ControllerComponents,
       val login = LoginInfo(CredentialsProvider.ID, signUpData.identity)
       silhouette.env.identityService.retrieve(login).flatMap({
         case Some(u) =>
-          Future.successful(Forbidden(Json.obj(
+          Future.successful(Forbidden(write(
             "success" -> false,
             "errors" -> "Email address is already registered.")))
 
