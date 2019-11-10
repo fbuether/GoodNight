@@ -179,4 +179,14 @@ class Stories(components: ControllerComponents,
         })
       })
     })
+
+
+  // def createPlayer(storyUrlname: String) =
+  //   auth.SecuredAction.async 
+
+  //   auth.SecuredAction.async(parse.json)({ request =>
+  //     parseJson[model.Player](request.body, { player =>
+  //       database.run(db.Player().insert(player)).map(_ => Created)
+  //     })
+  //   })
 }

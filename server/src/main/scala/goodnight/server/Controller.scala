@@ -1,18 +1,19 @@
 
 package goodnight.server
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-import play.api.mvc.Request
-import play.api.mvc.Result
-import play.api.mvc.BaseController
-import play.api.mvc.ControllerComponents
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsError
 import play.api.libs.json.JsonValidationError
+import play.api.libs.json.Reads
+import play.api.mvc.BaseController
+import play.api.mvc.BodyParser
+import play.api.mvc.ControllerComponents
+import play.api.mvc.Request
+import play.api.mvc.Result
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 import goodnight.common.Serialise._
 
@@ -61,5 +62,20 @@ class Controller(
           BadRequest(write(errorMessage)))
     }
   }
+
+
+ //  val ofJson[A]: BodyParser[Option[A]] =
+ //    BodyParser("upickle-json-body-parser")({ request =>
+ //      // check if request is content-type application/json
+
+
+ // readMaybe
+
+
+  // def securedJsonAction[A](innerAction: A => Future[Result])(
+  //   implicit ev: Serialisable[A]): Future[Result] = {
+
+  //   auth.SecuredAction.async
+  // }
 }
 
