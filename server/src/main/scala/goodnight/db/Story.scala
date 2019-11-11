@@ -36,4 +36,7 @@ object Story {
     base.join(User().filter(_.name === name)).on(_.creator === _.id).
       map((su: (Story, User)) => su._1)
   }
+
+  def ofUrlname(urlname: String) =
+    apply().filter(_.urlname === urlname).take(1).result.headOption
 }

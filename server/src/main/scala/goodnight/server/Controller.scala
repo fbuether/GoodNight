@@ -14,6 +14,14 @@ import play.api.mvc.Request
 import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import play.api.mvc.PlayBodyParsers
+
+import play.api.http.ParserConfiguration
+import play.api.http.HttpErrorHandler
+import akka.stream.Materializer
+import play.api.libs.Files.TemporaryFileCreator
+
+
 
 import goodnight.common.Serialise._
 
@@ -63,19 +71,41 @@ class Controller(
     }
   }
 
+  class JsonBodyParsers(
+    config: ParserConfiguration,
+    errorHandler: HttpErrorHandler,
+    materializer: Materializer,
+    temporaryFileCreator: TemporaryFileCreator)
+      extends PlayBodyParsers {
 
- //  val ofJson[A]: BodyParser[Option[A]] =
- //    BodyParser("upickle-json-body-parser")({ request =>
- //      // check if request is content-type application/json
+val config = new play.api.http.ParserConfiguration()
+
+    // largely inspired by Play's default text body parser.
+    def fromJson[A](implicit ev: Serialisable[A]): BodyParser[A] =
+      when(_.contentType.exists(_.equalsIgnoreCase("application/json")),
+        tolerantBodyParser[A]("goodnight json upickled",
+          DefaultMaxTextLength, // by default 512kb
+          "Error decoding json body")({ (request, bytes) =>
+            read[A](bytes.utf8String)
+          }),
+        createBadResult("Expected application/json body",
+          UNSUPPORTED_MEDIA_TYPE))
 
 
- // readMaybe
+    def asJson: BodyParser[ujson.Value] =
+      when(_.contentType.exists(_.equalsIgnoreCase("application/json")),
+        tolerantBodyParser[ujson.Value]("goodnight json ujsoned",
+          DefaultMaxTextLength, // by default 512kb
+          "Error decoding json body")({ (request, bytes) =>
+            ujson.read(bytes.utf8String)
+          }),
+        createBadResult("Expected application/json body",
+          UNSUPPORTED_MEDIA_TYPE))
+  }
 
-
-  // def securedJsonAction[A](innerAction: A => Future[Result])(
-  //   implicit ev: Serialisable[A]): Future[Result] = {
-
-  //   auth.SecuredAction.async
-  // }
+  def parse = new JsonBodyComponentsrs(components.config,
+    components.errorHandler,
+    components.materializer,
+    components.temporaryFileCreator)
 }
 

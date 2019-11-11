@@ -16,7 +16,7 @@ import goodnight.service.Conversions._
 
 object CreatePlayer {
   case class Props(router: pages.Router, story: model.Story, user: model.User,
-    onSave: model.Player => Callback)
+    onSave: String => Callback)
 
   case class State(saving: Boolean)
 
@@ -27,13 +27,7 @@ object CreatePlayer {
       e.preventDefaultCB >>
     bs.modState(_.copy(saving = true)) >>
     playerNameRef.get.flatMap(_.backend.get).flatMap({ playerName =>
-      bs.props.flatMap({ props =>
-        props.onSave(model.Player(UUID.randomUUID(),
-          props.user.id,
-          props.story.id,
-          playerName,
-          props.story.startLocation))
-      })
+      bs.props.flatMap(_.onSave(playerName))
     })
 
     def render(props: Props, state: State) = {

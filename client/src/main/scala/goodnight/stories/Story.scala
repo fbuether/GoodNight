@@ -11,6 +11,7 @@ import goodnight.common.Serialise._
 import goodnight.components._
 import goodnight.model
 import goodnight.service.Request
+import goodnight.service.Reply
 import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
 
@@ -39,15 +40,16 @@ object Story {
           })
       })
 
-    def saveNewPlayer(player: model.Player): Callback =
+    def saveNewPlayer(playerName: String): Callback =
       bs.state.flatMap({ state =>
         Request(ApiV1.CreatePlayer, state.story.get.urlname).
-          withBody(player).send.
+          withBody(ujson.Obj("name" -> playerName)).send.
           forStatus(201).
+          forJson[model.Player].
           completeWith({
             case Failure(e) =>
               Callback.log("oh my, an error: " + e)
-            case Success(_) =>
+            case Success(Reply(_, player)) =>
               bs.modState(_.copy(player = Some(player)))
           })
       })

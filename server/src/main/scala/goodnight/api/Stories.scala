@@ -181,12 +181,28 @@ class Stories(components: ControllerComponents,
     })
 
 
-  // def createPlayer(storyUrlname: String) =
-  //   auth.SecuredAction.async 
+  case class PlayerNameBody(name: String)
+  implicit val serialise_playerNameBody: Serialisable[PlayerNameBody] =
+    upickle.default.macroRW
 
-  //   auth.SecuredAction.async(parse.json)({ request =>
-  //     parseJson[model.Player](request.body, { player =>
-  //       database.run(db.Player().insert(player)).map(_ => Created)
-  //     })
-  //   })
+  def createPlayer(storyUrlname: String) =
+    auth.SecuredAction.async(parsers.fromJson[PlayerNameBody])({ request =>
+      val playerName = request.body("name").str
+      val user = request.identity.user
+      database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
+        case None =>
+          Future.successful(NotFound(write(
+            "success" -> false,
+            "error" -> "Story with name \"" + storyUrlname +
+              "\" does not exist.")))
+        case Some(story) =>
+          val newPlayer = model.Player(UUID.randomUUID(),
+            user.id,
+            story.id,
+            playerName,
+            story.startLocation)
+          database.run(db.Player().insert(newPlayer)).map(_ =>
+            Created(write(newPlayer)))
+      })
+    })
 }
