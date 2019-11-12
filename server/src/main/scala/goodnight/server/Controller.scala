@@ -27,7 +27,8 @@ import goodnight.common.Serialise._
 
 
 class Controller(
-  components: ControllerComponents)
+  components: ControllerComponents)(
+  implicit ec: ExecutionContext)
     extends BaseController {
   def controllerComponents: ControllerComponents =
     components
@@ -71,41 +72,28 @@ class Controller(
     }
   }
 
-  class JsonBodyParsers(
-    config: ParserConfiguration,
-    errorHandler: HttpErrorHandler,
-    materializer: Materializer,
-    temporaryFileCreator: TemporaryFileCreator)
-      extends PlayBodyParsers {
-
-val config = new play.api.http.ParserConfiguration()
-
-    // largely inspired by Play's default text body parser.
-    def fromJson[A](implicit ev: Serialisable[A]): BodyParser[A] =
-      when(_.contentType.exists(_.equalsIgnoreCase("application/json")),
-        tolerantBodyParser[A]("goodnight json upickled",
-          DefaultMaxTextLength, // by default 512kb
-          "Error decoding json body")({ (request, bytes) =>
-            read[A](bytes.utf8String)
-          }),
-        createBadResult("Expected application/json body",
-          UNSUPPORTED_MEDIA_TYPE))
 
 
-    def asJson: BodyParser[ujson.Value] =
-      when(_.contentType.exists(_.equalsIgnoreCase("application/json")),
-        tolerantBodyParser[ujson.Value]("goodnight json ujsoned",
-          DefaultMaxTextLength, // by default 512kb
-          "Error decoding json body")({ (request, bytes) =>
-            ujson.read(bytes.utf8String)
-          }),
-        createBadResult("Expected application/json body",
-          UNSUPPORTED_MEDIA_TYPE))
-  }
-
-  def parse = new JsonBodyComponentsrs(components.config,
-    components.errorHandler,
-    components.materializer,
-    components.temporaryFileCreator)
+  def parseAsJson[A](implicit ev: Serialisable[A]): BodyParser[A] =
+    parse.when(_.contentType.exists(_.equalsIgnoreCase("application/json")),
+      parse.raw.validate({ buffer =>
+        try Right(read[A](buffer.asBytes().map(_.utf8String).getOrElse("")))
+        catch { case (e: Throwable) =>
+          val errorMessage = ujson.Obj(
+            "success" -> false,
+            "error" -> "json parse error",
+            "detail" -> ujson.Arr(
+              e.toString,
+              ujson.Str(Option(e.getCause).map(_.toString).
+                getOrElse("no inner cause")),
+              e.getMessage))
+          Left(BadRequest(write(errorMessage)).as(JSON))
+        }
+      }), { request =>
+        Future.successful(
+          UnsupportedMediaType(write(ujson.Obj(
+            "success" -> false,
+            "error" -> ("Invalid content type. "+
+              "Expected application/json body.")))).as(JSON)) })
 }
 

@@ -186,8 +186,8 @@ class Stories(components: ControllerComponents,
     upickle.default.macroRW
 
   def createPlayer(storyUrlname: String) =
-    auth.SecuredAction.async(parsers.fromJson[PlayerNameBody])({ request =>
-      val playerName = request.body("name").str
+    auth.SecuredAction.async(parseAsJson[PlayerNameBody])({ request =>
+      val playerName = request.body.name
       val user = request.identity.user
       database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
         case None =>
