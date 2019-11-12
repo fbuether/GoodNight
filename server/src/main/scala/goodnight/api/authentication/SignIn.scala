@@ -50,14 +50,14 @@ class SignIn(components: ControllerComponents,
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                val reply = Accepted(write(user.user))
+                val reply = Accepted(user.user)
                 authServ.embed(ident, reply)(request)
               })
           case None =>
             Future.successful(Unauthorized)
         })
       }).recoverWith({ case (e: SilhouetteException) =>
-        Future.successful(Unauthorized(write(
+        Future.successful(Unauthorized(ujson.Obj(
           "success" -> false,
           "error" -> e.getMessage())))
       })

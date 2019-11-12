@@ -1,12 +1,6 @@
 
 package goodnight.server
 
-import play.api.libs.json.JsError
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.JsonValidationError
-import play.api.libs.json.Reads
 import play.api.mvc.BaseController
 import play.api.mvc.BodyParser
 import play.api.mvc.ControllerComponents
@@ -15,13 +9,8 @@ import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import play.api.mvc.PlayBodyParsers
-
-import play.api.http.ParserConfiguration
-import play.api.http.HttpErrorHandler
-import akka.stream.Materializer
-import play.api.libs.Files.TemporaryFileCreator
-
-
+import akka.util.ByteString
+import play.api.http.Writeable
 
 import goodnight.common.Serialise._
 
@@ -77,5 +66,13 @@ class Controller(
         }
         catch { case (e: Throwable) => Left(errorFromException(e)) }
       }))
+
+
+  // for writing json values, or any json-able values, directly:
+  implicit def jsonWriteableA[A](implicit ev: Serialisable[A]): Writeable[A] =
+    Writeable(data => ByteString(write(data)), Some("application/json"))
+
+  implicit val jsonWriteable: Writeable[ujson.Value] =
+    Writeable(data => ByteString(ujson.write(data)), Some("application/json"))
 }
 

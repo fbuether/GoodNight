@@ -59,7 +59,7 @@ class Stories(components: ControllerComponents,
           storiesFilterAuthor(filters.get("author").map(_.head))(
             db.Story()))
 
-      database.run(query.result).map(sl => Ok(write(sl)))
+      database.run(query.result).map(sl => Ok(sl))
     })
 
   def showOne(reqName: String) = auth.SecuredAction.async { request =>
@@ -73,7 +73,7 @@ class Stories(components: ControllerComponents,
           player.user === request.identity.user.id).
           result.headOption
         database.run(getPlayer).map({ player =>
-          Ok(write((story, player)))
+          Ok((story, player))
         })
     })
   }
@@ -91,7 +91,7 @@ class Stories(components: ControllerComponents,
       join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
       map(_._1).
       result
-    database.run(query).map(scenes => Ok(write(scenes)))
+    database.run(query).map(scenes => Ok(scenes))
   }
 
   case class StoryData(name: String)
@@ -112,13 +112,12 @@ class Stories(components: ControllerComponents,
           None)
         val insert = db.Story().insert(newStory)
         database.run(insert).map({ _ =>
-          Ok(write(newStory))
+          Ok(newStory)
         })
       case Some(_) =>
-        Future.successful(Conflict(write(
+        Future.successful(Conflict(ujson.Obj(
           "successful" -> false,
-          "error" -> "A story with the same reduced name already exists."
-        )))
+          "error" -> "A story with the same reduced name already exists.")))
     })
   })
 
@@ -127,8 +126,7 @@ class Stories(components: ControllerComponents,
 
   def createScene(storyName: String) =
     auth.SecuredAction.async(parseFromJson[NewSceneData])({ request =>
-      val getStory = db.Story().filter(_.urlname === storyName).
-        result.headOption
+      val getStory = db.Story.ofUrlname(storyName)
       database.run(getStory).flatMap({
         case None =>
           Future.successful(
@@ -186,7 +184,7 @@ class Stories(components: ControllerComponents,
       val user = request.identity.user
       database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
         case None =>
-          Future.successful(NotFound(write(
+          Future.successful(NotFound(ujson.Obj(
             "success" -> false,
             "error" -> "Story with name \"" + storyUrlname +
               "\" does not exist.")))
@@ -197,7 +195,7 @@ class Stories(components: ControllerComponents,
             playerName,
             story.startLocation)
           database.run(db.Player().insert(newPlayer)).map(_ =>
-            Created(write(newPlayer)))
+            Created(newPlayer))
       })
     })
 }
