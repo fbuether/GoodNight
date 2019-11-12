@@ -78,13 +78,23 @@ class Stories(components: ControllerComponents,
     })
   }
 
-  def showOneScene(story: String, scene: String) = auth.SecuredAction.async {
-    val query = db.Scene().filter(_.urlname === scene).
-      join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
-      map(_._1).
-      result.headOption
-    database.run(query).map(s => Ok(write(s)))
-  }
+
+  def showAvailableScenes(storyUrlname: String) = auth.SecuredAction.async({
+    request =>
+    database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
+      case None =>
+        Future.successful(
+          NotFound("Story with this urlname does not exist."))
+      case Some(story) =>
+        database.run(db.Player.of(request.identity.user.id, story.id)).map({
+          case None =>
+            PreconditionFailed("User has not created a player yet.")
+          case Some(player) =>
+              Ok(ujson.Obj("options" -> true))
+        })
+    })
+  })
+
 
   def showScenes(story: String) = auth.SecuredAction.async {
     val query = db.Scene().

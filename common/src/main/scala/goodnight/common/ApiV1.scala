@@ -34,7 +34,7 @@ object ApiV1 {
   object Story extends ApiPath("GET", p, C("story/"), S)
   object CreatePlayer extends ApiPath("PUT", p,
     C("story/"), S, C("/new-player"))
-  object Scene extends ApiPath("GET", p, C("story/"), S, C("/scene/"), S)
+  object AvailableScenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
 
   //
   // Editing Stories

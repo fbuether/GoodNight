@@ -34,4 +34,8 @@ class Player(tag: Tag) extends Table[model.Player](tag, "player") {
 
 object Player {
   def apply() = TableQuery[Player]
+
+  def of(user: UUID, story: UUID) =
+    apply().filter(player => player.user === user && player.story === story).
+      take(1).result.headOption
 }

@@ -74,7 +74,7 @@ class Router(
     case Story(story) => stories.showOne(story)
     case CreatePlayer(story) => stories.createPlayer(story)
     case Scenes(story) => stories.showScenes(story)
-    case Scene(story, scene) => stories.showOneScene(story, scene)
+    case AvailableScenes(story) => stories.showAvailableScenes(story)
 
     //
     // Editing Stories

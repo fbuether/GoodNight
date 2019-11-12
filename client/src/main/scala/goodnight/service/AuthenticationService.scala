@@ -15,6 +15,7 @@ import goodnight.service.Conversions._
 object AuthenticationService {
   private val userKey = "auth-user"
   private var changeListener: Buffer[Option[model.User] => Unit] = Buffer.empty
+  private var verified = false // todo: have we verified the auth this session?
 
   def getUser: Option[model.User] = {
     LocalStorage(userKey).
