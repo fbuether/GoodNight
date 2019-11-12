@@ -20,6 +20,7 @@ import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
+import upickle.default.macroRW
 
 import goodnight.common.Serialise._
 import goodnight.db
@@ -38,13 +39,11 @@ class SignUp(components: ControllerComponents,
     extends Controller(components) {
 
   case class SignUpData(identity: String, username: String, password: String)
-  implicit val signUpDataReads: Reads[SignUpData] = (
-    (JsPath \ "identity").read[String] and
-      (JsPath \ "username").read[String] and
-      (JsPath \ "password").read[String])(SignUpData.apply _)
+  implicit val serialise_signUpData: Serialisable[SignUpData] = macroRW
 
-  def doSignUp = silhouette.UnsecuredAction.async(parse.json)(
-    withJsonAs((request: Request[JsValue], signUpData: SignUpData) => {
+  def doSignUp = silhouette.UnsecuredAction.async(
+    parseFromJson[SignUpData])({ request =>
+      val signUpData = request.body
       // todo: check if signUpData.username as a username already exists.
 
       val login = LoginInfo(CredentialsProvider.ID, signUpData.identity)
@@ -72,5 +71,5 @@ class SignUp(components: ControllerComponents,
                 })
             })
       })
-    }))
+    })
 }

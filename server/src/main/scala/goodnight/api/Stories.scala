@@ -12,6 +12,7 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
+import upickle.default.macroRW
 
 import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.Id
@@ -94,99 +95,93 @@ class Stories(components: ControllerComponents,
   }
 
   case class StoryData(name: String)
-  implicit val storyDataReads: Reads[StoryData] =
-    (JsPath \ "name").read[String].map(StoryData(_))
+  implicit val serialise_storyData: Serialisable[StoryData] = macroRW
 
-  def create = auth.SecuredAction.async(parse.json)({ request =>
-    parseJson[StoryData](request.body, { storyData =>
-      val urlname = urlnameOf(storyData.name)
-      val checkExistence = db.Story().filter(s => s.urlname === urlname).
-        take(1).result.headOption
-      database.run(checkExistence).flatMap({
-        case None =>
-          val newStory = model.Story(UUID.randomUUID(),
-            request.identity.user.id,
-            storyData.name,
-            urlname,
-            "Moon.png",
-            "",
-            None)
-          val insert = db.Story().insert(newStory)
-          database.run(insert).map({ _ =>
-            Ok(write(newStory))
-          })
-        case Some(_) =>
-          Future.successful(Conflict(write(
-            "successful" -> false,
-            "error" -> "A story with the same reduced name already exists."
-          )))
-      })
-    })})
+  def create = auth.SecuredAction.async(parseFromJson[StoryData])({ request =>
+    val urlname = urlnameOf(request.body.name)
+    val checkExistence = db.Story().filter(s => s.urlname === urlname).
+      take(1).result.headOption
+    database.run(checkExistence).flatMap({
+      case None =>
+        val newStory = model.Story(UUID.randomUUID(),
+          request.identity.user.id,
+          request.body.name,
+          urlname,
+          "Moon.png",
+          "",
+          None)
+        val insert = db.Story().insert(newStory)
+        database.run(insert).map({ _ =>
+          Ok(write(newStory))
+        })
+      case Some(_) =>
+        Future.successful(Conflict(write(
+          "successful" -> false,
+          "error" -> "A story with the same reduced name already exists."
+        )))
+    })
+  })
 
   case class NewSceneData(text: String)
-  implicit val newSceneDataReads: Reads[NewSceneData] =
-    (JsPath \ "text").read[String].map(NewSceneData(_))
+  implicit val serialise_newSceneData: Serialisable[NewSceneData] = macroRW
 
   def createScene(storyName: String) =
-    auth.SecuredAction.async(parse.json)({ request =>
-      parseJson[NewSceneData](request.body, { scene =>
-        val getStory = db.Story().filter(_.urlname === storyName).
-          result.headOption
-        database.run(getStory).flatMap({
-          case None =>
-            Future.successful(
-              NotFound("Story with this urlname does not exist."))
-          case Some(story) =>
-            val newScene = model.Scene(UUID.randomUUID(),
-              story.id,
-              scene.text,
-              "title",
-              "urlname",
-              "image",
-              None,
-              "text",
-              false)
-            database.run(db.Scene().insert(newScene)).map({ _ =>
-              Created
-            })
-        })
+    auth.SecuredAction.async(parseFromJson[NewSceneData])({ request =>
+      val getStory = db.Story().filter(_.urlname === storyName).
+        result.headOption
+      database.run(getStory).flatMap({
+        case None =>
+          Future.successful(
+            NotFound("Story with this urlname does not exist."))
+        case Some(story) =>
+          val newScene = model.Scene(UUID.randomUUID(),
+            story.id,
+            request.body.text,
+            "title",
+            "urlname",
+            "image",
+            None,
+            "text",
+            false)
+          database.run(db.Scene().insert(newScene)).map({ _ =>
+            Created
+          })
       })
     })
 
+
   def updateScene(storyUrlname: String, sceneUrlname: String) =
-    auth.SecuredAction.async(parse.json)({ request =>
-      parseJson[NewSceneData](request.body, { sceneJson =>
-        val getStory = db.Story().filter(_.urlname === storyUrlname).
-          result.headOption
-        database.run(getStory).flatMap({
-          case None =>
-            Future.successful(
-              NotFound("Story with this urlname does not exist."))
-          case Some(story) =>
-            val getScene = db.Scene().filter(scene =>
-              scene.urlname === sceneUrlname &&
-                scene.story === story.id).
-              result.headOption
-            database.run(getScene).flatMap({
-              case None =>
-                Future.successful(
-                  NotFound("Scene with this urlname does not exist."))
-              case Some(scene) =>
-                val updatedScene = scene.copy(raw = sceneJson.text)
-                database.run(db.Scene().filter(_.id === scene.id).
-                  update(updatedScene)).map(_ => Ok)
-            })
-        })
+    auth.SecuredAction.async(parseFromJson[NewSceneData])({ request =>
+      val getStory = db.Story().filter(_.urlname === storyUrlname).
+        result.headOption
+      database.run(getStory).flatMap({
+        case None =>
+          Future.successful(
+            NotFound("Story with this urlname does not exist."))
+        case Some(story) =>
+          val getScene = db.Scene().filter(scene =>
+            scene.urlname === sceneUrlname &&
+              scene.story === story.id).
+            result.headOption
+          database.run(getScene).flatMap({
+            case None =>
+              Future.successful(
+                NotFound("Scene with this urlname does not exist."))
+            case Some(scene) =>
+              val updatedScene = scene.copy(raw = request.body.text)
+              database.run(db.Scene().filter(_.id === scene.id).
+                update(updatedScene)).map(_ => Ok)
+          })
       })
     })
+
 
 
   case class PlayerNameBody(name: String)
-  implicit val serialise_playerNameBody: Serialisable[PlayerNameBody] =
-    upickle.default.macroRW
+  implicit val serialise_playerNameBody: Serialisable[PlayerNameBody] = macroRW
 
   def createPlayer(storyUrlname: String) =
-    auth.SecuredAction.async(parseAsJson[PlayerNameBody])({ request =>
+    auth.SecuredAction.async(parseFromJson[PlayerNameBody])({ request =>
       val playerName = request.body.name
       val user = request.identity.user
       database.run(db.Story.ofUrlname(storyUrlname)).flatMap({

@@ -18,6 +18,7 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
+import upickle.default.macroRW
 
 import goodnight.db
 import goodnight.common.Serialise._
@@ -36,14 +37,12 @@ class SignIn(components: ControllerComponents,
 
 
   case class SignInData(identity: String, password: String)
-  implicit val signInDataReads: Reads[SignInData] = (
-    (JsPath \ "identity").read[String] and
-      (JsPath \ "password").read[String])(SignInData.apply _)
+  implicit val serialise_signInData: Serialisable[SignInData] = macroRW
 
 
-  def authenticate = silhouette.UnsecuredAction.async(parse.json)(
-    withJsonAs((request: Request[JsValue], signInData: SignInData) => {
-
+  def authenticate = silhouette.UnsecuredAction.async(
+    parseFromJson[SignInData])({ request =>
+      val signInData = request.body
       val credentials = Credentials(signInData.identity, signInData.password)
       credentialsProvider.authenticate(credentials).flatMap({ login =>
         silhouette.env.identityService.retrieve(login).flatMap({
@@ -62,7 +61,7 @@ class SignIn(components: ControllerComponents,
           "success" -> false,
           "error" -> e.getMessage())))
       })
-    }))
+    })
 
   def socialAuthenticate(provider: String) =
     TODO
