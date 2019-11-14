@@ -196,8 +196,8 @@ class Stories(components: ControllerComponents,
         case None =>
           Future.successful(NotFound(ujson.Obj(
             "success" -> false,
-            "error" -> "Story with name \"" + storyUrlname +
-              "\" does not exist.")))
+            "error" -> ujson.Str("Story with name \"" + storyUrlname +
+              "\" does not exist."))))
         case Some(story) =>
           val newPlayer = model.Player(UUID.randomUUID(),
             user.id,
