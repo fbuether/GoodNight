@@ -185,6 +185,16 @@ class Stories(components: ControllerComponents,
 
 
 
+  private def createPlayerForStory(user: model.User, story: model.Story,
+    playerName: String): Future[model.Player] = {
+    val player = model.Player(UUID.randomUUID(),
+      user.id,
+      story.id,
+      playerName,
+      story.startLocation)
+    database.run(db.Player().insert(player)).map(_ => player)
+  }
+
   case class PlayerNameBody(name: String)
   implicit val serialise_playerNameBody: Serialisable[PlayerNameBody] = macroRW
 
@@ -193,19 +203,9 @@ class Stories(components: ControllerComponents,
       val playerName = request.body.name
       val user = request.identity.user
       database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
-        case None =>
-          Future.successful(NotFound(ujson.Obj(
-            "success" -> false,
-            "error" -> ujson.Str("Story with name \"" + storyUrlname +
-              "\" does not exist."))))
+        case None => notFound("Story not found.")
         case Some(story) =>
-          val newPlayer = model.Player(UUID.randomUUID(),
-            user.id,
-            story.id,
-            playerName,
-            story.startLocation)
-          database.run(db.Player().insert(newPlayer)).map(_ =>
-            Created(newPlayer))
+          createPlayerForStory(user, story, playerName).map(Created(_))
       })
     })
 }

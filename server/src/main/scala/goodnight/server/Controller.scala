@@ -74,5 +74,14 @@ class Controller(
 
   implicit val jsonWriteable: Writeable[ujson.Value] =
     Writeable(data => ByteString(ujson.write(data)), Some("application/json"))
+
+
+  def error(message: String): ujson.Obj =
+    ujson.Obj(
+      "success" -> false,
+      "error" -> ujson.Str(message))
+
+  def notFound(message: String): Future[Result] =
+    Future.successful(NotFound(error(message)))
 }
 
