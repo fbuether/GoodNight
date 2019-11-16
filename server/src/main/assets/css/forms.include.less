@@ -1,0 +1,83 @@
+
+
+input[type="email"],
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+  border: @line-width solid tint(black, 70);
+  background: tint(black, 98);
+  border-radius: 0.3rem;
+
+  padding: 0.4rem 0.65rem;
+  outline: 0;
+
+  &::placeholder {
+    font-style: italic;
+    color: tint(@font, 33);
+  }
+}
+
+
+button {
+  border: @line-width solid darken(@action-background, 72);
+  border-radius: 0.3rem;
+
+  background: @action-background;
+  color: white;
+  padding: 0.4rem 0.65rem;
+  outline: 0;
+
+  text-shadow: 0 0 0.05rem hsv(0, 0, 0.5, 0.5);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: none;
+    background: tint(@action-background, 30);
+    text-shadow: 0 0 0.05rem hsv(0, 0, 0.7, 0.2);
+  }
+
+  &:active {
+    background: shade(@action-background, 20);
+    color: white;
+    text-shadow: 0 0 0.05rem hsv(0, 0, 0.5, 0.2);
+  }
+
+  &.locked {
+    cursor: default;
+    box-shadow: none;
+    background: greyscale(@action-background);
+    border: @line-width solid greyscale(darken(@action-background, 72));
+    color: greyscale(@action-font);
+  }
+
+  &.loading {
+    background: tint(black, 94);
+    color: tint(@font, 60);
+
+    & > .fa-spin {
+      display: inline-block;
+    }
+  }
+}
+
+
+
+
+
+.simple {
+  display: flex;
+  flex-direction: column;
+
+  input[type="email"],
+  input[type="text"],
+  input[type="password"],
+  select,
+  textarea {
+    margin: 0.4rem 0 0.25rem 0;
+  }
+
+  button {
+    margin: 0.65rem 0 0.4rem 0;
+  }
+}
