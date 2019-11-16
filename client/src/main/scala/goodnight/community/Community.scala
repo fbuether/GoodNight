@@ -12,7 +12,7 @@ import goodnight.components.Banner
 
 object Community {
   val component = ScalaComponent.builder.static("Community")(
-    <.div("Community is not yet implemented.")).
+    <.p("Community is not yet implemented.")).
     build
 
 

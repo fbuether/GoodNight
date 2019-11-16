@@ -1,0 +1,327 @@
+
+
+* {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+
+.hidden {
+  visibility: collapse;
+  width: 0;
+  height: 0;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+
+// headings
+
+h1,
+h1 * {
+  font-size: @h1-size;
+  line-height: @line-height-factor * @h1-size;
+  margin: 0;
+}
+
+h2 {
+  font-size: @h2-size;
+  line-height: @line-height-factor * @h2-size;
+  margin: (@h2-size * 0.8) @gn-padding (@h2-size * 0.6) @gn-padding;
+
+  border-bottom: @line-width solid @horizontal-line;
+}
+
+h3 {
+  font-size: @h3-size;
+  line-height: @line-height-factor * @h3-size;
+  margin: (@h3-size * 0.6) @gn-padding (@h3-size * 0.4) @gn-padding;
+}
+
+h4 {
+  font-size: @h4-size;
+  line-height: @line-height-factor * @h4-size;
+  margin: (@h4-size * 0.45) @gn-padding (@h4-size * 0.3) @gn-padding;
+}
+
+
+// text
+
+p {
+  margin: (@font-size * 0.4) @gn-padding (@font-size * 0.3) @gn-padding;
+  text-indent: @font-size * 0.7;
+  line-height: @font-size * @line-height-factor;
+
+  * {
+    text-indent: 0;
+  }
+}
+
+a {
+  color: @link;
+}
+
+
+ul {
+  list-style-type: none;
+}
+
+
+i.fas, i.far, i.fa {
+  font-size: inherit;
+}
+
+i.fas.label, i.far.label, i.fa.label {
+  margin-right: 0.3em;
+}
+
+
+// tiles.
+
+.as-tiles {
+  margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
+  display: flex;
+  flex-wrap: wrap;
+
+  & > * {
+    display: inline-flex;
+    width: calc(100%/3 - 0.6rem);
+  }
+
+  &.links > * > a {
+    display: inline-flex;
+    align-items: center;
+
+    width: 100%;
+    margin: 0.3rem;
+    padding: 0.5rem 0.4rem;
+
+    border-radius: 0.3rem;
+    border: @line-width solid @horizontal-line;
+
+    background: hsv(0, 0, 0.9);
+    text-decoration: none;
+    color: @font;
+
+    &:hover {
+      background: @link-hover-background url("../images/menu-background.png");
+      color: @link;
+      border: @line-width solid @link;
+    }
+
+  }
+}
+
+
+.as-items {
+  margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
+  display: flex;
+  flex-direction: column;
+
+  &.links > * > a,
+  &.links > *.disabled {
+    display: block;
+    margin: 0.3rem;
+    padding: 0.2rem 0.5rem;
+
+    border-radius: 0.3rem;
+    border: @line-width solid @horizontal-line;
+
+    background: hsv(0, 0, 0.9);
+    text-decoration: none;
+    color: @font;
+  }
+
+  &.links > * > a:hover {
+    background: mix(tint(black, 90), @link-hover-background, 60);
+    color: mix(@font, @link, 70);
+    border: @line-width solid @link;
+  }
+
+  &.links > *.disabled {
+    border: @line-width solid tint(@horizontal-line, 50);
+
+    & > h4,
+    & > p {
+      color: hsv(0, 0, 0.6);
+    }
+
+    & > img {
+      filter: grayscale(1);
+    }
+  }
+}
+
+
+
+// tooltips
+
+*.tooltip-anchor {
+  position: relative;
+
+  & > .tooltip {
+    position: absolute;
+    border: @line-width solid darken(@horizontal-line, 50);
+    background: hsv(0, 0, 0.96);
+    width: 11rem;
+    padding: 0.5rem 0.4rem;
+
+    visibility: collapse;
+    border-radius: 0.3rem;
+
+    &:before, &:after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      margin-left: -1rem;
+      width: 0;
+      height: 0;
+    }
+
+    &:before {
+      right: 1.3rem;
+      border-bottom: 0.7rem solid darken(@horizontal-line, 50);
+      border-right: 0.7rem solid transparent;
+      border-left: 0.7rem solid transparent;
+    }
+
+    &:after {
+      right: 1.35rem;
+      border-bottom: 0.65rem solid hsv(0, 0, 0.96);
+      border-right: 0.65rem solid transparent;
+      border-left: 0.65rem solid transparent;
+    }
+  }
+
+  &:hover > .tooltip {
+    visibility: visible;
+    display: block;
+    top: 1.5rem;
+    right: -1rem;
+    z-index: 5;
+  }
+}
+
+
+
+// formatting
+
+.as-columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+
+  @media (max-width: @gn-width * 0.7) {
+    flex-direction: column;
+  }
+
+  & > :first-child {
+    // undo the spacing created by padding in both columns.
+    margin-right: @gn-padding * -1;
+  }
+
+  & > * {
+    flex: 1 1 0;
+  }
+}
+
+
+// overlays
+
+.overlay-anchor {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 1em;
+  bottom: 1em;
+  left: 1em;
+  right: 1em;
+  background: @main-background;
+  border: 0.05em solid @horizontal-line;
+  border-radius: 0.6em;
+  box-shadow: 0.2em 0.2em 2em hsv(0, 0, 0.6);
+}
+
+.overlay.fullscreen {
+  position: fixed;
+}
+
+
+
+// inset elements
+
+.inset {
+  margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
+
+  padding: 0.8rem @gn-padding;
+
+
+  border: @line-width solid @horizontal-line;
+  border-radius: 0.3rem;
+  background: tint(black, 96);
+
+  h2:first-child,
+  h3:first-child {
+    margin: -12px (@gn-padding * -1) 12px (@gn-padding * -1);
+    border-top-right-radius: 0.3rem;
+    border-top-left-radius: 0.3rem;
+    background: mix(@highlight-background, white, 30);
+    border-bottom: @line-width solid @horizontal-line;
+    padding: 12px @gn-padding 8px @gn-padding;
+  }
+
+  h4 {
+    border-bottom: 1px solid @horizontal-line;
+    padding-left: 0.2rem;
+  }
+
+  label,
+  button,
+  a.button,
+  div.a.button,
+  ul {
+    width: 100%;
+  }
+
+  label,
+  h4,
+  ul {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
+
+// loading screen
+
+.loadingBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 80%;
+  margin: 0 auto;
+
+  border-radius: 0.3em;
+  border: 1px solid @horizontal-line;
+  padding: 0.4em 0.3em;
+
+  background: hsv(0, 0, 0.9);
+  text-decoration: none;
+  color: @font;
+
+  img {
+    margin-top: 0.2em;
+    height: 4em;
+  }
+}

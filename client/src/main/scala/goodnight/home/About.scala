@@ -4,7 +4,6 @@ package goodnight.home
 import java.lang.System
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
 import goodnight.components.Shell

@@ -43,7 +43,7 @@ object Menu {
       <.li(^.className := linkClass,
         router.link(page)(
           <.span(^.className := icon),
-          " " + title))
+          title))
 
     def render(p: Props, user: State) = {
       val userItems = user match {
@@ -52,12 +52,12 @@ object Menu {
           // this span is required to have react create new elements.
           // otherwise, after logout, the new sign in link would also fire.
           <.span(),
-          item(p, pages.SignIn, "far fa-check-square", "Sign in"))
+          item(p, pages.SignIn, "fas fa-sign-in-alt", "Sign in"))
         case Some(user) => Seq(
           item(p, pages.Profile, "fa fa-user-astronaut", user.name),
           <.li(<.a(^.onClick --> doSignOut(p),
-            <.i(^.className := "far fa-times-circle"),
-            " Sign out")))
+            <.i(^.className := "fas fa-sign-out-alt"),
+            "Sign out")))
       }
 
       <.div.withRef(menuRef)(^.className := "menu",
@@ -69,7 +69,7 @@ object Menu {
           <.li(^.className := "expander",
             <.a(^.onClick --> toggleExpandedMenu,
               <.i(^.className := "fa fa-navicon"),
-              " Menu")),
+              "Menu")),
           userItems.toTagMod))
     }
   }

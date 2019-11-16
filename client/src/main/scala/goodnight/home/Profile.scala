@@ -18,22 +18,8 @@ import goodnight.service.{ Request, Reply }
 
 
 object Profile {
-  // def render(router: pages.Router): VdomElement = {
-  //   Shell.component(Shell.Props(router,
-  //     ))(
-  //     component(Props(router)))
-  // }
-
-
-  // type Props = (pages.Router)
-
-  case class Props(
-    router: pages.Router
-  )
-
-  case class State(
-    i: Int
-  )
+  case class Props(router: pages.Router)
+  case class State(i: Int)
 
   class Backend(bs: BackendScope[Props, State]) {
     val changer = bs.modState(s => s.copy(i = s.i + 1))
@@ -53,7 +39,7 @@ object Profile {
             if (stories.isEmpty)
               <.p("You have not written any stories yet.")
             else
-              <.ul(^.className := "storyList",
+              <.ul(^.className := "story-list as-tiles links",
                 stories.map({ story =>
                   renderStory(router, story)
                 }).toTagMod)
@@ -67,12 +53,9 @@ object Profile {
         <.p("This area will show a bit of info about yourself, at some point."),
         <.h2("My Stories"),
         Loading.suspend(p.router, loadMyStories(p.router)),
-        <.ul(^.className := "storyList",
-          <.li(
-            p.router.link(pages.CreateStory)(
-              <.img(^.src := (p.router.baseUrl +
-                "assets/images/buuf/Alien World.png").value),
-              <.div("Create a new story")))))
+        <.p("Fancy something not read before? ",
+          p.router.link(pages.CreateStory)(
+            "Create a new story!")))
   }
 
   val component = ScalaComponent.builder[Props]("Profile").

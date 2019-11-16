@@ -34,7 +34,7 @@ object Stories {
       forJson[List[model.Story]].
       map({
         case Reply(_, stories) =>
-          <.ul(^.className := "storyList",
+          <.ul(^.className := "story-list as-tiles links",
             stories.map({ story =>
               renderStory(router, story)
             }).toTagMod)

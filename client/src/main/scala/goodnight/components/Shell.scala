@@ -15,14 +15,14 @@ object Shell {
   val footer = ScalaComponent.builder[pages.Router]("Footer").
     render_P(router =>
       <.div(^.className := "schlussvermerk",
-        "© " + Year.now.getValue + " ",
+        // "© " + Year.now.getValue + " ",
         <.a(^.href := "https://jasminefields.net",
           ^.title := "jasminéfields.net",
           ^.target := "_blank",
           "jasminéfields.net"),
         " ~ ",
         router.link(pages.About)(
-          "about us"),
+          "the goodnight team"),
         " ~ ",
         <.a(^.href := "mailto:goodnight@jasminefields.net",
           "goodnight@jasminefields.net"),

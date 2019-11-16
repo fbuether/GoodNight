@@ -26,11 +26,9 @@ object Input {
 
     def render(p: Props, s: State): VdomElement = {
       val ty = if (p.password) <.input.password else <.input.text
-      <.label(^.className := "captioned",
-        p.label,
-        ty(^.name := p.name,
-          p.props.toTagMod
-        ).withRef(inputRef))
+      ty(^.name := p.name,
+        p.props.toTagMod,
+        ^.placeholder := p.label).withRef(inputRef)
     }
   }
 

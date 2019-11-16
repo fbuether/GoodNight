@@ -19,7 +19,7 @@ object Home {
           Experience the tension of diving into the ocean's depths,
           climbing the stars, or fighting for your survival in the
           cold arctic."""),
-        <.div(^.className := "withColumns",
+        <.div(^.className := "as-columns",
           <.div(
             <.h3("News"),
             <.p("GoodNight is in development! New things are bound to " +

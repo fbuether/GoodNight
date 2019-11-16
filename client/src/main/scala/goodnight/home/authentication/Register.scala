@@ -64,18 +64,21 @@ object Register {
     }
 
     def render(router: Props, s: State): VdomElement =
-      <.form(^.className := "centered inset",
+      <.form(^.className := "simple centered inset",
         ^.onSubmit ==> doRegister,
         <.h2(
           <.i(^.className := "fa fa-plus-square"),
           " Register"),
+        <.p("Please supply a username and an email address, so we know how " +
+          "to address as well as contact you."),
         usernameRef.component(Input.Props(
-          "Username:", "username",
+          "Username", "username",
           List(^.autoFocus := true, ^.required := true))),
         mailRef.component(Input.Props(
-          "Email:", "email", List(^.required := true))),
+          "Email", "email", List(^.required := true))),
+        <.p("We prefer you to supply a safe password."),
         passwordRef.component(Input.Props(
-          "Password:", "password",
+          "Password", "password",
           List(^.required := true), password = true)),
         <.button(^.tpe := "submit",
           <.i(^.className := "far fa-check-square"),

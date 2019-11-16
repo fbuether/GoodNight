@@ -77,20 +77,20 @@ object SignIn {
 
 
     def render(p: Props, s: State): VdomElement = {
-      <.div(^.className := "withColumns",
+      <.div(^.className := "as-columns",
         <.div(
           <.h2("Register"),
           <.p("If you are new to GoodNight, you can register yourself here:"),
           <.p(
             p.router.link(pages.Register)(
-              <.i(^.className := "fa fa-arrow-right"),
-              " Register yourself at GoodNight")),
+              <.i(^.className := "fa fa-arrow-right label"),
+              "Register yourself at GoodNight")),
           <.h2("Forgot Password?"),
           <.p("Forgot your password?"),
           <.p(
             p.router.link(pages.RequestPasswordReset)(
-              <.i(^.className := "fa fa-unlock"),
-              " Request to reset your password")),
+              <.i(^.className := "fa fa-unlock label"),
+              "Request to reset your password")),
           <.h2("Social Media Sign In"),
           <.p("Sign in via any of these social media providers:"),
           // <.ul(
@@ -100,16 +100,16 @@ object SignIn {
           //       "Github")))
         ),
         <.div(
-          <.form(^.className := "centered inset",
+          <.form(^.className := "simple inset",
             ^.onSubmit ==> doSignIn,
             <.h2(
-              <.i(^.className := "fa fa-check-square-o"),
-              " Sign in"),
+              <.i(^.className := "fas fa-sign-in-alt label"),
+              "Sign in"),
             usernameRef.component(Input.Props(
-              "Email:", "username",
+              "Email", "username",
               List(^.autoFocus := true, ^.required := true))),
             passwordRef.component(Input.Props(
-              "Password:", "password",
+              "Password", "password",
               List(^.required := true), password = true)),
             // <label class="checkbox">
             //   <input type="hidden" name="staySignedInExists" value="true">
@@ -120,9 +120,9 @@ object SignIn {
             <.button(^.tpe := "submit",
               (^.className := "loading").when(s.loading),
               (^.disabled := true).when(s.loading),
-              (<.i(^.className := "fa fa-pencil-square-o")).when(!s.loading),
-              (<.i(^.className := "far fa-spin fa-compass")).when(s.loading),
-              " Sign in"),
+              (<.i(^.className := "far fa-check-square label")).when(!s.loading),
+              (<.i(^.className := "far fa-spin fa-compass label")).when(s.loading),
+              "Sign in"),
             s.loginError.map(err =>
               <.p(^.className := "plain error",
                 err)))))

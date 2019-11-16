@@ -1,0 +1,110 @@
+
+html {
+  font-size: @font-size;
+  line-height: @font-size * @line-height-factor;
+  overflow-y: scroll;
+}
+
+
+body {
+  font-family: "Droid Serif", "droid_serifregular", Cambria, Georgia, serif;
+
+  margin: 0;
+  padding: 0;
+
+  background: hsv(209, 0.34, 0.38) url("../images/background.png");
+
+  font-size: 0;
+  line-height: 0;
+}
+
+
+div#goodnight-client {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+div.goodnight {
+  background: hsv(0, 0, 0.94);
+  color: @font;
+
+  width: @gn-width;
+  margin: (@font-size * 2) auto (@font-size * 6) auto;
+  border-radius: 0.8rem;
+
+  font-size: 0;
+  line-height: 0;
+
+  @media (max-width: @gn-width) {
+    margin-top: 0;
+    border-radius: 0;
+  }
+}
+
+
+//--------------------------------------
+// banner
+
+
+.banner {
+  @scale: @h1-size;
+  padding: (@scale * 0.7) (@gn-padding * 1.5)
+    (@scale * 0.6) (@gn-padding * 0.5);
+
+  @bg: @highlight-background;
+  background: linear-gradient(to bottom, darken(@bg, 8) 0%, @bg 17%, @bg 100%);
+
+  @image-scale: @h1-size * 3.4;
+  @image-unpos: @font-size * -1.5;
+  img {
+    position: absolute;
+    margin: @image-unpos (@font-size * 0.8);
+    width: @image-scale;
+    height: @image-scale;
+  }
+
+  span {
+    margin-left: @image-scale + @scale;
+    /* font-size: @h1-size; */
+    text-shadow: 1px 1px 2px hsv(0, 0, 0.7);
+  }
+
+  & + * {
+    margin-top: @font-size;
+  }
+}
+
+
+//--------------------------------------
+// schlussvermerk
+
+
+.schlussvermerk {
+  text-align: center;
+  margin: 2rem 20% 0 20%;
+  padding: 1.2rem 0 3.2rem 0px;
+
+  border-top: 1px solid @horizontal-line;
+  color: @font-less;
+
+  font-size: 0.65rem;
+  line-height: 0.65rem;
+
+  clear: both;
+}
+
+.schlussvermerk a {
+  font-size: inherit;
+  line-height: inherit;
+  color: @font-less;
+}
+
+.schlussvermerk img {
+  vertical-align: middle;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}

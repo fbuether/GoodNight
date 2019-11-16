@@ -36,9 +36,9 @@ object CreatePlayer {
         <.p("""To read or play this story, you will need a name first.
           Please tell us how you will be addressed henceforth in this world.
           """),
-        <.div(^.className := "centered inset",
+        <.div(^.className := "simple centered inset",
           playerNameRef.component(Input.Props(
-            "Name:", "playerName",
+            "Name", "playerName",
             List(^.autoFocus := true, ^.required := true))),
           <.button(^.tpe := "submit",
             ^.className := "small atRight",

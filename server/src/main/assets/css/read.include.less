@@ -1,0 +1,89 @@
+
+ul.story-list {
+  li > a > img {
+    width: 4rem;
+    height: 4rem;
+    margin-right: 0.3rem;
+  }
+}
+
+
+// ingame
+
+
+div#matter {
+  display: flex;
+  flex-direction: row-reverse;
+
+  div#side {
+    flex-grow: 0;
+  }
+
+  div#centre {
+    flex-grow: 1;
+  }
+}
+
+
+
+// auswahl
+
+
+.choices > * > a,
+.choices > *.disabled {
+  position: relative;
+  padding: 0.3rem 0;
+
+  &:after {
+    clear: both;
+  }
+
+  & > img:first-child {
+    float: left;
+    width: 5rem;
+    height: 5rem;
+    margin: 0 0.5rem;
+  }
+
+  .requirements {
+    float: right;
+    margin: 0.5rem;
+
+    & > li {
+      display: inline-block;
+      margin-left: 0.1rem;
+      padding: 0.2rem;
+
+      & > img {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .tooltip {
+        display: flex;
+        flex-direction: column;
+        top: 3rem;
+        right: -0.85rem;
+      }
+
+      &.disabled {
+        border-radius: 0.3rem;
+        background: @error;
+
+        & > img {
+          filter: grayscale(1);
+        }
+
+        .tooltip > *:last-child {
+          color: @error;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
