@@ -17,6 +17,5 @@ case class Scene(
   image: String,
   location: Option[UUID],
   text: String,
-  mandatory: Boolean,
+  mandatory: Boolean
 )
-

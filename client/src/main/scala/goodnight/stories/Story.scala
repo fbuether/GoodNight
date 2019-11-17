@@ -68,7 +68,8 @@ object Story {
       case State(Some(story), Some(player), _) =>
         <.div(
           Banner.component(props.router, story.image, story.name),
-          <.p("Return to play, " + player.name))
+          StoryRoll.component(StoryRoll.Props(props.router, story,
+            player)))
       case _ =>
         Error.component(new Error("somethings wrong."), false)
     }
