@@ -23,6 +23,7 @@ val versions = new {
   val react = "16.8.6"
   val reactMarkdown = "4.0.6"
   val reactMarkdownScala = "0.3.1"
+  val fontAwesome = "5.11.2"
   val roshttp = "2.2.4"
   val upickle = "0.8.0"
 
@@ -81,8 +82,8 @@ lazy val client: Project = project.in(file("client")).
     // optimised building.
     webpackBundlingMode := BundlingMode.LibraryOnly(),
     emitSourceMaps := false,
-    version in webpack := "4.8.1",
-    version in startWebpackDevServer := "3.1.4",
+    version in webpack := "4.41.2",
+    version in startWebpackDevServer := "3.9.0",
 
 
     resolvers ++= Seq(
@@ -132,7 +133,10 @@ lazy val server = project.in(file("server")).
     ),
 
     libraryDependencies ++= Seq(
-      caffeine, // play cache
+      // play cache
+      caffeine,
+
+      "org.webjars" % "font-awesome" % versions.fontAwesome,
 
       "com.typesafe.play" %% "play-slick" % versions.playSlick,
       "com.typesafe.play" %% "play-slick-evolutions" % versions.playSlick,
