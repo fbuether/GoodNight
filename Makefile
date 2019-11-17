@@ -31,7 +31,12 @@ sbt:
 
 
 clean:
-	sbt clean
+	rm -r project/project/target/ || true
+	rm -r project/target/ || true
+	rm -r client/target/ || true
+	rm -r server/target/ || true
+	rm -r common/.js/target/ || true
+	rm -r common/.jvm/target/ || true
 
 
 docker:

@@ -13,8 +13,8 @@
   </head>
   <body>
     <div id="goodnight-client"></div>
-
-    <script src="@resolve("goodnight-client-jsdeps.js")"></script>
+    <script src="@resolve("goodnight-client-" + jsMode + "-library.js")"></script>
+    <script src="@resolve("goodnight-client-" + jsMode + "-loader.js")"></script>
     <script src="@resolve("goodnight-client-" + jsMode + ".js")"></script>
   </body>
 </html>

@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat
 
 def setProject(projName: String) = Seq(
   name := "GoodNight " + projName,
-  // version := "0.0.5",
   maintainer := "fbuether@jasminefields.net",
 )
 
@@ -18,18 +17,12 @@ val versions = new {
   val scalajsDom = "0.9.7"
   val scalajsReact = "1.4.2"
   val log4js = "1.4.13-1"
-  // val autowire = "0.2.6"
-  // val booPickle = "1.3.1"
-  // val diode = "1.1.5"
-  // val diodeReact = "1.1.5.142"
   val uTest = "0.7.1"
   val scalaJsTime = "0.2.5"
 
   val react = "16.8.6"
-  val jQuery = "3.4.1"
-  val fontawesome = "5.6.3"
-  // val bootstrap = "4.3.1"
-  // val chartjs = "2.6.0"
+  val reactMarkdown = "4.0.6"
+  val reactMarkdownScala = "0.3.1"
   val roshttp = "2.2.4"
   val upickle = "0.8.0"
 
@@ -46,22 +39,10 @@ val versions = new {
 
 val setScalaOptions = Seq(
   scalaVersion := versions.scala,
-  scalacOptions ++= Seq(
-    // "-Xlint:_",
-    "-unchecked",
-    "-deprecation",
-    "-feature",
-  ),
+  scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
   sources in (Compile, doc) := Seq.empty,
   publishArtifact in (Compile, packageDoc) := false
 )
-
-
-// scalac allows to elide code in certain builds, to remove debug
-// behaviour from production builds. This setting controlls that
-// behaviour.
-lazy val elideOptions = settingKey[Seq[String]](
-  "Set limit for elidable functions")
 
 
 lazy val common = crossProject(JSPlatform, JVMPlatform).
@@ -77,15 +58,16 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
 
 
 lazy val client: Project = project.in(file("client")).
-  enablePlugins(ScalaJSPlugin, ScalaJSWeb, BuildInfoPlugin, GitVersioning).
+  enablePlugins(BuildInfoPlugin, GitVersioning,
+    ScalaJSBundlerPlugin).
   dependsOn(common.js.settings(name := "commonJS")).
   settings(
     setProject("Client"),
     setScalaOptions,
 
-    // by default, do not elide anything, i.e. keep everything.
-    elideOptions := Seq(),
-    scalacOptions ++= elideOptions.value,
+    // store a set of build information.
+    git.useGitDescribe := true,
+    buildInfoPackage := "goodnight.version",
     buildInfoKeys := Seq[BuildInfoKey](
       name, version, scalaVersion, sbtVersion,
       BuildInfoKey.action("buildTime")(
@@ -93,84 +75,48 @@ lazy val client: Project = project.in(file("client")).
       git.gitHeadCommit,
       git.baseVersion,
     ),
-    git.useGitDescribe := true,
-    // git.formattedShaVersion := git.gitHeadCommit.value.map(_.substring(0,7)),
-    buildInfoPackage := "goodnight.version",
 
-    skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := true,
+
+    // optimised building.
+    webpackBundlingMode := BundlingMode.LibraryOnly(),
+    emitSourceMaps := false,
+    version in webpack := "4.8.1",
+    version in startWebpackDevServer := "3.1.4",
+
 
     resolvers ++= Seq(
       Resolver.bintrayRepo("hmil", "maven")
     ),
 
     libraryDependencies ++= Seq(
-      "com.github.japgolly.scalajs-react" %%% "core" % versions.scalajsReact,
-      "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalajsReact,
-
       "org.scala-js" %%% "scalajs-dom" % versions.scalajsDom,
       "org.scala-js" %%% "scalajs-java-time" % versions.scalaJsTime,
+      "com.github.japgolly.scalajs-react" %%% "core" % versions.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalajsReact,
+      "com.dbrsn.scalajs.react.components" %%% "react-markdown" %
+        versions.reactMarkdownScala,
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
 
-      // "io.suzaku" %%% "diode" % versions.diode,
-      // "io.suzaku" %%% "diode-react" % versions.diodeReact,
-
       "com.lihaoyi" %%% "utest" % versions.uTest % Test
     ),
-    jsDependencies ++= Seq(
-      "org.webjars.npm" % "react" % versions.react /
-        "umd/react.development.js"
-        minified "umd/react.production.min.js"
-        commonJSName "React",
-      "org.webjars.npm" % "react-dom" % versions.react /
-        "umd/react-dom.development.js"
-        minified "umd/react-dom.production.min.js"
-        dependsOn "umd/react.development.js"
-        commonJSName "ReactDOM",
-      "org.webjars.npm" % "react-dom" % versions.react /
-        "umd/react-dom-server.browser.development.js"
-        minified "umd/react-dom-server.browser.production.min.js"
-        dependsOn "umd/react-dom.development.js"
-        commonJSName "ReactDOMServer",
-      "org.webjars.npm" % "jquery" % versions.jQuery /
-        "dist/jquery.js"
-        minified "jquery.min.js",
-      // "org.webjars.npm" % "bootstrap" % versions.bootstrap /
-      // "bootstrap.js" minified "bootstrap.min.js" dependsOn "dist/jquery.js",
-      // "org.webjars.bower" % "chartjs" % versions.chartjs /
-      // "Chart.js" minified "Chart.min.js",
-      "org.webjars" % "log4javascript" % versions.log4js /
-        "js/log4javascript_uncompressed.js"
-        minified "js/log4javascript.js"
+    npmDependencies in Compile ++= Seq(
+      "react" -> versions.react,
+      "react-dom" -> versions.react,
+      "react-markdown" -> versions.reactMarkdown
     ),
-
-    // settings for tests.
-    scalaJSUseMainModuleInitializer in Test := false,
-    // RuntimeDOM is needed for tests
-    jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
-    testFrameworks += new TestFramework("utest.runner.Framework"),
-
-    // react 16.8 does not properly announce dependencies at webjars.org,
-    // add these here manually. https://github.com/webjars/webjars/issues/1789
-    dependencyOverrides ++= Seq(
-      "org.webjars.npm" % "js-tokens" % "4.0.0",
-      "org.webjars.npm" % "scheduler" % "0.14.0"
-    )
   )
 
 
 lazy val server = project.in(file("server")).
-  enablePlugins(PlayScala, GitVersioning).
+  enablePlugins(PlayScala, GitVersioning, WebScalaJSBundlerPlugin).
   disablePlugins(PlayLayoutPlugin).
-  aggregate(projectToRef(client)).
   dependsOn(common.jvm.settings(name := "commonJVM")).
   settings(
     setProject("Server"),
     setScalaOptions,
 
-    // trigger scalaJSPipeline when using compile or continuous compilation
-    compile in Compile := compile.in(Compile).dependsOn(scalaJSPipeline).value,
     // connect the client project
     scalaJSProjects := Seq(client),
     pipelineStages in Assets := Seq(scalaJSPipeline),
@@ -179,19 +125,6 @@ lazy val server = project.in(file("server")).
     // less assets.
     includeFilter in (Assets, LessKeys.less) := "*.less",
     excludeFilter in (Assets, LessKeys.less) := "*.include.less",
-    // compile in Compile := compile.in(Compile).dependsOn(less).value,
-
-    // new command to build a release version, also runs tests.
-    commands += Command.command("release") { state =>
-      "set elideOptions in client := Seq(\"-Xelide-below\", \"WARNING\")" ::
-      "client/clean" ::
-      "client/test" ::
-      "server/clean" ::
-      "server/test" ::
-      "server/dist" ::
-      "set elideOptions in client := Seq()" ::
-      state
-    },
 
     resolvers ++= Seq(
       Resolver.jcenterRepo,
@@ -200,10 +133,6 @@ lazy val server = project.in(file("server")).
 
     libraryDependencies ++= Seq(
       caffeine, // play cache
-
-      "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
-      "org.webjars.npm" % "fontawesome" % versions.fontawesome % Provided,
-      // "org.webjars.npm" % "bootstrap" % versions.bootstrap % Provided,
 
       "com.typesafe.play" %% "play-slick" % versions.playSlick,
       "com.typesafe.play" %% "play-slick-evolutions" % versions.playSlick,
@@ -214,17 +143,14 @@ lazy val server = project.in(file("server")).
       "com.mohiva" %% "play-silhouette" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
-      // "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.0-RC2",
-      // "com.mohiva" %% "play-silhouette-testkit" % "5.0.0-RC2" % "test"
-
-      "com.lihaoyi" %% "utest" % versions.uTest % Test,
     )
   )
 
 
-// load the Play server project at sbt startup
-onLoad in Global := (Command.
-  process("project server", _: State)).
-  compose((onLoad in Global).value)
-
-
+lazy val goodnight = project.in(file(".")).
+  aggregate(client, server).
+  settings(
+    commands += Command.command("run")({ state =>
+      "server/run" :: state
+    })
+  )

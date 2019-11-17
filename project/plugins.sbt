@@ -1,6 +1,8 @@
 resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
 resolvers += Resolver.typesafeRepo("releases")
 
+addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.15.0-0.6")
+addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.15.0-0.6")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.9.0")
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.3")
 addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.4")
