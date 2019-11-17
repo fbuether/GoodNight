@@ -11,13 +11,12 @@ trait PathCreator {
       case (_, C(const) +: sl) => const + writeNext(params, sl)
       case (p +: pl, S +: sl) => p + writeNext(pl, sl)
       case (_, S +: sl) => {
-        println("invalid PathCreator call, too few parameters for S!")
-        ""
+        throw new Error("invalid PathCreator call, too few parameters for S!")
       }
       case (Seq(p), R +: sl) => p + writeNext(Seq(), sl)
       case (_, R +: sl) => {
-        println("invalid PathCreator call, too few/many parameters for R!")
-        ""
+        throw new Error(
+          "invalid PathCreator call, too few/many parameters for R!")
       }
     }
 
