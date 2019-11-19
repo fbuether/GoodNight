@@ -27,6 +27,14 @@ RUN \
   chmod -R 755 /usr/share/scala && \
   ln -s /usr/share/scala/bin/scala /usr/local/bin/scala
 
+
+# install npm to fetch javascript dependencies.
+
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
+  apt-get install npm && \
+  npm --version
+
+
 WORKDIR /build/
 
 # copy the build definition only, in order to provide a base for sbt to
