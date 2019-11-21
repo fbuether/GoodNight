@@ -11,7 +11,7 @@ case class Scene(
   // the textual representation, uninterpreted.
   raw: String,
 
-  // interpreted data, dependent on text.
+  // interpreted data, dependent on `raw`.
   title: String,
   urlname: String,
   image: String,
