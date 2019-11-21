@@ -15,7 +15,33 @@ import goodnight.service.Conversions._
 object AuthenticationService {
   private val userKey = "auth-user"
   private var changeListener: Buffer[Option[model.User] => Unit] = Buffer.empty
+  private var startVerify = false
   private var verified = false // todo: have we verified the auth this session?
+
+  def verifyIfRequired = {
+    if (!verified && !startVerify) {
+      startVerify = true
+      getUser match {
+        case None =>
+          verified = true
+        case Some(storedUser) =>
+          println("verifying user.")
+          startVerify = true
+          Request(ApiV1.Self).send.forJson[model.User].map({
+            a => verified = true; a
+          }).completeWith({
+            case Success(Reply(200, user)) => Callback({
+              if (storedUser != user) {
+                LocalStorage.update(userKey, write(user))
+                changeListener.foreach(_(Some(user)))
+              }
+            })
+            case r =>
+              signOut
+          }).runNow
+      }
+    }
+  }
 
   def getUser: Option[model.User] = {
     LocalStorage(userKey).
@@ -27,6 +53,7 @@ object AuthenticationService {
 
   def onUserChange(handler: Option[model.User] => Unit): Unit = {
     changeListener += handler
+    verifyIfRequired
     handler(getUser)
   }
 

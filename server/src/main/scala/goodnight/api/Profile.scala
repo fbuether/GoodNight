@@ -41,6 +41,6 @@ class Profile(
   }
 
   def showSelf = auth.SecuredAction({ request =>
-    Ok(write(request.identity.user))
+    Ok(request.identity.user)
   })
 }

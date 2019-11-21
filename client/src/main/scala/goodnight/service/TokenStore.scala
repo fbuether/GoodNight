@@ -22,7 +22,7 @@ object TokenStore
 
   def store(token: String): Unit = {
     // only update token if it actually is different from before.
-    if (get == Some(token) || get == None) {
+    if (get != Some(token) || get == None) {
       LocalStorage.update(tokenKey, token)
       changeListener.foreach(listener => listener(Some(token)))
     }
