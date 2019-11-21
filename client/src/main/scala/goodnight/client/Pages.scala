@@ -13,6 +13,8 @@ package pages {
   case object Profile extends Page
   case object About extends Page
 
+  case object Test extends Page
+
   // authentication
   case object Register extends Page
   case object SignIn extends Page

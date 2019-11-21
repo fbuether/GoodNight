@@ -28,6 +28,10 @@ object Client {
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
       staticRoute("#about", pages.About) ~> renderR(About.render)
+
+      |
+      staticRoute("#test", pages.Test) ~> renderR(Test.render)
+
     )
 
     // pages that require no valid authentication (as opposed to any state).
