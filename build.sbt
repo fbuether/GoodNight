@@ -28,6 +28,7 @@ val versions = new {
 
   val scalaTest = "3.0.8"
   val playSlick = "4.0.2"
+  val playScalaTest = "4.0.3"
   val postgresql = "42.2.6"
   val slickPostgres = "0.18.0"
   val silhouette = "6.1.0"
@@ -71,6 +72,7 @@ lazy val client: Project = project.in(file("client")).
   settings(
     setProject("Client"),
     setScalaOptions,
+    setTestOptions,
 
     // store a set of build information.
     git.useGitDescribe := true,
@@ -106,6 +108,7 @@ lazy val client: Project = project.in(file("client")).
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
 
+      "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
     ),
     npmDependencies in Compile ++= Seq(
       "react" -> versions.react,
@@ -122,6 +125,7 @@ lazy val server = project.in(file("server")).
   settings(
     setProject("Server"),
     setScalaOptions,
+    setTestOptions,
 
     // connect the client project
     scalaJSProjects := Seq(client),
@@ -153,6 +157,11 @@ lazy val server = project.in(file("server")).
       "com.mohiva" %% "play-silhouette" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
+
+      "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
+      "org.scalatestplus.play" %% "scalatestplus-play" % versions.playScalaTest
+        % "test",
+	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % "test"
     )
   )
 
