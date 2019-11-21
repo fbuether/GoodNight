@@ -25,8 +25,6 @@ object AuthenticationService {
         case None =>
           verified = true
         case Some(storedUser) =>
-          println("verifying user.")
-          startVerify = true
           Request(ApiV1.Self).send.forJson[model.User].map({
             a => verified = true; a
           }).completeWith({
