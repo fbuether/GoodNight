@@ -24,7 +24,9 @@ val versions = new {
   val fontAwesome = "5.11.2"
   val roshttp = "2.2.4"
   val upickle = "0.8.0"
+  val fastParse = "2.1.3"
 
+  val scalaTest = "3.0.8"
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
   val slickPostgres = "0.18.0"
@@ -41,6 +43,13 @@ val setScalaOptions = Seq(
 )
 
 
+val setTestOptions = Seq(
+  testOptions in Test += Tests.Argument(
+    TestFrameworks.ScalaTest, "-y", "org.scalatest.FunSpec"),
+  logBuffered in Test := false
+)
+
+
 lazy val common = crossProject(JSPlatform, JVMPlatform).
   crossType(CrossType.Pure).
   in(file("common")).
@@ -48,6 +57,8 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
+      "com.lihaoyi" %%% "fastparse" % versions.fastParse,
       "com.lihaoyi" %%% "upickle" % versions.upickle
     )
   )
