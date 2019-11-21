@@ -16,8 +16,6 @@ val versions = new {
   val scala = "2.12.8"
   val scalajsDom = "0.9.7"
   val scalajsReact = "1.4.2"
-  val log4js = "1.4.13-1"
-  val uTest = "0.7.1"
   val scalaJsTime = "0.2.5"
 
   val react = "16.8.6"
@@ -30,10 +28,7 @@ val versions = new {
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
   val slickPostgres = "0.18.0"
-
   val silhouette = "6.1.0"
-
-  val scalajsScripts = "1.1.2"
 }
 
 
@@ -100,7 +95,6 @@ lazy val client: Project = project.in(file("client")).
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
 
-      "com.lihaoyi" %%% "utest" % versions.uTest % Test
     ),
     npmDependencies in Compile ++= Seq(
       "react" -> versions.react,
@@ -126,6 +120,7 @@ lazy val server = project.in(file("server")).
     // less assets.
     includeFilter in (Assets, LessKeys.less) := "*.less",
     excludeFilter in (Assets, LessKeys.less) := "*.include.less",
+
 
     resolvers ++= Seq(
       Resolver.jcenterRepo,
