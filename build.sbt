@@ -60,6 +60,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   jsConfigure(project => project.enablePlugins(ScalaJSWeb)).
   settings(
     setScalaOptions,
+    setTestOptions,
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "fastparse" % versions.fastParse,
       "com.lihaoyi" %%% "upickle" % versions.upickle
