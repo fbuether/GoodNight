@@ -17,10 +17,10 @@ val versions = new {
   val scalajsDom = "0.9.7"
   val scalajsReact = "1.4.2"
   val scalaJsTime = "0.2.5"
+  val webpack = "4.41.2"
+  val webpackDevserver = "3.9.0"
 
   val react = "16.8.6"
-  val reactMarkdown = "4.0.6"
-  val reactMarkdownScala = "0.3.1"
   val fontAwesome = "5.11.2"
   val roshttp = "2.2.4"
   val upickle = "0.8.0"
@@ -47,7 +47,10 @@ val setScalaOptions = Seq(
 val setTestOptions = Seq(
   testOptions in Test += Tests.Argument(
     TestFrameworks.ScalaTest, "-y", "org.scalatest.FunSpec"),
-  logBuffered in Test := false
+  logBuffered in Test := false,
+  libraryDependencies ++= Seq(
+    "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
+  )
 )
 
 
@@ -58,7 +61,6 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
       "com.lihaoyi" %%% "fastparse" % versions.fastParse,
       "com.lihaoyi" %%% "upickle" % versions.upickle
     )
@@ -90,8 +92,8 @@ lazy val client: Project = project.in(file("client")).
     // optimised building.
     webpackBundlingMode := BundlingMode.LibraryOnly(),
     emitSourceMaps := false,
-    version in webpack := "4.41.2",
-    version in startWebpackDevServer := "3.9.0",
+    version in webpack := versions.webpack,
+    version in startWebpackDevServer := versions.webpackDevserver,
 
 
     resolvers ++= Seq(
@@ -103,17 +105,12 @@ lazy val client: Project = project.in(file("client")).
       "org.scala-js" %%% "scalajs-java-time" % versions.scalaJsTime,
       "com.github.japgolly.scalajs-react" %%% "core" % versions.scalajsReact,
       "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalajsReact,
-      "com.dbrsn.scalajs.react.components" %%% "react-markdown" %
-        versions.reactMarkdownScala,
 
       "fr.hmil" %%% "roshttp" % versions.roshttp,
-
-      "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
     ),
     npmDependencies in Compile ++= Seq(
       "react" -> versions.react,
-      "react-dom" -> versions.react,
-      "react-markdown" -> versions.reactMarkdown
+      "react-dom" -> versions.react
     ),
   )
 
@@ -158,7 +155,6 @@ lazy val server = project.in(file("server")).
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
 
-      "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
       "org.scalatestplus.play" %% "scalatestplus-play" % versions.playScalaTest
         % "test",
 	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % "test"
@@ -169,7 +165,5 @@ lazy val server = project.in(file("server")).
 lazy val goodnight = project.in(file(".")).
   aggregate(client, server).
   settings(
-    commands += Command.command("run")({ state =>
-      "server/run" :: state
-    })
+    commands += Command.command("run")("server/run"::_)
   )
