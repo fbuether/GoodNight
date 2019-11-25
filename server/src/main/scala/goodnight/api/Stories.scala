@@ -147,9 +147,8 @@ class Stories(components: ControllerComponents,
             request.body.text,
             "title",
             "urlname",
-            "image",
+            request.body.text,
             None,
-            "text",
             false)
           database.run(db.Scene().insert(newScene)).map({ _ =>
             Created
@@ -176,7 +175,9 @@ class Stories(components: ControllerComponents,
               Future.successful(
                 NotFound("Scene with this urlname does not exist."))
             case Some(scene) =>
-              val updatedScene = scene.copy(raw = request.body.text)
+              val updatedScene = scene.copy(
+                raw = request.body.text,
+                text = request.body.text)
               database.run(db.Scene().filter(_.id === scene.id).
                 update(updatedScene)).map(_ => Ok)
           })

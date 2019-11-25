@@ -4,7 +4,6 @@ package goodnight.stories
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.util.{ Try, Success, Failure }
-import com.dbrsn.scalajs.react.markdown.ReactMarkdown
 
 import goodnight.client.pages
 import goodnight.common.ApiV1
@@ -27,7 +26,8 @@ object Scene {
     def render(props: Props, state: State) =
       <.div(
         <.h2(props.scene.title),
-        ReactMarkdown(source = props.scene.text)())
+        <.p(props.scene.text)
+      )
   }
 
   def component = ScalaComponent.builder[Props]("StoryRoll").

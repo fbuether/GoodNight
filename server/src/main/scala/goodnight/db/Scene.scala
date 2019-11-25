@@ -14,13 +14,12 @@ class Scene(tag: Tag) extends Table[model.Scene](tag, "scene") {
   def story = column[UUID]("story")
   def raw = column[String]("raw")
   def title = column[String]("title")
-  def image = column[String]("image")
-  def location = column[Option[UUID]]("location")
-  def text = column[String]("text")
-  def mandatory = column[Boolean]("mandatory")
   def urlname = column[String]("urlname")
+  def text = column[String]("text")
+  def location = column[Option[UUID]]("location")
+  def mandatory = column[Boolean]("mandatory")
 
-  def * = ((id, story, raw, title, urlname, image, location, text, mandatory) <>
+  def * = ((id, story, raw, title, urlname, text, location, mandatory) <>
     (model.Scene.tupled, model.Scene.unapply))
 
   def storyFk = foreignKey("scene_fk_story_story", story, Story())(_.id,

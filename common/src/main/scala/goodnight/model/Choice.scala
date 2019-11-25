@@ -12,22 +12,7 @@ case class Choice(
 
   // the index of this choice in relation to the scene itself, to order all
   // choices as intended.
-  order: Int,
+  pos: Int,
 
-  title: String,
   text: String
 )
-
-
-// case class Requirement(
-//   id: UUID,
-//   choice: UUID,
-
-//   quality: UUID,
-//   min: Int,
-//   max: Int,
-//   // Should *this requirement* be shown if the player meets it?
-//   showIfMet: Boolean,
-//   // Should *this choice* be shown if the player does not meet this requirement?
-//   hidesIfUnmet: Boolean
-// )
