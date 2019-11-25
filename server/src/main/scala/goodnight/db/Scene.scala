@@ -34,4 +34,13 @@ class Scene(tag: Tag) extends Table[model.Scene](tag, "scene") {
 
 object Scene {
   def apply() = TableQuery[Scene]
+
+  type Q = Query[Scene, model.Scene, Seq]
+
+  def ofStory(storyUrlname: String, sceneUrlname: String) =
+    apply().
+      join(Story().filter(_.urlname === storyUrlname)).on(_.story === _.id).
+      map(_._1).
+      filter(_.urlname === sceneUrlname).
+      take(1).result.headOption
 }

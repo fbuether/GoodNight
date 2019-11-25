@@ -21,7 +21,7 @@ import goodnight.db
 import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
-
+import goodnight.logic.SceneParser
 
 class Stories(components: ControllerComponents,
   database: Database,
@@ -134,6 +134,8 @@ class Stories(components: ControllerComponents,
   case class NewSceneData(text: String)
   implicit val serialise_newSceneData: Serialisable[NewSceneData] = macroRW
 
+
+
   def createScene(storyName: String) =
     auth.SecuredAction.async(parseFromJson[NewSceneData])({ request =>
       val getStory = db.Story.ofUrlname(storyName)
@@ -142,17 +144,35 @@ class Stories(components: ControllerComponents,
           Future.successful(
             NotFound("Story with this urlname does not exist."))
         case Some(story) =>
-          val newScene = model.Scene(UUID.randomUUID(),
-            story.id,
-            request.body.text,
-            "title",
-            "urlname",
-            request.body.text,
-            None,
-            false)
-          database.run(db.Scene().insert(newScene)).map({ _ =>
-            Created
-          })
+          SceneParser.parsePScene(request.body.text) match {
+            case Left(error) =>
+              Future.successful(UnprocessableEntity(ujson.Obj(
+                "successful" -> false,
+                "error" -> error)))
+            case Right(SceneParser.PScene(content, settings, choices)) =>
+              val newScene = model.Scene(UUID.randomUUID(),
+                story.id,
+                request.body.text,
+                content.substring(0, 20), // todo
+                urlnameOf(content.substring(0, 20)), // todo
+                content,
+                None, // todo
+                false) // todo
+
+              val newChoices = choices.zipWithIndex.map({
+                case (SceneParser.PChoice(content, settings), idx) =>
+                  model.Choice(UUID.randomUUID(),
+                    newScene.id,
+                    idx,
+                    content)
+              })
+
+              val insertScene = db.Scene().insert(newScene)
+              val insertChoices = newChoices.map(db.Choice().insert)
+
+              database.run(insertScene andThen DBIO.sequence(insertChoices)).
+                map(_ => Created)
+          }
       })
     })
 
@@ -183,7 +203,6 @@ class Stories(components: ControllerComponents,
           })
       })
     })
-
 
 
   private def createPlayerForStory(user: model.User, story: model.Story,
