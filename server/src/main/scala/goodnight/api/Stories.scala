@@ -179,28 +179,39 @@ class Stories(components: ControllerComponents,
 
   def updateScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(parseFromJson[NewSceneData])({ request =>
-      val getStory = db.Story().filter(_.urlname === storyUrlname).
-        result.headOption
-      database.run(getStory).flatMap({
+      val getScene = db.Scene.ofStory(storyUrlname, sceneUrlname)
+      database.run(getScene).flatMap({
         case None =>
           Future.successful(
-            NotFound("Story with this urlname does not exist."))
-        case Some(story) =>
-          val getScene = db.Scene().filter(scene =>
-            scene.urlname === sceneUrlname &&
-              scene.story === story.id).
-            result.headOption
-          database.run(getScene).flatMap({
-            case None =>
-              Future.successful(
-                NotFound("Scene with this urlname does not exist."))
-            case Some(scene) =>
+            NotFound("This Scene in this Story does not exist."))
+        case Some(scene) =>
+          SceneParser.parsePScene(request.body.text) match {
+            case Right(SceneParser.PScene(content, settings, choices)) =>
               val updatedScene = scene.copy(
                 raw = request.body.text,
-                text = request.body.text)
+                text = content)
               database.run(db.Scene().filter(_.id === scene.id).
-                update(updatedScene)).map(_ => Ok)
-          })
+                take(1).
+                update(updatedScene)).flatMap(_ =>
+
+                database.run(DBIO.sequence(
+                  choices.zipWithIndex.map({
+                    case (SceneParser.PChoice(content, settings), pos) =>
+                    db.Choice.update(updatedScene.id, pos, content)
+                  }))).flatMap(_ =>
+
+                  database.run(
+                    db.Choice().filter(choice =>
+                      choice.scene === updatedScene.id &&
+                        choice.pos > choices.length).
+                      delete).map(_ =>
+
+                Ok(updatedScene))))
+            case Left(error) =>
+              Future.successful(UnprocessableEntity(ujson.Obj(
+                "successful" -> false,
+                "error" -> error)))
+          }
       })
     })
 

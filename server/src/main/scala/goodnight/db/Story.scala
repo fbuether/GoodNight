@@ -39,4 +39,17 @@ object Story {
 
   def ofUrlname(urlname: String) =
     apply().filter(_.urlname === urlname).take(1).result.headOption
+
+
+
+  // precompiled, specific queries.
+
+  def allPublicCompiled = Compiled(apply())
+  def allPublic: DBIO[Seq[model.Story]] =
+    allPublicCompiled.result
+
+  def ofUserQuery(userId: Rep[UUID]) = apply().filter(_.creator === userId)
+  def ofUserCompiled = Compiled(ofUserQuery _)
+  def ofUser(userId: UUID): DBIO[Seq[model.Story]] =
+    ofUserCompiled(userId).result
 }

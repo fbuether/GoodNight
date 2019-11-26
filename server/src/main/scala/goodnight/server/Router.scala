@@ -14,6 +14,8 @@ import goodnight.client.Frontend
 import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
+import goodnight.stories.read
+import goodnight.stories.write
 
 import goodnight.common.ApiV1._
 
@@ -26,6 +28,8 @@ class Router(
   authSignIn: authentication.SignIn,
   profile: Profile,
   stories: Stories,
+  readStories: read.Stories,
+  writeStories: write.Stories,
   assets: Assets)
     extends SimpleRouter {
 
@@ -70,7 +74,8 @@ class Router(
     //
     // Reading Stories
     //
-    case Stories() => stories.showAll(header.target.queryMap)
+    case Stories() => readStories.getAvailableStories(header.target.queryMap)
+
     case Story(story) => stories.showOne(story)
     case CreatePlayer(story) => stories.createPlayer(story)
     case Scenes(story) => stories.showScenes(story)

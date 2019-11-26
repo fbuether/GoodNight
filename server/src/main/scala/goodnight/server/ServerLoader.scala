@@ -56,6 +56,8 @@ import goodnight.api.authentication.UserService
 import goodnight.api.authentication.CredentialAuthInfoRepository
 import goodnight.api.authentication.DatabaseAuthenticatorRepository
 import goodnight.api.authentication.AuthEnvironment
+import goodnight.stories.read
+import goodnight.stories.write
 
 class ServerLoader extends ApplicationLoader {
   def load(context: Context): Application = {
@@ -144,7 +146,12 @@ class GoodnightComponents(context: Context)
     database, silhouette)
   lazy val stories = new Stories(controllerComponents, database, silhouette)
 
+  lazy val readStories = new read.Stories(controllerComponents, database,
+    silhouette)
+  lazy val writeStories = new write.Stories(controllerComponents, database,
+    silhouette)
+
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authSignUp, authSignIn, profile, stories,
+    authSignUp, authSignIn, profile, stories, readStories, writeStories,
     assets)
 }
