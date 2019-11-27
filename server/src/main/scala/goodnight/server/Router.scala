@@ -75,8 +75,7 @@ class Router(
     // Reading Stories
     //
     case Stories() => readStories.getAvailableStories(header.target.queryMap)
-
-    case Story(story) => stories.showOne(story)
+    case Story(storyUrlname) => readStories.getStory(storyUrlname)
     case CreatePlayer(story) => stories.createPlayer(story)
     case Scenes(story) => stories.showScenes(story)
     case AvailableScenes(story) => stories.showAvailableScenes(story)

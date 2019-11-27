@@ -33,52 +33,6 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-  private def storiesFilterAuthorMyself(
-    identity: Option[Id], filtersMyself: Boolean)(
-    query: db.Story.Q): db.Story.Q = {
-    println(s"well: $filtersMyself, $identity")
-    (filtersMyself, identity) match {
-      case (true, Some(ident)) => query.filter(_.creator === ident.user.id)
-      case _ => query
-    }
-  }
-
-  private def storiesFilterAuthor(author: Option[String])(
-    query: db.Story.Q): db.Story.Q =
-    author match {
-      case Some(name) => db.Story.filterCreator(name)(query)
-      case _ => query
-    }
-
-  def showAll(filters: Map[String, Seq[String]]) =
-    auth.UserAwareAction.async({request =>
-
-      val query =
-        storiesFilterAuthorMyself(request.identity,
-          filters.get("authorMyself").isDefined)(
-          storiesFilterAuthor(filters.get("author").map(_.head))(
-            db.Story()))
-
-      database.run(query.result).map(sl => Ok(sl))
-    })
-
-  def showOne(reqName: String) = auth.SecuredAction.async { request =>
-    val getStory = db.Story().filter(_.urlname === reqName).result.headOption
-    database.run(getStory).flatMap({
-      case None =>
-        Future.successful(NotFound)
-      case Some(story) =>
-        val getPlayer = db.Player().filter(player =>
-          player.story === story.id &&
-          player.user === request.identity.user.id).
-          result.headOption
-        database.run(getPlayer).map({ player =>
-          Ok((story, player))
-        })
-    })
-  }
-
-
   def showAvailableScenes(storyUrlname: String) = auth.SecuredAction.async({
     request =>
     database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
