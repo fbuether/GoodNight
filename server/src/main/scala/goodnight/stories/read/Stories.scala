@@ -29,13 +29,9 @@ class Stories(components: ControllerComponents,
     })
 
   def getStory(urlname: String) =
-    auth.SecuredAction.async({ request =>
-      val select = db.Story.ofUrlname(urlname).flatMap({
-        case Some(story) =>
-          db.Player.ofStory(request.identity.user.id, story.id).map(player =>
-            Ok((story, player)))
-        case None => DBIO.successful(NotFound)
-      })
-      database.run(select)
-    })
+    auth.SecuredAction.async(request =>
+      database.run(
+        GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
+          db.Player.ofStory(request.identity.user.id, story.id).
+            map(player => Ok((story, player))))))
 }

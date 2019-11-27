@@ -29,6 +29,7 @@ class Router(
   profile: Profile,
   stories: Stories,
   readStories: read.Stories,
+  readScenes: read.Scenes,
   writeStories: write.Stories,
   assets: Assets)
     extends SimpleRouter {
@@ -76,15 +77,17 @@ class Router(
     //
     case Stories() => readStories.getAvailableStories(header.target.queryMap)
     case Story(storyUrlname) => readStories.getStory(storyUrlname)
+    case AvailableScenes(storyUrlname) =>
+      readScenes.getAvailableScenes(storyUrlname)
+
     case CreatePlayer(story) => stories.createPlayer(story)
-    case Scenes(story) => stories.showScenes(story)
-    case AvailableScenes(story) => stories.showAvailableScenes(story)
 
     //
     // Editing Stories
     //
     case CreateStory() => stories.create
     case CreateScene(story) => stories.createScene(story)
+    case Scenes(story) => stories.showScenes(story)
     case EditScene(story, scene) => stories.updateScene(story, scene)
 
   }

@@ -43,4 +43,17 @@ object Scene {
       map(_._1).
       filter(_.urlname === sceneUrlname).
       take(1).result.headOption
+
+  private def forPlayerQuery(storyId: Rep[UUID],
+    playerLocation: Rep[Option[UUID]]) =
+    apply().
+      filter(scene => scene.location === playerLocation &&
+        scene.story === storyId).
+      sortBy(_.title)
+  private val forPlayerCompiled = Compiled(forPlayerQuery _)
+  def forPlayer(storyId: UUID, playerLocationId: Option[UUID]):
+      DBIO[Seq[model.Scene]] =
+    forPlayerCompiled(storyId, playerLocationId).result
+
+
 }

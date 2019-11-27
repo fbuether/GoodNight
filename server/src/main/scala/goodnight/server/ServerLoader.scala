@@ -148,10 +148,14 @@ class GoodnightComponents(context: Context)
 
   lazy val readStories = new read.Stories(controllerComponents, database,
     silhouette)
+  lazy val readScenes = new read.Scenes(controllerComponents, database,
+    silhouette)
   lazy val writeStories = new write.Stories(controllerComponents, database,
     silhouette)
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authSignUp, authSignIn, profile, stories, readStories, writeStories,
+    authSignUp, authSignIn, profile, stories,
+    readStories, readScenes,
+    writeStories,
     assets)
 }

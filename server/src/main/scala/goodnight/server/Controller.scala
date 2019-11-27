@@ -9,6 +9,7 @@ import play.api.mvc.ControllerComponents
 import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import slick.jdbc.PostgresProfile.api._
 
 import goodnight.common.Serialise._
 
@@ -81,5 +82,16 @@ class Controller(
 
   def notFound(message: String): Future[Result] =
     Future.successful(NotFound(error(message)))
+
+
+  // extract option results from database queries
+  protected case class GetOrNotFound[T](query: DBIO[Option[T]]) {
+    def flatMap(cont: T => DBIO[Result]): DBIO[Result] =
+      query.flatMap({
+        case Some(element) => cont(element)
+        case None => DBIO.successful(NotFound(error(
+          "The requested element does not exist.")))
+      })
+  }
 }
 
