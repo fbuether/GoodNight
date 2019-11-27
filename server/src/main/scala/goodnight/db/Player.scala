@@ -38,4 +38,13 @@ object Player {
   def of(user: UUID, story: UUID) =
     apply().filter(player => player.user === user && player.story === story).
       take(1).result.headOption
+
+
+  private def ofStoryQuery(userId: Rep[UUID], storyId: Rep[UUID]) = apply().
+    filter(player => player.user === userId && player.story === storyId).
+    take(1)
+  private val ofStoryCompiled = Compiled(ofStoryQuery _)
+  def ofStory(userId: UUID, storyId: UUID): DBIO[Option[model.Player]] =
+    ofStoryCompiled(userId, storyId).result.headOption
+
 }

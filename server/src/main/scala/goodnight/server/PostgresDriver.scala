@@ -66,9 +66,6 @@ trait PostgresProfile extends ExPostgresProfile
         FixedSqlAction[Int,NoStream,Effect.Write] =
       tableQuery += element
   }
-
-
-  // def table[E <: AbstractTable[_]] = TableQuery[E]
 }
 
 

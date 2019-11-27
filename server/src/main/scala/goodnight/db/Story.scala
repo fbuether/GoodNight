@@ -37,19 +37,24 @@ object Story {
       map((su: (Story, User)) => su._1)
   }
 
-  def ofUrlname(urlname: String) =
-    apply().filter(_.urlname === urlname).take(1).result.headOption
-
 
 
   // precompiled, specific queries.
 
-  def allPublicCompiled = Compiled(apply())
+  private def ofUrlnameQuery(urlname: Rep[String]) = apply().
+    filter(_.urlname === urlname).
+    take(1)
+  private val ofUrlnameCompiled = Compiled(ofUrlnameQuery _)
+  def ofUrlname(urlname: String): DBIO[Option[model.Story]] =
+    ofUrlnameCompiled(urlname).result.headOption
+
+  private val allPublicCompiled = Compiled(apply())
   def allPublic: DBIO[Seq[model.Story]] =
     allPublicCompiled.result
 
-  def ofUserQuery(userId: Rep[UUID]) = apply().filter(_.creator === userId)
-  def ofUserCompiled = Compiled(ofUserQuery _)
+  private def ofUserQuery(userId: Rep[UUID]) = apply().
+    filter(_.creator === userId)
+  private val ofUserCompiled = Compiled(ofUserQuery _)
   def ofUser(userId: UUID): DBIO[Seq[model.Story]] =
     ofUserCompiled(userId).result
 }
