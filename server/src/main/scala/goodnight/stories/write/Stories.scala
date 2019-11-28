@@ -9,6 +9,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
+import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
@@ -30,5 +31,28 @@ class Stories(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
+  private def urlnameOf(name: String) =
+    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
+
+  case class WithName(name: String)
+  implicit val serialise_WithName: Serialisable[WithName] = macroRW
+
+  def createStory =
+    auth.SecuredAction.async(parseFromJson[WithName])({ request =>
+      def existsError(s: model.Story) = DBIO.successful(Conflict(error(
+        "A story with this name already exists.")))
+      def insertStory = db.Story.insert(model.Story(UUID.randomUUID(),
+        request.identity.user.id,
+        request.body.name,
+        urlnameOf(request.body.name),
+        "Moon.png",
+        "",
+        None)).
+        map(Ok(_))
+
+      database.run(
+        db.Story.ofUrlname(urlnameOf(request.body.name)).
+          flatMap(_.fold(insertStory)(existsError)))
+    })
 }

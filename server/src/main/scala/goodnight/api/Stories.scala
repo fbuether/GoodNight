@@ -41,32 +41,6 @@ class Stories(components: ControllerComponents,
     database.run(query).map(scenes => Ok(scenes))
   }
 
-  case class StoryData(name: String)
-  implicit val serialise_storyData: Serialisable[StoryData] = macroRW
-
-  def create = auth.SecuredAction.async(parseFromJson[StoryData])({ request =>
-    val urlname = urlnameOf(request.body.name)
-    val checkExistence = db.Story().filter(s => s.urlname === urlname).
-      take(1).result.headOption
-    database.run(checkExistence).flatMap({
-      case None =>
-        val newStory = model.Story(UUID.randomUUID(),
-          request.identity.user.id,
-          request.body.name,
-          urlname,
-          "Moon.png",
-          "",
-          None)
-        val insert = db.Story().insert(newStory)
-        database.run(insert).map({ _ =>
-          Ok(newStory)
-        })
-      case Some(_) =>
-        Future.successful(Conflict(ujson.Obj(
-          "successful" -> false,
-          "error" -> "A story with the same reduced name already exists.")))
-    })
-  })
 
   case class NewSceneData(text: String)
   implicit val serialise_newSceneData: Serialisable[NewSceneData] = macroRW

@@ -84,7 +84,8 @@ class Router(
     //
     // Editing Stories
     //
-    case CreateStory() => stories.create
+    case CreateStory() => writeStories.createStory
+
     case CreateScene(story) => stories.createScene(story)
     case Scenes(story) => stories.showScenes(story)
     case EditScene(story, scene) => stories.updateScene(story, scene)
