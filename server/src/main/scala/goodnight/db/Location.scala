@@ -6,6 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
@@ -24,6 +25,6 @@ class Location(tag: Tag) extends Table[model.Location](tag, "location") {
 }
 
 
-object Location {
-  def apply() = TableQuery[Location]
+object Location extends TableQueryBase[model.Location, Location](
+  new Location(_)) {
 }

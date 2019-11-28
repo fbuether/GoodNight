@@ -6,6 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
@@ -32,17 +33,18 @@ class Scene(tag: Tag) extends Table[model.Scene](tag, "scene") {
 }
 
 
-object Scene {
-  def apply() = TableQuery[Scene]
-
-  type Q = Query[Scene, model.Scene, Seq]
-
-  def ofStory(storyUrlname: String, sceneUrlname: String) =
+object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
+  private def ofStoryQuery(storyUrlname: Rep[String],
+    sceneUrlname: Rep[String]) =
     apply().
       join(Story().filter(_.urlname === storyUrlname)).on(_.story === _.id).
       map(_._1).
       filter(_.urlname === sceneUrlname).
-      take(1).result.headOption
+      take(1)
+  private val ofStoryCompiled = Compiled(ofStoryQuery _)
+  def ofStory(storyUrlname: String, sceneUrlname: String):
+      DBIO[Option[model.Scene]] =
+    ofStoryCompiled(storyUrlname, sceneUrlname).result.headOption
 
   private def forPlayerQuery(storyId: Rep[UUID],
     playerLocation: Rep[Option[UUID]]) =
@@ -54,6 +56,4 @@ object Scene {
   def forPlayer(storyId: UUID, playerLocationId: Option[UUID]):
       DBIO[Seq[model.Scene]] =
     forPlayerCompiled(storyId, playerLocationId).result
-
-
 }

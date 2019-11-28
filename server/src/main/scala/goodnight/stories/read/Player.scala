@@ -30,7 +30,7 @@ class Player(components: ControllerComponents,
     auth.SecuredAction.async(parseFromJson[WithName])(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-          db.Player().insert(model.Player(UUID.randomUUID(),
+          db.Player.insert(model.Player(UUID.randomUUID(),
             request.identity.user.id,
             story.id,
             request.body.name,

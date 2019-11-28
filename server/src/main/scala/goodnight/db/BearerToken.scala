@@ -6,10 +6,11 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
-case class BearerToken(tag: Tag) extends Table[model.BearerToken](
+class BearerToken(tag: Tag) extends Table[model.BearerToken](
   tag, "bearer_token") {
   def id = column[String]("id", O.PrimaryKey)
   def provider = column[String]("provider")
@@ -22,6 +23,6 @@ case class BearerToken(tag: Tag) extends Table[model.BearerToken](
 }
 
 
-object BearerToken {
-  def apply() = TableQuery[BearerToken]
+object BearerToken extends TableQueryBase[model.BearerToken, BearerToken](
+  new BearerToken(_)) {
 }

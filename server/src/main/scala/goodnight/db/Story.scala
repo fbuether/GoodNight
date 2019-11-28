@@ -6,6 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
@@ -27,20 +28,7 @@ class Story(tag: Tag) extends Table[model.Story](tag, "story") {
 }
 
 
-object Story {
-  def apply() = TableQuery[Story]
-
-  type Q = Query[Story, model.Story, Seq]
-
-  def filterCreator(name: String)(base: Q) = {
-    base.join(User().filter(_.name === name)).on(_.creator === _.id).
-      map((su: (Story, User)) => su._1)
-  }
-
-
-
-  // precompiled, specific queries.
-
+object Story extends TableQueryBase[model.Story, Story](new Story(_)) {
   private def ofUrlnameQuery(urlname: Rep[String]) = apply().
     filter(_.urlname === urlname).
     take(1)

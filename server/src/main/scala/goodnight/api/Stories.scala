@@ -90,8 +90,8 @@ class Stories(components: ControllerComponents,
               val newScene = model.Scene(UUID.randomUUID(),
                 story.id,
                 request.body.text,
-                content.substring(0, 20), // todo
-                urlnameOf(content.substring(0, 20)), // todo
+                content.substring(0, content.length.min(20)), // todo
+                urlnameOf(content.substring(0, content.length.min(20))), // todo
                 content,
                 None, // todo
                 false) // todo
@@ -134,7 +134,7 @@ class Stories(components: ControllerComponents,
                 database.run(DBIO.sequence(
                   choices.zipWithIndex.map({
                     case (SceneParser.PChoice(content, settings), pos) =>
-                    db.Choice.update(updatedScene.id, pos, content)
+                    db.Choice.updateText(updatedScene.id, pos, content)
                   }))).flatMap(_ =>
 
                   database.run(

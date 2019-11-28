@@ -6,10 +6,11 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
-class Player(tag: Tag) extends Table[model.Player](tag, "player") {
+class Player(val tag: Tag) extends Table[model.Player](tag, "player") {
   def id = column[UUID]("id", O.PrimaryKey)
   def user = column[UUID]("user_id")
   def story = column[UUID]("story")
@@ -32,19 +33,11 @@ class Player(tag: Tag) extends Table[model.Player](tag, "player") {
 }
 
 
-object Player {
-  def apply() = TableQuery[Player]
-
-  def of(user: UUID, story: UUID) =
-    apply().filter(player => player.user === user && player.story === story).
-      take(1).result.headOption
-
-
+object Player extends TableQueryBase[model.Player, Player](new Player(_)) {
   private def ofStoryQuery(userId: Rep[UUID], storyId: Rep[UUID]) = apply().
     filter(player => player.user === userId && player.story === storyId).
     take(1)
   private val ofStoryCompiled = Compiled(ofStoryQuery _)
   def ofStory(userId: UUID, storyId: UUID): DBIO[Option[model.Player]] =
     ofStoryCompiled(userId, storyId).result.headOption
-
 }

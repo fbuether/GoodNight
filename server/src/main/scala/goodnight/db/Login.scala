@@ -6,6 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
@@ -23,6 +24,5 @@ class Login(tag: Tag) extends Table[model.Login](tag, "login") {
 }
 
 
-object Login {
-  def apply() = TableQuery[Login]
+object Login extends TableQueryBase[model.Login, Login](new Login(_)) {
 }

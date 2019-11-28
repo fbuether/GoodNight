@@ -6,6 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableQueryBase
 import goodnight.model
 
 
@@ -24,14 +25,14 @@ class Choice(tag: Tag) extends Table[model.Choice](tag, "choice") {
 }
 
 
-object Choice {
-  def apply() = TableQuery[Choice]
-
-  type Q = Query[Choice, model.Choice, Seq]
-
-  def update(sceneId: UUID, pos: Int, newText: String) =
-    apply().filter(choice => choice.scene === sceneId && choice.pos === pos).
-      take(1).
+object Choice extends TableQueryBase[model.Choice, Choice](new Choice(_)) {
+  private def updateTextQuery(sceneId: Rep[UUID], pos: Rep[Int]) =
+    apply().
+      filter(choice => choice.scene === sceneId && choice.pos === pos).
       map(_.text).
-      update(newText)
+      take(1)
+  private val updateTextCompiled = Compiled(updateTextQuery _)
+  def updateText(sceneId: UUID, pos: Int, text: String): DBIO[Int] =
+    updateTextCompiled(sceneId, pos).
+      update(text)
 }
