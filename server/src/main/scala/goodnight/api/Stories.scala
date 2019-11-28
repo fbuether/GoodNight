@@ -33,23 +33,6 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-  def showAvailableScenes(storyUrlname: String) = auth.SecuredAction.async({
-    request =>
-    database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
-      case None =>
-        Future.successful(
-          NotFound("Story with this urlname does not exist."))
-      case Some(story) =>
-        database.run(db.Player.of(request.identity.user.id, story.id)).map({
-          case None =>
-            PreconditionFailed("User has not created a player yet.")
-          case Some(player) =>
-              Ok(ujson.Obj("options" -> true))
-        })
-    })
-  })
-
-
   def showScenes(story: String) = auth.SecuredAction.async {
     val query = db.Scene().
       join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
@@ -170,27 +153,4 @@ class Stories(components: ControllerComponents,
     })
 
 
-  private def createPlayerForStory(user: model.User, story: model.Story,
-    playerName: String): Future[model.Player] = {
-    val player = model.Player(UUID.randomUUID(),
-      user.id,
-      story.id,
-      playerName,
-      story.startLocation)
-    database.run(db.Player().insert(player)).map(_ => player)
-  }
-
-  case class PlayerNameBody(name: String)
-  implicit val serialise_playerNameBody: Serialisable[PlayerNameBody] = macroRW
-
-  def createPlayer(storyUrlname: String) =
-    auth.SecuredAction.async(parseFromJson[PlayerNameBody])({ request =>
-      val playerName = request.body.name
-      val user = request.identity.user
-      database.run(db.Story.ofUrlname(storyUrlname)).flatMap({
-        case None => notFound("Story not found.")
-        case Some(story) =>
-          createPlayerForStory(user, story, playerName).map(Created(_))
-      })
-    })
 }

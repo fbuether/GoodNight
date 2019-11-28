@@ -30,6 +30,7 @@ class Router(
   stories: Stories,
   readStories: read.Stories,
   readScenes: read.Scenes,
+  readPlayer: read.Player,
   writeStories: write.Stories,
   assets: Assets)
     extends SimpleRouter {
@@ -76,11 +77,9 @@ class Router(
     // Reading Stories
     //
     case Stories() => readStories.getAvailableStories(header.target.queryMap)
-    case Story(storyUrlname) => readStories.getStory(storyUrlname)
-    case AvailableScenes(storyUrlname) =>
-      readScenes.getAvailableScenes(storyUrlname)
-
-    case CreatePlayer(story) => stories.createPlayer(story)
+    case Story(story) => readStories.getStory(story)
+    case AvailableScenes(story) => readScenes.getAvailableScenes(story)
+    case CreatePlayer(story) => readPlayer.createPlayer(story)
 
     //
     // Editing Stories

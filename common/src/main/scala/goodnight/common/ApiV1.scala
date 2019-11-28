@@ -43,5 +43,4 @@ object ApiV1 {
   object CreateScene extends ApiPath("PUT", p, C("story/"), S, C("/scenes"))
   object EditScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
   object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
-
 }
