@@ -28,4 +28,9 @@ class Scenes(components: ControllerComponents,
           GetOrNotFound(db.Player.ofStory(userId, story.id)).flatMap(player =>
             db.Scene.forPlayer(story.id, player.location).map(Ok(_)))
         })))
+
+  def getAllScenes(storyUrlname: String) =
+    auth.SecuredAction.async(request =>
+      database.run(
+        db.Scene.allOfStory(storyUrlname).map(Ok(_))))
 }

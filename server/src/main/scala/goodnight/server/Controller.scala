@@ -93,5 +93,14 @@ class Controller(
           "The requested element does not exist.")))
       })
   }
+
+  protected case class EmptyOrConflict[T](query: DBIO[Option[T]]) {
+    def andThen(cont: => DBIO[Result]): DBIO[Result] =
+      query.flatMap({
+        case None => cont
+        case Some(_) => DBIO.successful(Conflict(error(
+        "The element to save already exists.")))
+      })
+  }
 }
 

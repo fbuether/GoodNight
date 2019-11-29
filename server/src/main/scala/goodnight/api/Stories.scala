@@ -33,15 +33,6 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-  def showScenes(story: String) = auth.SecuredAction.async {
-    val query = db.Scene().
-      join(db.Story().filter(_.urlname === story)).on(_.story === _.id).
-      map(_._1).
-      result
-    database.run(query).map(scenes => Ok(scenes))
-  }
-
-
   case class NewSceneData(text: String)
   implicit val serialise_newSceneData: Serialisable[NewSceneData] = macroRW
 

@@ -25,35 +25,26 @@ import goodnight.server.PostgresProfile.Database
 import goodnight.logic.SceneParser
 
 
-class Stories(components: ControllerComponents,
+class Scenes(components: ControllerComponents,
   database: Database,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  // todo: merge with sceneParser.urlnameOf
-  def urlnameOf(name: String) =
-    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
+  case class WithText(text: String)
+  implicit val serialise_WithText: Serialisable[WithText] = macroRW
 
-
-
-  private def parseStory(user: model.User, name: String) =
-    model.Story(UUID.randomUUID(),
-      user.id,
-      name,
-      urlnameOf(name),
-      "Moon.png",
-      "",
-      None)
-
-  case class WithName(name: String)
-  implicit val serialise_WithName: Serialisable[WithName] = macroRW
-
-  def createStory =
-    auth.SecuredAction.async(parseFromJson[WithName])(request =>
+  def createScene(storyUrlname: String) =
+    auth.SecuredAction.async(parseFromJson[WithText])(request =>
       database.run(
-        EmptyOrConflict(db.Story.ofUrlname(urlnameOf(request.body.name))).
-          andThen(db.Story.insert(
-            parseStory(request.identity.user, request.body.name)).
-            map(Ok(_)))))
+        GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
+          SceneParser.parseScene(story, request.body.text).fold(
+            err => DBIO.successful(UnprocessableEntity(error(err))),
+            parsed =>
+            EmptyOrConflict(db.Scene.ofStory(storyUrlname, parsed._1.urlname)).
+              andThen(
+                db.Scene.insert(parsed._1).flatMap(insertedScene =>
+                  DBIO.sequence(parsed._2.map(db.Choice.insert)).
+                    map(_ => Created(insertedScene))))))))
+
 }

@@ -46,6 +46,14 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
       DBIO[Option[model.Scene]] =
     ofStoryCompiled(storyUrlname, sceneUrlname).result.headOption
 
+  private def allOfStoryQuery(storyUrlname: Rep[String]) =
+    apply().
+      join(Story().filter(_.urlname === storyUrlname)).on(_.story === _.id).
+      map(_._1)
+  private val allOfStoryCompiled = Compiled(allOfStoryQuery _)
+  def allOfStory(storyUrlname: String): DBIO[Seq[model.Scene]] =
+    allOfStoryCompiled(storyUrlname).result
+
   private def forPlayerQuery(storyId: Rep[UUID],
     playerLocation: Rep[Option[UUID]]) =
     apply().
