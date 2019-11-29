@@ -92,6 +92,9 @@ class Controller(
         case None => DBIO.successful(NotFound(error(
           "The requested element does not exist.")))
       })
+
+    def map(cont: T => Result): DBIO[Result] =
+      flatMap(t => DBIO.successful(cont(t)))
   }
 
   protected case class EmptyOrConflict[T](query: DBIO[Option[T]]) {

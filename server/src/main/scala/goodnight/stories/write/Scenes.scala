@@ -48,17 +48,30 @@ class Scenes(components: ControllerComponents,
   // todo: check if the data actually got updated.
   def updateScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(parseFromJson[WithText])(request =>
-      database.run(
-        GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-          GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname)).
-            flatMap(scene =>
-              SceneParser.parseScene(story, request.body.text).fold(
-                err => DBIO.successful(UnprocessableEntity(error(err))),
-                parsed =>
-                db.Choice.ofScene(scene.id).flatMap(choices =>
-                  db.Scene.update(scene.id, parsed._1).flatMap(_ =>
-                    DBIO.sequence(parsed._2.
-                      map(_.copy(scene = parsed._1.id)).
-                      map(replaceChoice(_, choices))).
-                      map(_ => Accepted))))))))
+      database.run(for (
+        story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
+        scene <- GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname));
+        result <- SceneParser.parseScene(story, request.body.text).fold(
+          err => DBIO.successful(UnprocessableEntity(error(err))),
+          parsed => for (
+            choices <- db.Choice.ofScene(scene.id);
+            _ <- db.Scene.update(scene.id, parsed._1);
+            result <- DBIO.sequence(parsed._2.
+              map(_.copy(scene = parsed._1.id)).
+              map(replaceChoice(_, choices))).map(_ => Accepted))
+          yield result))
+      yield result))
+      // database.run(
+      //   GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
+      //     GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname)).
+      //       flatMap(scene =>
+      //         SceneParser.parseScene(story, request.body.text).fold(
+      //           err => DBIO.successful(UnprocessableEntity(error(err))),
+      //           parsed =>
+      //           db.Choice.ofScene(scene.id).flatMap(choices =>
+      //             db.Scene.update(scene.id, parsed._1).flatMap(_ =>
+      //               DBIO.sequence(parsed._2.
+      //                 map(_.copy(scene = parsed._1.id)).
+      //                 map(replaceChoice(_, choices))).
+      //                 map(_ => Accepted))))))))
 }
