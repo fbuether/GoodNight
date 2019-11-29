@@ -35,4 +35,25 @@ object Choice extends TableQueryBase[model.Choice, Choice](new Choice(_)) {
   def updateText(sceneId: UUID, pos: Int, text: String): DBIO[Int] =
     updateTextCompiled(sceneId, pos).
       update(text)
+
+
+  private def ofSceneQuery(sceneId: Rep[UUID]) =
+    apply().
+      filter(_.scene === sceneId).
+      sortBy(_.pos)
+  private def ofSceneCompiled = Compiled(ofSceneQuery _)
+  def ofScene(sceneId: UUID): DBIO[Seq[model.Choice]] =
+    ofSceneCompiled(sceneId).result
+
+
+  private def byIdQuery(id: Rep[UUID]) =
+    apply().
+      filter(_.id === id).
+      take(1)
+  private def byIdCompiled = Compiled(byIdQuery _)
+
+
+  def update(id: UUID, newChoice: model.Choice): DBIO[Int] =
+    byIdCompiled(id).
+      update(newChoice.copy(id = id))
 }

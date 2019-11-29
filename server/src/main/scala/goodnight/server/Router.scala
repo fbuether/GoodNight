@@ -11,7 +11,6 @@ import play.api.routing.SimpleRouter
 import play.api.routing._
 
 import goodnight.client.Frontend
-import goodnight.api.Stories
 import goodnight.api.Profile
 import goodnight.api.authentication
 import goodnight.stories.read
@@ -27,7 +26,6 @@ class Router(
   authSignUp: authentication.SignUp,
   authSignIn: authentication.SignIn,
   profile: Profile,
-  stories: Stories,
   readStories: read.Stories,
   readScenes: read.Scenes,
   readPlayer: read.Player,
@@ -88,7 +86,6 @@ class Router(
     case CreateStory() => writeStories.createStory
     case Scenes(story) => readScenes.getAllScenes(story)
     case CreateScene(story) => writeScenes.createScene(story)
-
-    case EditScene(story, scene) => stories.updateScene(story, scene)
+    case EditScene(story, scene) => writeScenes.updateScene(story, scene)
   }
 }

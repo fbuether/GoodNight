@@ -49,7 +49,6 @@ import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepo
 
 import goodnight.client.Frontend
 import goodnight.api.Profile
-import goodnight.api.Stories
 import goodnight.api.authentication.SignUp
 import goodnight.api.authentication.SignIn
 import goodnight.api.authentication.UserService
@@ -144,7 +143,6 @@ class GoodnightComponents(context: Context)
     silhouette, credentialsProvider)
   lazy val profile = new Profile(controllerComponents,
     database, silhouette)
-  lazy val stories = new Stories(controllerComponents, database, silhouette)
 
   lazy val readStories = new read.Stories(controllerComponents, database,
     silhouette)
@@ -158,7 +156,7 @@ class GoodnightComponents(context: Context)
     silhouette)
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authSignUp, authSignIn, profile, stories,
+    authSignUp, authSignIn, profile,
     readStories, readScenes, readPlayer,
     writeStories, writeScenes,
     assets)

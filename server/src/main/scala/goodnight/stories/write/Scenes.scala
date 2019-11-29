@@ -34,6 +34,7 @@ class Scenes(components: ControllerComponents,
   case class WithText(text: String)
   implicit val serialise_WithText: Serialisable[WithText] = macroRW
 
+  // todo: check if the data actually got inserted.
   def createScene(storyUrlname: String) =
     auth.SecuredAction.async(parseFromJson[WithText])(request =>
       database.run(
@@ -47,4 +48,27 @@ class Scenes(components: ControllerComponents,
                   DBIO.sequence(parsed._2.map(db.Choice.insert)).
                     map(_ => Created(insertedScene))))))))
 
+
+  def replaceChoice(newChoice: model.Choice, oldChoices: Seq[model.Choice]) =
+    oldChoices.filter(_.pos == newChoice.pos).headOption match {
+      case Some(prev) => db.Choice.update(prev.id, newChoice)
+      case None => db.Choice.insert(newChoice)
+    }
+
+  // todo: check if the data actually got updated.
+  def updateScene(storyUrlname: String, sceneUrlname: String) =
+    auth.SecuredAction.async(parseFromJson[WithText])(request =>
+      database.run(
+        GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
+          GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname)).
+            flatMap(scene =>
+              SceneParser.parseScene(story, request.body.text).fold(
+                err => DBIO.successful(UnprocessableEntity(error(err))),
+                parsed =>
+                db.Choice.ofScene(scene.id).flatMap(choices =>
+                  db.Scene.update(scene.id, parsed._1).flatMap(_ =>
+                    DBIO.sequence(parsed._2.
+                      map(_.copy(scene = parsed._1.id)).
+                      map(replaceChoice(_, choices))).
+                      map(_ => Accepted))))))))
 }
