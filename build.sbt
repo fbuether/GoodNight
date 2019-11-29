@@ -45,14 +45,15 @@ val setScalaOptions = Seq(
 
 
 val setTestOptions = Seq(
-  testOptions in Test += Tests.Argument(
-    TestFrameworks.ScalaTest, "-y", "org.scalatest.FunSpec"),
+  testOptions in Test +=
+    (if (isScalaJSProject.value) Tests.Argument(TestFrameworks.ScalaTest)
+    else Tests.Argument(TestFrameworks.ScalaTest,
+      "-y", "org.scalatest.FunSpec")),
   logBuffered in Test := false,
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
   )
 )
-
 
 lazy val common = crossProject(JSPlatform, JVMPlatform).
   crossType(CrossType.Pure).
@@ -61,6 +62,7 @@ lazy val common = crossProject(JSPlatform, JVMPlatform).
   settings(
     setScalaOptions,
     setTestOptions,
+
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "fastparse" % versions.fastParse,
       "com.lihaoyi" %%% "upickle" % versions.upickle
@@ -129,6 +131,8 @@ lazy val server = project.in(file("server")).
     scalaJSProjects := Seq(client),
     pipelineStages in Assets := Seq(scalaJSPipeline),
     pipelineStages := Seq(digest, gzip),
+    // use fastOptJS for test and testonly as well.
+    scalaJSPipeline / devCommands ++= Seq("test", "testOnly"),
 
     // less assets.
     includeFilter in (Assets, LessKeys.less) := "*.less",
