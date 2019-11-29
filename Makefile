@@ -35,6 +35,7 @@ clean:
 	rm -r project/target/ || true
 	rm -r client/target/ || true
 	rm -r server/target/ || true
+	rm -r target/ || true
 	rm -r common/.js/target/ || true
 	rm -r common/.jvm/target/ || true
 

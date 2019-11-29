@@ -27,8 +27,9 @@ val versions = new {
   val fastParse = "2.1.3"
 
   val scalaTest = "3.0.8"
+  val scalaMock = "4.4.0"
+
   val playSlick = "4.0.2"
-  val playScalaTest = "4.0.3"
   val postgresql = "42.2.6"
   val slickPostgres = "0.18.0"
   val silhouette = "6.1.0"
@@ -51,7 +52,8 @@ val setTestOptions = Seq(
       "-y", "org.scalatest.FunSpec")),
   logBuffered in Test := false,
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % Test,
+    "org.scalamock" %%% "scalamock" % versions.scalaMock % Test
   )
 )
 
@@ -160,15 +162,13 @@ lazy val server = project.in(file("server")).
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
 
-      "org.scalatestplus.play" %% "scalatestplus-play" % versions.playScalaTest
-        % "test",
-	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % "test"
+	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % Test
     )
   )
 
 
 lazy val goodnight = project.in(file(".")).
-  aggregate(client, server).
+  aggregate(common.jvm, common.js, client, server).
   settings(
     commands += Command.command("run")("server/run"::_)
   )

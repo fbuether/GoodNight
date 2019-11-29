@@ -9,6 +9,8 @@ import goodnight.model
 import goodnight.model.text._
 
 
+class MarkdownParserTest {
+
 
 // class MarkdownTest extends FunSpec with EitherValues with Inside {
 //   def parsed(raw: String) = SceneParser.parseMarkdown(raw) match {
@@ -48,3 +50,5 @@ import goodnight.model.text._
 //     }
 //   }
 // }
+
+}

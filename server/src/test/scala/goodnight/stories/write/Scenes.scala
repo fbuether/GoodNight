@@ -1,16 +1,16 @@
 
-package goodnight.service
-
+package goodnight.stories.write
 
 import play.api.test.Helpers._
 import com.mohiva.play.silhouette.test._
 
 import goodnight.GoodnightTest
 
+
 import goodnight.api.authentication.AuthEnvironment
 
 
-object ServiceTest extends GoodnightTest {
+object ScenesTest extends GoodnightTest {
   // val components = Helpers.stubControllerComponents()
 
   // val identity = Id(LoginInfo("facebook", "apollonia.vanova@watchmen.com"))
