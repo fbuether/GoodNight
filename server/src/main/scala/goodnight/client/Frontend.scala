@@ -1,10 +1,10 @@
 
 package goodnight.client
 
+import controllers.AssetsFinder
+import play.api.Mode
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
-import play.api.Mode
-import controllers.AssetsFinder
 
 
 class Frontend(
