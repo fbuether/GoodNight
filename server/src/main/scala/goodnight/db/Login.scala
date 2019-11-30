@@ -15,6 +15,7 @@ class Login(tag: Tag) extends Table[model.Login](tag, "login") {
   def user = column[UUID]("user_id")
   def providerID = column[String]("provider_id")
   def providerKey = column[String]("provider_key")
+
   def * = ((id, user, providerID, providerKey) <>
     (model.Login.tupled, model.Login.unapply))
 

@@ -57,15 +57,16 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
 
 
   private def forPlayerQuery(storyId: Rep[UUID],
-    playerLocation: Rep[Option[UUID]]) =
+    playerLocation: Option[UUID]) =
     apply().
-      filter(scene => scene.location === playerLocation &&
-        scene.story === storyId).
+      filter(_.story === storyId).
+      filterOpt(playerLocation)(_.location === _).
       sortBy(_.title)
-  private val forPlayerCompiled = Compiled(forPlayerQuery _)
+  // cannot precompile due to un-rep-value
+  // private val forPlayerCompiled = Compiled(forPlayerQuery _)
   def forPlayer(storyId: UUID, playerLocationId: Option[UUID]):
       DBIO[Seq[model.Scene]] =
-    forPlayerCompiled(storyId, playerLocationId).result
+    forPlayerQuery(storyId, playerLocationId).result
 
 
   private def byIdQuery(id: Rep[UUID]) =

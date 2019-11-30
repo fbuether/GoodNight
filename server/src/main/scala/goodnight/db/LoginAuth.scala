@@ -17,6 +17,7 @@ class LoginAuth(tag: Tag) extends Table[model.LoginAuth](tag, "login_auth") {
   def hasher = column[String]("hasher")
   def password = column[String]("password")
   def salt = column[Option[String]]("salt")
+
   def * = ((id, providerID, providerKey, hasher, password, salt) <>
     (model.LoginAuth.tupled, model.LoginAuth.unapply))
 }
