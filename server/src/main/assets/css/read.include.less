@@ -34,15 +34,7 @@ div#matter {
 // auswahl
 
 
-.choices > * > a,
-.choices > *.disabled {
-  position: relative;
-  padding: 0.3rem 0;
-
-  &:after {
-    clear: both;
-  }
-
+.choices > li {
   & > img:first-child {
     float: left;
     width: 5rem;
@@ -50,45 +42,37 @@ div#matter {
     margin: 0 0.5rem;
   }
 
-  .requirements {
-    float: right;
-    margin: 0.5rem;
+  & > p {
+    position: relative;
+    margin-right: 0;
+    padding-right: 5.5rem;
+    min-height: 2.6rem;
 
-    & > li {
-      display: inline-block;
-      margin-left: 0.1rem;
-      padding: 0.2rem;
-
-      & > img {
-        display: inline-block;
-        width: 2rem;
-        height: 2rem;
-      }
-
-      .tooltip {
-        display: flex;
-        flex-direction: column;
-        top: 3rem;
-        right: -0.85rem;
-      }
-
-      &.disabled {
-        border-radius: 0.3rem;
-        background: @error;
-
-        & > img {
-          filter: grayscale(1);
-        }
-
-        .tooltip > *:last-child {
-          color: @error;
-        }
-      }
+    & > button {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 5rem;
     }
   }
 }
 
 
+.requirements {
+  float: right;
+  margin-top: 0.3rem;
 
+  & > li {
+    & > .tooltip {
+      display: flex;
+      flex-direction: column;
+    }
 
+    &.disabled {
 
+      & > .tooltip > *:last-child {
+        color: @error;
+      }
+    }
+  }
+}

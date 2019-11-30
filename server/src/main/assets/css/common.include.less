@@ -84,6 +84,7 @@ i.fas.label, i.far.label, i.fa.label {
 
 // tiles.
 
+// tiles are medium-sized, boxed cards, shown as thirds of the page.
 .as-tiles {
   margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
   display: flex;
@@ -118,46 +119,73 @@ i.fas.label, i.far.label, i.fa.label {
   }
 }
 
-
+// items are large, full-width, boxed, sequential options.
 .as-items {
   margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
-  display: flex;
-  flex-direction: column;
 
-  &.links > * > a,
-  &.links > *.disabled {
+  & > li {
     display: block;
-    margin: 0.3rem;
+    margin: (@font-size * 0.6) 0 (@font-size * 0.45) 0;
     padding: 0.2rem 0.5rem;
 
     border-radius: 0.3rem;
     border: @line-width solid @horizontal-line;
 
     background: hsv(0, 0, 0.9);
-    text-decoration: none;
     color: @font;
-  }
 
-  &.links > * > a:hover {
-    background: mix(tint(black, 90), @link-hover-background, 60);
-    color: mix(@font, @link, 70);
-    border: @line-width solid @link;
-  }
+    &.disabled {
+      border: @line-width solid tint(@horizontal-line, 50);
 
-  &.links > *.disabled {
-    border: @line-width solid tint(@horizontal-line, 50);
+      & > h4,
+      & > p {
+        color: hsv(0, 0, 0.5);
+      }
 
-    & > h4,
-    & > p {
-      color: hsv(0, 0, 0.6);
+      & > img {
+        filter: grayscale(1);
+      }
     }
 
-    & > img {
-      filter: grayscale(1);
+    &:after {
+      clear: both;
     }
   }
 }
 
+
+// a horizontal list of small icons, possibly with tooltips.
+.as-icons {
+  @size: 1.7rem;
+  & > li {
+    display: inline flex;
+    padding: (0.1 * @size);
+
+    &:not(:first-child) {
+      margin-left: 0.1rem;
+    }
+
+    & > img {
+      display: inline-block;
+      width: @size;
+      height: @size;
+    }
+
+    &.tooltip-anchor:hover > .tooltip {
+      top: (1.6 * @size);
+      right: (-0.58 * @size);
+    }
+
+    &.disabled {
+      background: hsv(0, 0, 0.84);
+      border-radius: 0.3rem;
+
+      & > img {
+        filter: opacity(0.4) grayscale(1);
+      }
+    }
+  }
+}
 
 
 // tooltips
@@ -201,7 +229,6 @@ i.fas.label, i.far.label, i.fa.label {
 
   &:hover > .tooltip {
     visibility: visible;
-    display: block;
     top: 1.5rem;
     right: -1rem;
     z-index: 5;
