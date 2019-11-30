@@ -24,6 +24,8 @@ object StoryRoll {
   class Backend(bs: BackendScope[Props, State]) {
     // def append(): Callback
 
+    def doScene(scene: model.Scene): Callback =
+      Callback.log("entering " + scene.title)
 
     def loadScenes(props: Props): AsyncCallback[VdomElement] =
       Request(ApiV1.AvailableScenes, props.story.urlname).send.
@@ -35,19 +37,12 @@ object StoryRoll {
               case Some(scene) =>
                 Scene.component(Scene.Props(props.router, scene, props.player))
               case None =>
-                renderSelection(props, scenes)
+                SceneSelection.component(SceneSelection.Props(
+                  props.router, None, props.player, scenes, doScene))
             }
           case Failure(e) =>
             Error.component(e, false)
         })
-
-    def renderSelection(props: Props, scenes: List[model.Scene]) = {
-      <.div(
-        scenes.map(scene =>
-          <.div("scene: " + scene.title)).
-          toTagMod
-      )
-    }
 
     def render(props: Props, state: State) =
       <.div(^.id := "matter",
