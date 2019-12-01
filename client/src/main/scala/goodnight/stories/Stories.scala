@@ -38,8 +38,6 @@ object Stories {
             stories.map({ story =>
               renderStory(router, story)
             }).toTagMod)
-        case Reply(_, f) =>
-          <.p("got wrong reply: " + f)
       })
 
 

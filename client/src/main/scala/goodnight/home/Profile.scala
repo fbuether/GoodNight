@@ -43,8 +43,6 @@ object Profile {
                 stories.map({ story =>
                   renderStory(router, story)
                 }).toTagMod)
-          case Reply(_, f) =>
-            <.p("got wrong reply: " + f)
         })
 
     def render(p: Props, s: State): VdomElement =
