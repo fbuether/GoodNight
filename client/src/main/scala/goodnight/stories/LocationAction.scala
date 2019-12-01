@@ -1,6 +1,7 @@
 
 package goodnight.stories
 
+import java.util.UUID
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.util.{ Try, Success, Failure }
@@ -16,13 +17,12 @@ import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
 
 
-object SceneSelection {
+object LocationAction {
   case class Props(router: pages.Router, location: Option[model.Location],
     player: model.Player, scenes: Seq[model.Scene],
     onClick: model.Scene => Callback)
 
-
-  def component = ScalaComponent.builder[Props]("SceneSelection").
+  def component = ScalaComponent.builder[Props]("LocationAction").
     stateless.
     render_P(props =>
       <.div(
@@ -70,4 +70,25 @@ object SceneSelection {
     ).
     build
 
+  // request scenes available at the current location, and return a new
+  // LocationAction-Component for them when loading has finished.
+  def loadLocationAction(router: pages.Router,
+    story: model.Story, player: model.Player, location: Option[UUID],
+    onSelectScene: model.Scene => Callback):
+      AsyncCallback[VdomElement] = {
+    val request = location.
+      map(u => Request(ApiV1.AvailableScenesAt, story.urlname,
+        u.toString)).
+      getOrElse(Request(ApiV1.AvailableScenes, story.urlname))
+
+    request.send.
+      forStatus(200).forJson[List[model.Scene]].
+      body.attemptTry.map({
+        case Success(scenes) =>
+          component(Props(router, None, player, scenes, onSelectScene))
+        case Failure(e) =>
+          Error.component(e, false)
+      })
+  }
 }
+
