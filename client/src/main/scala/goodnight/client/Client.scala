@@ -60,8 +60,23 @@ object Client {
       // Reading Stories
       //
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
+      // Base route, which will load and then redirect to any of the following
       {val route = ("#story" / anyName).caseClass[pages.Story]
         dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
+      // Location: None or Some(location)
+      {val route = ("#story" / anyName / "continue".const(None:Option[String])).
+        caseClass[pages.Location]
+        dynamicRouteCT(route) ~> dynRenderR(Story.renderLocation)} |
+      {val route = ("#story" / anyName / ("at" / anyName).option).
+        caseClass[pages.Location]
+        dynamicRouteCT(route) ~> dynRenderR(Story.renderLocation)} |
+      // At a specific scene
+      {val route = ("#story" / anyName / "do" / anyName).caseClass[pages.Scene]
+        dynamicRouteCT(route) ~> dynRenderR(Story.renderScene)} |
+      // taken a choice, before continuing on
+      {val route = ("#story" / anyName / "do" / anyName / "then" / anyName).
+        caseClass[pages.Choice]
+        dynamicRouteCT(route) ~> dynRenderR(Story.renderChoice)} |
       //
       // Editing Stories
       //

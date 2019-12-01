@@ -84,4 +84,16 @@ object Story {
   def render(page: pages.Story, router: pages.Router) =
     Shell.component(router)(this.component(
       Props(router, page.story)))
+
+  def renderLocation(page: pages.Location, router: pages.Router) =
+    Shell.component(router)(this.component(
+      Props(router, page.story)))
+
+  def renderScene(page: pages.Scene, router: pages.Router) =
+    Shell.component(router)(this.component(
+      Props(router, page.story)))
+
+  def renderChoice(page: pages.Choice, router: pages.Router) =
+    Shell.component(router)(this.component(
+      Props(router, page.story)))
 }

@@ -15,17 +15,22 @@ package pages {
 
   case object Test extends Page
 
+
   // authentication
   case object Register extends Page
   case object SignIn extends Page
   case class SignInFor(page: String) extends Page
   case object RequestPasswordReset extends Page
 
+
   // Reading Stories
   case object Stories extends Page
   case class Story(story: String) extends Page
-  case class Inventory(story: String) extends Page
-  case class Scene(story: String) extends Page
+  case class Location(story: String, location: Option[String]) extends Page
+  case class Scene(story: String, scene: String) extends Page
+  case class Choice(story: String, scene: String, choice: String) extends Page
+  // case class Inventory(story: String) extends Page
+
 
   // Creating stories
   case object CreateStory extends Page

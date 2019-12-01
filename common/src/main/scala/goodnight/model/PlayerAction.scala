@@ -11,7 +11,8 @@ object Action {
   case class Scene(scene: model.Scene) extends Action
   case class Choice(choice: model.Choice) extends Action
   // self-directed movement requires a map-like view. Happens later.
-  // case class Location(location: Option[UUID]) extends Action
+  // for now, location is always None.
+  case class Location(location: Option[model.Location]) extends Action
 }
 
 

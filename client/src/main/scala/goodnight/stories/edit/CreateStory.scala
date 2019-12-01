@@ -23,7 +23,7 @@ object CreateStory {
   class Backend(bs: BackendScope[pages.Router, State]) {
     private val nameRef = Input.componentRef
 
-
+    // todo: do new. really. completely new.
     def createCreateRequest(name: String): AsyncCallback[Reply[model.Story]] =
       Request.put(ApiV1.CreateStory).
         withBody(ujson.Obj("name" -> name)).
