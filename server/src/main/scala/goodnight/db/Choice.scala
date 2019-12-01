@@ -48,8 +48,7 @@ object Choice extends TableQueryBase[model.Choice, Choice](new Choice(_)) {
 
   private def byIdQuery(id: Rep[UUID]) =
     apply().
-      filter(_.id === id).
-      take(1)
+      filter(_.id === id)
   private def byIdCompiled = Compiled(byIdQuery _)
 
 

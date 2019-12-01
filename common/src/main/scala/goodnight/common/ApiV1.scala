@@ -34,7 +34,13 @@ object ApiV1 {
   object Story extends ApiPath("GET", p, C("story/"), S)
   object CreatePlayer extends ApiPath("PUT", p,
     C("story/"), S, C("/new-player"))
+  // availableScenes shows all Scenes without a location; if all scenes
+  // have a location, always use AvailableScenesAt.
   object AvailableScenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
+  object AvailableScenesAt extends ApiPath("GET", p, C("story/"), S,
+    C("/scenes/at/"), S)
+  object DoScene extends ApiPath("POST", p,
+    C("story/"), S, C("/go/scene/"), S)
 
   //
   // Editing Stories

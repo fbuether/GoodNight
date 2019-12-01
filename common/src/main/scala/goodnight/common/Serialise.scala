@@ -16,6 +16,7 @@ object Serialise {
   implicit val serialise_player: Serialisable[model.Player] = macroRW
   implicit val serialise_story: Serialisable[model.Story] = macroRW
   implicit val serialise_scene: Serialisable[model.Scene] = macroRW
+  implicit val serialise_choice: Serialisable[model.Choice] = macroRW
   implicit val serialise_user: Serialisable[model.User] = macroRW
 
   def write[A](a: A)(implicit rw: Serialisable[A]): String =

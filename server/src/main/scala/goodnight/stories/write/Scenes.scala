@@ -51,15 +51,16 @@ class Scenes(components: ControllerComponents,
       database.run(for (
         story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
         scene <- GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname));
+        choices <- db.Choice.ofScene(scene.id);
         result <- SceneParser.parseScene(story, request.body.text).fold(
           err => DBIO.successful(UnprocessableEntity(error(err))),
           parsed => for (
-            choices <- db.Choice.ofScene(scene.id);
             _ <- db.Scene.update(scene.id, parsed._1);
-            result <- DBIO.sequence(parsed._2.
-              map(_.copy(scene = parsed._1.id)).
-              map(replaceChoice(_, choices))).map(_ => Accepted))
-          yield result))
+            _ <- DBIO.sequence(parsed._2.
+              map(_.copy(scene = scene.id)).
+              map(replaceChoice(_, choices)))
+          )
+          yield Accepted))
       yield result))
       // database.run(
       //   GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>

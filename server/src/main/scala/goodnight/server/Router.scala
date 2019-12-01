@@ -77,8 +77,11 @@ class Router(
     //
     case Stories() => readStories.getAvailableStories(header.target.queryMap)
     case Story(story) => readStories.getStory(story)
-    case AvailableScenes(story) => readScenes.getAvailableScenes(story)
+    case AvailableScenes(story) => readScenes.getAvailableScenes(story, None)
+    case AvailableScenesAt(story, location) =>
+      readScenes.getAvailableScenes(story, Some(location))
     case CreatePlayer(story) => readPlayer.createPlayer(story)
+    case DoScene(story, scene) => readScenes.doScene(story, scene)
 
     //
     // Editing Stories

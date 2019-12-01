@@ -20,7 +20,7 @@ class Scenes(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  def getAvailableScenes(storyUrlname: String) =
+  def getAvailableScenes(storyUrlname: String, location: Option[String]) =
     auth.SecuredAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap({story =>
@@ -33,4 +33,13 @@ class Scenes(components: ControllerComponents,
     auth.SecuredAction.async(request =>
       database.run(
         db.Scene.allOfStory(storyUrlname).map(Ok(_))))
+
+  def doScene(storyUrlname: String, sceneUrlname: String) =
+    auth.SecuredAction.async(request =>
+    // todo: save the current player state to be at this scene.
+      database.run(
+        GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname)).
+          flatMap(scene =>
+            db.Choice.ofScene(scene.id).map(choices =>
+              Ok((scene, choices))))))
 }
