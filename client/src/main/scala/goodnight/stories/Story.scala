@@ -27,6 +27,7 @@ object Story {
       gotoLocation(None)
 
     def gotoLocation(location: Option[model.Location]): Callback =
+      clearView >>
       bs.props.flatMap(props =>
         Request(ApiV1.AvailableScenes, props.story.urlname).send.
           forStatus(200).forJson[List[model.Scene]].
@@ -38,6 +39,7 @@ object Story {
           toCallback)
 
     def gotoScene(scene: model.Scene): Callback =
+      clearView >>
       bs.props.flatMap(props =>
         Request(ApiV1.DoScene, props.story.urlname, scene.urlname).send.
           forStatus(200).forJson[(model.Scene, Seq[model.Choice])].
@@ -49,6 +51,7 @@ object Story {
           toCallback)
 
     def gotoChoice(scene: model.Scene, choice: model.Choice): Callback =
+      clearView >>
       bs.props.flatMap(props =>
         Request(ApiV1.DoChoice, props.story.urlname, scene.urlname,
           choice.title).send.
@@ -60,15 +63,27 @@ object Story {
               async).
           toCallback)
 
+    def clearView: Callback =
+      bs.setState(State(None))
 
     def setView(newView: VdomElement): Callback =
       bs.setState(State(Some(newView)))
 
-    def render(props: Props, state: State): VdomElement =
-      state.view match {
-        case None => Loading.component(props.router)
+    def render(props: Props, state: State): VdomElement = {
+      val view: VdomElement = state.view match {
+        case None =>
+          <.div(
+            <.h2("Loading"),
+            Loading.component(props.router))
         case Some(component) => component
       }
+
+      <.div(^.id := "matter",
+        <.div(^.id := "centre",
+          view),
+        <.div(^.id := "side",
+          <.h4("Sir Archibald")))
+    }
   }
 
   val component = ScalaComponent.builder[Props]("Story").
@@ -85,7 +100,8 @@ object Story {
       case (story, None) =>
         CreatePlayer.component(CreatePlayer.Props(router, story, player =>
           component(Props(router, story, player))))
-      case (story, Some(player)) => component(Props(router, story, player))
+      case (story, Some(player)) =>
+        component(Props(router, story, player))
     }
 
   def render(page: pages.Story, router: pages.Router) =

@@ -28,7 +28,7 @@ object ReadScene {
       <.div(
         <.h2(props.scene.title),
         <.p(props.scene.text),
-        <.ul(^.className := "as-items",
+        <.ul(^.className := "choices as-items",
           props.choices.sortBy(_.pos).map(choice =>
             <.li(
               <.p(choice.text,

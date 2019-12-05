@@ -31,9 +31,9 @@ object ReadChoice {
         <.hr(),
         <.h3(props.choice.title),
         <.p(props.choice.text),
-        <.div(<.button(^.className := "right",
+        <.button(^.className := "return",
           ^.onClick --> props.gotoLocation(None),
-          <.span(^.className := "fas fa-angle-double-right"))))
+          "Return"))
     ).
     build
 }
