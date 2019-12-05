@@ -105,6 +105,8 @@ object SceneParser {
         model.Choice(UUID.randomUUID(),
           scene.id,
           pos,
+          titleOfContent(pChoice.content),
+          urlnameOf(titleOfContent(pChoice.content)),
           pChoice.content)
       })
 

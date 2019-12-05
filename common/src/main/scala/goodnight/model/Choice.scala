@@ -14,5 +14,8 @@ case class Choice(
   // choices as intended.
   pos: Int,
 
+  title: String,
+  urlname: String,
+
   text: String
 )
