@@ -17,7 +17,7 @@ import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
 
 
-object SceneAction {
+object ReadScene {
   case class Props(router: pages.Router, player: model.Player,
     scene: model.Scene, choices: Seq[model.Choice],
     onSelect: model.Choice => Callback)
@@ -38,18 +38,18 @@ object SceneAction {
     build
 
 
-  def doSceneAction(router: pages.Router,
-    story: model.Story, player: model.Player, scene: model.Scene,
-    onSelectChoice: model.Choice => Callback):
-      AsyncCallback[VdomElement] = {
-    Request(ApiV1.DoScene, story.urlname, scene.urlname).send.
-      forStatus(200).forJson[(model.Scene, Seq[model.Choice])].
-      body.attemptTry.map({
-        case Success((scene, choices)) =>
-          component(Props(router, player, scene, choices, onSelectChoice))
-        case Failure(e) =>
-          Error.component(e, false)
-      })
-  }
+  // def doSceneAction(router: pages.Router,
+  //   story: model.Story, player: model.Player, scene: model.Scene,
+  //   onSelectChoice: model.Choice => Callback):
+  //     AsyncCallback[VdomElement] = {
+  //   Request(ApiV1.DoScene, story.urlname, scene.urlname).send.
+  //     forStatus(200).forJson[(model.Scene, Seq[model.Choice])].
+  //     body.attemptTry.map({
+  //       case Success((scene, choices)) =>
+  //         component(Props(router, player, scene, choices, onSelectChoice))
+  //       case Failure(e) =>
+  //         Error.component(e, false)
+  //     })
+  // }
 }
 
