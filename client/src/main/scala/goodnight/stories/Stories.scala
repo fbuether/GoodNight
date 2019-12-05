@@ -6,6 +6,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.util.{ Try, Success, Failure }
 
 import goodnight.client.pages
+import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components.Banner
 import goodnight.components.Loading
@@ -16,11 +17,6 @@ import goodnight.service.{ Request, Reply }
 
 
 object Stories {
-
-  // type Props = pages.Router
-
-  // type State = (Boolean, List[String])
-
   def renderStory(router: pages.Router, story: model.Story) =
     <.li(
       router.link(pages.Story(story.urlname))(
@@ -28,22 +24,19 @@ object Stories {
           story.image).value),
         <.div(story.name)))
 
+  def renderStories(router: pages.Router, stories: Seq[model.Story]) =
+    <.ul(^.className := "story-list as-tiles links",
+      stories.map(renderStory(router, _)).toTagMod)
 
   def loadStories(router: pages.Router) =
-    Request.get("/api/v1/stories").send.
+    Request(ApiV1.Stories).send.
+      forStatus(200).
       forJson[List[model.Story]].
-      map({
-        case Reply(_, stories) =>
-          <.ul(^.className := "story-list as-tiles links",
-            stories.map({ story =>
-              renderStory(router, story)
-            }).toTagMod)
-      })
-
+      body.
+      map(renderStories(router, _))
 
   def storyList(router: pages.Router): VdomElement =
     Loading.suspend(router, loadStories(router))
-
 
   val component = ScalaComponent.builder[pages.Router]("Stories").
     render_P(router =>

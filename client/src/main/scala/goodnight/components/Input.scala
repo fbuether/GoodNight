@@ -37,5 +37,14 @@ object Input {
     renderBackend[Backend].
     build
 
-  def componentRef = Ref.toScalaComponent(component)
+
+  type InputRef = Ref.WithScalaComponent[Props, State, Backend, CtorType.Props]
+
+  def componentRef: InputRef = Ref.toScalaComponent(component)
+
+  def withValue[R](input: InputRef, cont: String => CallbackTo[R]):
+      CallbackTo[R] =
+    // todo: don't just getOrElse("") a missing input. something's wrong in
+    // that case, i guess.
+    input.get.flatMap(_.backend.get).getOrElse("").flatMap(cont)
 }

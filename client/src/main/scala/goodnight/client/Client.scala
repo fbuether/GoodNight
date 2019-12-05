@@ -27,11 +27,8 @@ object Client {
     val publicPages = (
       staticRoute(root, pages.Home) ~> renderR(Home.render) |
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
-      staticRoute("#about", pages.About) ~> renderR(About.render)
-
-      |
+      staticRoute("#about", pages.About) ~> renderR(About.render) |
       staticRoute("#test", pages.Test) ~> renderR(Test.render)
-
     )
 
     // pages that require no valid authentication (as opposed to any state).
@@ -54,29 +51,15 @@ object Client {
       //
       // Profile
       //
-      {staticRoute("#profile", pages.Profile) ~>
-        renderR(Profile.render)} |
+      {staticRoute("#profile", pages.Profile) ~> renderR(Profile.render)} |
+
       //
       // Reading Stories
       //
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
-      // Base route, which will load and then redirect to any of the following
-      {val route = ("#story" / anyName).caseClass[pages.Story]
+      {val route = ("#story" / anyName / "continue").caseClass[pages.Story]
         dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
-      // Location: None or Some(location)
-      {val route = ("#story" / anyName / "continue".const(None:Option[String])).
-        caseClass[pages.Location]
-        dynamicRouteCT(route) ~> dynRenderR(Story.renderLocation)} |
-      {val route = ("#story" / anyName / ("at" / anyName).option).
-        caseClass[pages.Location]
-        dynamicRouteCT(route) ~> dynRenderR(Story.renderLocation)} |
-      // At a specific scene
-      {val route = ("#story" / anyName / "do" / anyName).caseClass[pages.Scene]
-        dynamicRouteCT(route) ~> dynRenderR(Story.renderScene)} |
-      // taken a choice, before continuing on
-      {val route = ("#story" / anyName / "do" / anyName / "then" / anyName).
-        caseClass[pages.Choice]
-        dynamicRouteCT(route) ~> dynRenderR(Story.renderChoice)} |
+
       //
       // Editing Stories
       //

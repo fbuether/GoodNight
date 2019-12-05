@@ -15,22 +15,32 @@ import goodnight.service.Conversions._
 
 
 object CreatePlayer {
-  case class Props(router: pages.Router, story: model.Story, user: model.User,
-    onSave: String => Callback)
+  case class Props(router: pages.Router, story: model.Story,
+    child: model.Player => VdomElement)
 
-  case class State(saving: Boolean)
-
+  case class State(player: Option[model.Player], saving: Boolean)
   class Backend(bs: BackendScope[Props, State]) {
     private val playerNameRef = Input.componentRef
 
-    def doSave(e: ReactEventFromInput): Callback =
-      e.preventDefaultCB >>
-    bs.modState(_.copy(saving = true)) >>
-    playerNameRef.get.flatMap(_.backend.get).flatMap({ playerName =>
-      bs.props.flatMap(_.onSave(playerName))
-    })
+    def callSave(storyUrlname: String, playerName: String):
+        AsyncCallback[model.Player] =
+      Request(ApiV1.CreatePlayer, storyUrlname).
+        withBody(ujson.Obj("name" -> playerName)).
+        send.
+        forStatus(201).
+        forJson[model.Player].
+        body
 
-    def render(props: Props, state: State) = {
+    def doSave(props: Props): Callback =
+      // e.preventDefaultCB >>
+      bs.modState(_.copy(saving = true)) >>
+      Input.withValue(playerNameRef, playerName =>
+        callSave(props.story.urlname, playerName).flatMap(player =>
+        bs.modState(_.copy(saving = false, player = Some(player))).async).
+        toCallback)
+
+
+    def renderForm(props: Props, saving: Boolean) =
       <.div(
         <.h2("Welcome!"),
         <.p("""To read or play this story, you will need a name first.
@@ -42,19 +52,22 @@ object CreatePlayer {
             List(^.autoFocus := true, ^.required := true))),
           <.button(^.tpe := "submit",
             ^.className := "small atRight",
-            ^.onClick ==> doSave,
-            (^.className := "loading").when(state.saving),
-            (^.disabled := true).when(state.saving),
+            ^.onClick --> doSave(props),
+            (^.className := "loading").when(saving),
+            (^.disabled := true).when(saving),
             <.i(
-              (^.className := "far fa-spin fa-compass label").
-                when(state.saving),
-              (^.className := "far fa-check-square label").when(!state.saving)),
+              (^.className := "far fa-spin fa-compass label").when(saving),
+              (^.className := "far fa-check-square label").when(!saving)),
             "Enter")))
+
+    def render(props: Props, state: State) = state match {
+      case State(None, saving) => renderForm(props, saving)
+      case State(Some(player), _) => props.child(player)
     }
   }
 
   val component = ScalaComponent.builder[Props]("CreatePlayer").
-    initialState(State(false)).
+    initialState(State(None, false)).
     renderBackend[Backend].
     build
 }

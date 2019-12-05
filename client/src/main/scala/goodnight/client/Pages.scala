@@ -25,11 +25,9 @@ package pages {
 
   // Reading Stories
   case object Stories extends Page
+  // all story progress is a single page, as it is not freely navigable.
   case class Story(story: String) extends Page
-  case class Location(story: String, location: Option[String]) extends Page
-  case class Scene(story: String, scene: String) extends Page
-  case class Choice(story: String, scene: String, choice: String) extends Page
-  // case class Inventory(story: String) extends Page
+  // case class Inventory(story: String) extends Story
 
 
   // Creating stories
