@@ -28,6 +28,7 @@ class Router(
   profile: Profile,
   readStories: read.Stories,
   readScenes: read.Scenes,
+  readChoices: read.Choices,
   readPlayer: read.Player,
   writeStories: write.Stories,
   writeScenes: write.Scenes,
@@ -82,6 +83,8 @@ class Router(
       readScenes.getAvailableScenes(story, Some(location))
     case CreatePlayer(story) => readPlayer.createPlayer(story)
     case DoScene(story, scene) => readScenes.doScene(story, scene)
+    case DoChoice(story, scene, choice) =>
+      readChoices.doChoice(story, scene, choice)
 
     //
     // Editing Stories

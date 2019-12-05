@@ -39,8 +39,12 @@ object ApiV1 {
   object AvailableScenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
   object AvailableScenesAt extends ApiPath("GET", p, C("story/"), S,
     C("/scenes/at/"), S)
+
+  // actual activity
   object DoScene extends ApiPath("POST", p,
     C("story/"), S, C("/go/scene/"), S)
+  object DoChoice extends ApiPath("POST", p,
+    C("story/"), S, C("/go/scene/"), S, C("/choose/"), S)
 
   //
   // Editing Stories
