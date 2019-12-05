@@ -17,26 +17,23 @@ import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
 
 
-object ReadScene {
+object ReadChoice {
   case class Props(router: pages.Router, player: model.Player,
-    scene: model.Scene, choices: Seq[model.Choice],
-    onClick: model.Choice => Callback)
+    scene: model.Scene, choice: model.Choice,
+    gotoLocation: Option[model.Location] => Callback)
 
-  def component = ScalaComponent.builder[Props]("ReadScene").
+  def component = ScalaComponent.builder[Props]("ReadChoice").
     stateless.
     render_P(props =>
       <.div(
         <.h2(props.scene.title),
         <.p(props.scene.text),
-        <.ul(^.className := "as-items",
-          props.choices.sortBy(_.pos).map(choice =>
-            <.li(
-              <.p(choice.text,
-                <.button(^.className := "right",
-                  ^.onClick --> props.onClick(choice),
-                  <.span(^.className := "fas fa-angle-double-right"))))
-          ).toTagMod
-        ))
+        <.hr(),
+        <.h3(props.choice.title),
+        <.p(props.choice.text),
+        <.div(<.button(^.className := "right",
+          ^.onClick --> props.gotoLocation(None),
+          <.span(^.className := "fas fa-angle-double-right"))))
     ).
     build
 }

@@ -45,11 +45,20 @@ object Story {
             setView(ReadScene.component(ReadScene.Props(
               props.router, props.player, sceneChoices._1, sceneChoices._2,
               gotoChoice(sceneChoices._1, _)))).
-          async).
-        toCallback)
+              async).
+          toCallback)
 
     def gotoChoice(scene: model.Scene, choice: model.Choice): Callback =
-      Callback.log("going to " + choice.pos)
+      bs.props.flatMap(props =>
+        Request(ApiV1.DoChoice, props.story.urlname, scene.urlname,
+          choice.title).send.
+          forStatus(200).// forJson[model.Choice] what kind of results?
+          body.flatMap(_ =>
+            setView(ReadChoice.component(ReadChoice.Props(
+              props.router, props.player, scene, choice,
+              gotoLocation))).
+              async).
+          toCallback)
 
 
     def setView(newView: VdomElement): Callback =

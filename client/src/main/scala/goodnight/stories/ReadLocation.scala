@@ -22,7 +22,7 @@ object ReadLocation {
     location: Option[model.Location], scenes: Seq[model.Scene],
     onClick: model.Scene => Callback)
 
-  def component = ScalaComponent.builder[Props]("LocationAction").
+  def component = ScalaComponent.builder[Props]("ReadLocation").
     stateless.
     render_P(props =>
       <.div(

@@ -49,7 +49,7 @@ object WithStory {
 
   // todo: re-use an already loaded story, if this component reloads with the
   // same storyUrlname.
-  val component = ScalaComponent.builder[Props]("CreatePlayer").
+  val component = ScalaComponent.builder[Props]("WithStory").
     initialState(State(None)).
     renderBackend[Backend].
     componentDidMount(bs => bs.backend.loadIfRequired(bs.props.storyUrlname)).
