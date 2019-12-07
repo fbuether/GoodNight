@@ -36,6 +36,7 @@ object Setting {
 
   // literally includes another scene here, as if it's contents had been written
   // inline. Only difference: removes the Setting Name
+  // includes are not evaluated for untaken choices.
   case class Include(scene: String) extends Setting
 }
 

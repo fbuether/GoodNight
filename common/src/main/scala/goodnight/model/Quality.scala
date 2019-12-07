@@ -15,7 +15,7 @@ object Sort {
 
   // Integer: A integral value, possibly limited (e.g. "hit points")
   // the value of these qualities is the decimal rep. of the integer.
-  case class Int(min: Option[Int], max: Option[Int]) extends Sort
+  case class Integer(min: Option[Int], max: Option[Int]) extends Sort
 }
 
 

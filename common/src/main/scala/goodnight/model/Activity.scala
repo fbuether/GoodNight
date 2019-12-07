@@ -11,6 +11,8 @@ case class Activity(
   number: Int,
   scene: String, // refers Scene.name
 
+  random: Seq[Int], // generated random values, if the scene required any
+
   // the effects that this activity had
   // this maps Quality.name -> value, where value may be a number as string
   effects: Map[String, String]
