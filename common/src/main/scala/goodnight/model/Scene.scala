@@ -2,20 +2,42 @@
 package goodnight.model
 
 
-case class Choice(
-  scene: String, // refers Scene.title
+sealed trait Setting
+object Setting {
+  // Sets the name of the scene
+  case class Name(name: String) extends Setting
 
-  // all values (and the existence of a choice) depend on `raw` of `scene`.
+  // Describes scenes that this scene can continue to
+  case class Continue(scene: String) extends Setting
 
-  // the index of this choice in relation to the scene itself, to order all
-  // choices as intended.
-  pos: Int,
+  // Denotes this scene as a start for this game
+  case object Start extends Setting
 
-  title: String,
-  urlname: String,
+  // Sets a quality to a specific value
+  case class Set(quality: String, value: Expression) extends Setting
 
-  text: String
-)
+  // A test to be performed when this scene fires
+  case class Test(condition: Expression) extends Setting
+
+  // to be executed when a parallel Test succeeds
+  case class Success(consequence: Setting) extends Setting
+
+  // to be executed when a parallel Test fails
+  case class Failure(consequence: Setting) extends Setting
+
+  // a requirement for this scene
+  case class Requirement(quality: String, value: Expression) extends Setting
+
+  // always show this scene as an option, even if requirements are missing
+  case object ShowAlways extends Setting
+
+  // adds a "return" button to return to a parent scen
+  case class Return(scene: String) extends Setting
+
+  // literally includes another scene here, as if it's contents had been written
+  // inline. Only difference: removes the Setting Name
+  case class Include(scene: String) extends Setting
+}
 
 
 case class Scene(
@@ -27,13 +49,13 @@ case class Scene(
   // interpreted data, dependent on `raw`.
 
   // the (extracted) title and its url-representation
-  title: String,
+  name: String,
   urlname: String,
+
   // this is all non-setting text
+  // todo: possibly containing dynamic elements.
   text: String,
-  // the location, as in $ location = ...
-  location: Option[String], // refers Location.name
-  // if this scene must happen as soon as possible, `$ mandatory`
-  // to set, otherwise non-mandatory.
-  mandatory: Boolean
+
+  // all settings of this scene.
+  settings: Seq[Setting]
 )
