@@ -82,9 +82,14 @@ class Router(
     case AvailableScenesAt(story, location) =>
       readScenes.getAvailableScenes(story, Some(location))
     case CreatePlayer(story) => readPlayer.createPlayer(story)
+
     case DoScene(story, scene) => readScenes.doScene(story, scene)
     case DoChoice(story, scene, choice) =>
       readChoices.doChoice(story, scene, choice)
+    case DoLocationNone(story) => readScenes.doLocation(story, None)
+    case DoLocation(story, location) =>
+      readScenes.doLocation(story, Some(location))
+
 
     //
     // Editing Stories

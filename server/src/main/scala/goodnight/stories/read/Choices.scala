@@ -20,6 +20,7 @@ class Choices(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
+  // todo: do-actions do not return the next options. Create seperate call.
   def doChoice(storyUrlname: String, sceneUrlname: String,
     choiceUrlname: String) =
     auth.SecuredAction.async(request =>

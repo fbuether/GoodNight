@@ -31,6 +31,12 @@ object ApiV1 {
   // Reading Stories
   //
   object Stories extends ApiPath("GET", p, C("stories"))
+
+  // Story returns a specific story, and, if it exists, the state of the
+  // current player in this story (player + last playeraction)
+  // type:
+  // [(model.Story, // this story
+  //   Option[model.Player])] // the player of the current user, if any
   object Story extends ApiPath("GET", p, C("story/"), S)
   object CreatePlayer extends ApiPath("PUT", p,
     C("story/"), S, C("/new-player"))
@@ -39,12 +45,43 @@ object ApiV1 {
   object AvailableScenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
   object AvailableScenesAt extends ApiPath("GET", p, C("story/"), S,
     C("/scenes/at/"), S)
+  object AvailableChoices extends ApiPath("GET", p,
+    C("story/"), S, C("/scene/"), S)
 
-  // actual activity
+  //
+  // Perform Player Activity:
+  //
+  // All these actions return 202 (Accepted) on success, and 409 (Conflict)
+  // if anything is wrong. Content describes the outcome to the player, if
+  // any major change happens. Continuations can be fetched with the
+  // Available* Actions.
+
+  // enter a scene.
+  // This is only allowed if the player is in state
+  // State.Location(story, scene.location), and meets the requirements of the
+  // scene.
+  // Returns a Seq[model.Effect?] caused by entering this scene, if any.
+  // player state afterwards is State.Scene(story, scene)
   object DoScene extends ApiPath("POST", p,
     C("story/"), S, C("/go/scene/"), S)
+
+  // Perform a choice.
+  // This is only allowed if the player is in state State.Scene(story, scene),
+  // and meets the requirements for this choice.
+  // Returns a Seq[model.Effect?] caused by performing this scene, if any.
+  // player state afterwards is State.Choice(story, scene, choice)
   object DoChoice extends ApiPath("POST", p,
     C("story/"), S, C("/go/scene/"), S, C("/choose/"), S)
+
+  // move to a different location.
+  // This is only allowede if the player is in state State.Location(story, _),
+  // and meets the location's requirements.
+  // Returns a Seq[model.Effect?] caused by moving to the new location, if any.
+  // player state afterwards is State.Location(story, location).
+  object DoLocationNone extends ApiPath("POST", p,
+    C("story/"), S, C("/go-nowhere"))
+  object DoLocation extends ApiPath("POST", p,
+    C("story/"), S, C("/go-to/"), S)
 
   //
   // Editing Stories
