@@ -30,58 +30,43 @@ object ApiV1 {
   //
   // Reading Stories
   //
+
+  // fetch all available stories.
   object Stories extends ApiPath("GET", p, C("stories"))
+
 
   // Story returns a specific story, and, if it exists, the state of the
   // current player in this story (player + last playeraction)
   // type:
-  // [(model.Story, // this story
-  //   Option[model.Player])] // the player of the current user, if any
+  // (model.Story, // this story
+  //  Option[(model.Player, // the player of the current user, if any
+  //          model.Activity)]) // the player's last activity
   object Story extends ApiPath("GET", p, C("story/"), S)
+
+
+  // CreatePlayer returns the new player along with the first activity
+  // item and its scene, similar to Story.
+  // type: (model.Player, model.Activity, model.Scene)
   object CreatePlayer extends ApiPath("PUT", p,
     C("story/"), S, C("/new-player"))
-  // availableScenes shows all Scenes without a location; if all scenes
-  // have a location, always use AvailableScenesAt.
-  object AvailableScenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
-  object AvailableScenesAt extends ApiPath("GET", p, C("story/"), S,
-    C("/scenes/at/"), S)
-  object AvailableChoices extends ApiPath("GET", p,
+
+
+  // load all info about a scene.
+  // returns the scene model, as well as a list of next scenes.
+  // type: (model.Scene, Seq[model.Scene])
+  object Scene extends ApiPath("GET", p,
     C("story/"), S, C("/scene/"), S)
+
 
   //
   // Perform Player Activity:
-  //
-  // All these actions return 202 (Accepted) on success, and 409 (Conflict)
-  // if anything is wrong. Content describes the outcome to the player, if
-  // any major change happens. Continuations can be fetched with the
-  // Available* Actions.
 
-  // enter a scene.
-  // This is only allowed if the player is in state
-  // State.Location(story, scene.location), and meets the requirements of the
-  // scene.
-  // Returns a Seq[model.Effect?] caused by entering this scene, if any.
-  // player state afterwards is State.Scene(story, scene)
-  object DoScene extends ApiPath("POST", p,
-    C("story/"), S, C("/go/scene/"), S)
+  // Return 202 (Accepted) on success, and 409 (Conflict) if anything is wrong.
+  // Requires the the sceneUrlname as parameter.
+  // on success, returns the outcome as well as the new scene and new options.
+  // type: (model.Activity, model.Scene, Seq[model.Scene])
+  object Do extends ApiPath("POST", p, C("story/"), S, C("/do/"), S)
 
-  // Perform a choice.
-  // This is only allowed if the player is in state State.Scene(story, scene),
-  // and meets the requirements for this choice.
-  // Returns a Seq[model.Effect?] caused by performing this scene, if any.
-  // player state afterwards is State.Choice(story, scene, choice)
-  object DoChoice extends ApiPath("POST", p,
-    C("story/"), S, C("/go/scene/"), S, C("/choose/"), S)
-
-  // move to a different location.
-  // This is only allowede if the player is in state State.Location(story, _),
-  // and meets the location's requirements.
-  // Returns a Seq[model.Effect?] caused by moving to the new location, if any.
-  // player state afterwards is State.Location(story, location).
-  object DoLocationNone extends ApiPath("POST", p,
-    C("story/"), S, C("/go-nowhere"))
-  object DoLocation extends ApiPath("POST", p,
-    C("story/"), S, C("/go-to/"), S)
 
   //
   // Editing Stories
