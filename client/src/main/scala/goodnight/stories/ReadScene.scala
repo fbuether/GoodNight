@@ -1,7 +1,6 @@
 
 package goodnight.stories
 
-import java.util.UUID
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.util.{ Try, Success, Failure }
