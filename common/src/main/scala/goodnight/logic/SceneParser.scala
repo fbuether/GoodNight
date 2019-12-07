@@ -10,56 +10,102 @@ import goodnight.model.text._
 
 
 object SceneParser {
-  // single lines, detected by start of the line.
-  private def contentLine[_:P]: P[Either[String, String]] =
-    P(!">" ~ !"$" ~/ CharsWhile(_ != '\n', 0).!).
-      map(line => Left(line.trim))
+  private def whitespace[_:P]: P[Unit] =
+    P((" " | "\t").rep(0))
 
-  private def choiceLine[_:P]: P[String] =
-    P(">" ~/ CharsWhile(_ != '\n', 0).!).
-      map(line => line.trim)
+  private def remainingLine[_:P]: P[String] =
+    P(CharsWhile(_ != '\n', 0).!).
+      map(_.trim)
 
-  private def settingLine[_:P]: P[Either[String, String]] =
-    P("$" ~/ CharsWhile(_ != '\n', 0).!).
-      map(line => Right(line.trim))
+  private def name[_:P]: P[String] =
+    P(CharsWhileIn("[a-zA-Z0-9 ]").!).
+      map(_.trim)
 
-  // a group of content and settings
-  private def partContent[_:P]: P[(String, Seq[String])] =
-    P((contentLine | settingLine).rep(min = 1, sep = "\n")).
-      map({ lines =>
-        val (lefts, rights) = lines.partition(_.isLeft)
-        (lefts.map(_.left.get).mkString("\n"),
-          rights.map(_.right.get).toList)
-      })
 
-  // a new choice, as indicated by leading ">" on first line
-  private def choice[_:P]: P[PChoice] =
-    P(choiceLine ~ ("\n" ~ partContent).?).
-      map({ case (firstText, remainder) =>
-        val (text, settings) = remainder.getOrElse("", Seq())
-        val content = firstText + (if (text.isEmpty) "" else "\n" + text)
-        PChoice(content, settings)
-      })
+  // content
 
-  // a list of several choices
-  private def choices[_:P]: P[Seq[PChoice]] =
-    P(choice.rep(min = 0, sep = "\n"))
+  // todo: settings embedded into lines
+  private def content[_:P]: P[Either[String, model.Setting]] =
+    P(!"$" ~/ remainingLine).
+      map(Left.apply)
 
-  private def sceneOnlyChoices[_:P] = P(choices).
-    map(PScene("", Seq(), _))
 
-  private def sceneContentAndMaybeChoices[_:P] =
-    P(partContent ~ ("\n" ~ choices).?).
-      map(c => PScene(c._1, c._2, c._3.getOrElse(Seq())))
+  // expressions
+  private def expression[_:P]: P[model.Expression] =
+    P(name).
+      map(model.Expression.Literal.apply)
 
-  // a full scene, composed of content and possibly choices or just choices
+
+  // settings
+
+  private def nameSetting[_:P]: P[model.Setting] =
+    P("name" ~/ whitespace ~ ":" ~ remainingLine).
+      map(model.Setting.Name.apply)
+
+  private def nextSetting[_:P]: P[model.Setting] =
+    P("next" ~/ whitespace ~ ":" ~ remainingLine).
+      map(model.Setting.Next.apply)
+
+  private def startSetting[_:P]: P[model.Setting] =
+    P("start" ~/ whitespace).
+      map(_ => model.Setting.Start)
+
+  private def setSetting[_:P]: P[model.Setting] =
+    P("set" ~/ whitespace ~ ":" ~ whitespace ~ name ~ whitespace ~ "=" ~
+      whitespace ~ expression).
+      map(model.Setting.Set.tupled)
+
+  private def testSetting[_:P]: P[model.Setting] =
+    P("test" ~/ whitespace ~ ":" ~ whitespace ~ expression).
+      map(model.Setting.Test.apply)
+
+  private def successSetting[_:P]: P[model.Setting] =
+    P("success" ~/ whitespace ~ ":" ~ whitespace ~ anySetting).
+      map(model.Setting.Success.apply)
+
+  private def failureSetting[_:P]: P[model.Setting] =
+    P("failure" ~/ whitespace ~ ":" ~ whitespace ~ anySetting).
+      map(model.Setting.Failure.apply)
+
+  private def requireSetting[_:P]: P[model.Setting] =
+    P("require" ~/ whitespace ~ ":" ~ whitespace ~ expression).
+      map(model.Setting.Require.apply)
+
+  private def showAlwaysSetting[_:P]: P[model.Setting] =
+    P(("show" ~/ whitespace ~ "always" ~ whitespace) |
+      ("always" ~/ whitespace ~ "show" ~ whitespace)).
+      map(_ => model.Setting.ShowAlways)
+
+  private def returnSetting[_:P]: P[model.Setting] =
+    P("return" ~/ whitespace ~ ":" ~ remainingLine).
+      map(model.Setting.Return.apply)
+
+  private def includeSetting[_:P]: P[model.Setting] =
+    P("include" ~/ whitespace ~ ":" ~ remainingLine).
+      map(model.Setting.Include.apply)
+
+
+
+  private def anySetting[_:P]: P[model.Setting] =
+    P((nameSetting | nextSetting | startSetting | setSetting |
+      testSetting | successSetting | failureSetting | requireSetting |
+      showAlwaysSetting | returnSetting | includeSetting))
+
+  private def setting[_:P]: P[Either[String, model.Setting]] =
+    P("$" ~/ whitespace ~ anySetting).
+      map(Right.apply)
+
+
+  // full scenes
   private def scene[_:P]: P[PScene] =
-    P((sceneContentAndMaybeChoices | sceneOnlyChoices) ~ End)
+    P(Start ~ (content | setting).rep(min = 1, sep = "\n") ~ End).
+      map(lines => PScene(
+        lines.collect({ case Left(t) => t}).mkString("\n"),
+        lines.collect({ case Right(t) => t})))
 
 
-  case class PChoice(content: String, settings: Seq[String])
-  case class PScene(content: String, settings: Seq[String],
-    choices: Seq[PChoice])
+  // case class PChoice(content: String, settings: Seq[String])
+  case class PScene(content: String, settings: Seq[model.Setting])
 
 
   def parsePScene(raw: String, detailedErrors: Boolean = false) =
@@ -80,39 +126,16 @@ object SceneParser {
     content.substring(0, content.length.min(20))
 
 
-  private def getLocation(settings: Seq[String]): Option[String] =
-    None
-
-
-  private def isMandatory(settings: Seq[String]): Boolean =
-    false
-
-
   def parseScene(story: model.Story, raw: String):
-      Either[String, (model.Scene, Seq[model.Choice])] = {
+      Either[String, model.Scene] =
     parsePScene(raw, false).map({ pScene =>
-
-      val sceneTitle = titleOfContent(pScene.content)
-      val scene = model.Scene(story.name,
+      val title = titleOfContent(pScene.content)
+      model.Scene(story.name,
         raw,
-        sceneTitle,
-        urlnameOf(sceneTitle),
+        title,
+        urlnameOf(title),
         pScene.content,
-        getLocation(pScene.settings),
-        isMandatory(pScene.settings))
-
-      val choices = pScene.choices.zipWithIndex.map({ case (pChoice, pos) =>
-        val title = titleOfContent(pChoice.content)
-        // ignore choice.settings for now
-        model.Choice(sceneTitle,
-          pos,
-          title,
-          urlnameOf(title),
-          pChoice.content)
-      })
-
-      (scene, choices)
+        pScene.settings)
     })
-  }
 }
 

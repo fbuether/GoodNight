@@ -12,9 +12,9 @@ import goodnight.logic.SceneParser._
 
 class SceneParserTest extends FunSpec with Inside {
   val parsed: (String => SceneParser.PScene) =
-    SceneParser.parsePScene(_, true) match {
+    SceneParser.parsePScene(_, false) match {
       case Right(scene) => scene
-      case Left(error) => throw new Error(s"Parsing failed with: $error")
+      case Left(error) => throw new Error(error)
     }
 
   describe("scene content") {
@@ -45,90 +45,116 @@ class SceneParserTest extends FunSpec with Inside {
 
     it("ignores lines with $") {
       assert(parsed("""|main
-                       |$something
+                       |$start
                        |
                        |or other""".stripMargin).content ==
         "main\n\nor other")
-    }
-
-    it("ignores everything after a line with >") {
-      assert(parsed("""|main
-                       |>choice
-                       |$setting
-                       |body""".stripMargin).content ==
-        "main")
     }
   }
 
   describe("scene settings") {
     they("start with $ sign") {
-      assert(parsed("$setting").settings ==
-        Seq("setting"))
+      assert(parsed("$start").settings ==
+        Seq(model.Setting.Start))
     }
 
     they("can appear multiple times") {
-      assert(parsed("$setting\nbody\n$more").settings ==
-        Seq("setting", "more"))
+      assert(parsed("$name: name\nbody\n$start").settings ==
+        Seq(model.Setting.Name("name"), model.Setting.Start))
     }
 
     they("do not contain empty lines") {
-      assert(parsed("$setting\n\n$more").settings ==
-        Seq("setting", "more"))
+      assert(parsed("$name:name\n\n$start").settings ==
+        Seq(model.Setting.Name("name"), model.Setting.Start))
     }
 
-    they("can be empty") {
-      assert(parsed("$\n$more\n$\nwell.").settings ==
-        Seq("", "more", ""))
-    }
-  }
-
-  describe("scene choices") {
-    they("start with the > sign") {
-      assert(parsed("body\n>choice") ==
-        PScene("body", Seq(),
-          Seq(PChoice("choice", Seq()))))
+    they("may have whitespace in front") {
+      assert(parsed("$    	  	start").settings ==
+        Seq(model.Setting.Start))
     }
 
-    they("can be the whole body") {
-      assert(parsed(">") ==
-        PScene("", Seq(), Seq(PChoice("", Seq()))))
+    they("can not be empty") {
+      assert(intercept[Error]({ parsed("$\n$more\n$\nwell.") }).getMessage().
+        startsWith("Expected (nameSetting"))
     }
 
-    describe("consume all text past the first >") {
-      they("as body") {
-        assert(parsed(">this\nis\n\ncontent").choices(0).content ==
-          "this\nis\n\ncontent")
+    they("cannot be random text") {
+      assert(intercept[Error]({ parsed("$foobar") }).getMessage().
+        startsWith("Expected (nameSetting"))
+    }
+
+    describe("specific ones") {
+      it("name with value") {
+        assert(parsed("$ name: beginning").settings(0) ==
+          model.Setting.Name("beginning"))
       }
 
-      they("as settings") {
-        assert(parsed(">\n$set\n$set2").choices(0).settings ==
-          Seq("set", "set2"))
+      it("next with scene name") {
+        assert(parsed("$ next: after dinner").settings(0) ==
+          model.Setting.Next("after dinner"))
       }
 
-      they("as settings and body") {
-        assert(parsed(">body\n$set\n$set2\nbody2\n\nbody3").choices(0) ==
-          PChoice("body\nbody2\n\nbody3", Seq("set", "set2")))
-        }
+      it("start") {
+        assert(parsed("$ start").settings(0) ==
+          model.Setting.Start)
+      }
+
+      it("set with quality name and value") {
+        assert(parsed("$ set: quality = 17").settings(0) ==
+          model.Setting.Set("quality", model.Expression.Literal("17")))
+      }
+
+      it("test with condition") {
+        assert(parsed("$ test: in good light").settings(0) ==
+          model.Setting.Test(model.Expression.Literal("in good light")))
+      }
+
+      it("success with new setting") {
+        assert(parsed("$ success: next: home").settings(0) ==
+          model.Setting.Success(model.Setting.Next("home")))
+      }
+
+      it("failure with new setting") {
+        assert(parsed("$ failure: set: doomed").settings(0) ==
+          model.Setting.Success(model.Setting.Set("doomed",
+            model.Expression.Literal(""))))
+      }
+
+      it("require with condition") {
+        assert(parsed("$ require: doomed").settings(0) ==
+          model.Setting.Require(
+            model.Expression.Quality("doomed")))
+      }
+
+      it("showAlways") {
+        assert(parsed("$ show always").settings(0) ==
+          model.Setting.ShowAlways)
+      }
+
+      it("showAlways backwards") {
+        assert(parsed("$ always show").settings(0) ==
+          model.Setting.ShowAlways)
+      }
+
+      it("return with scene") {
+        assert(parsed("$ return: home").settings(0) ==
+          model.Setting.Return("home"))
+      }
+
+      it("include with scene") {
+        assert(parsed("$ include: cupboard").settings(0) ==
+          model.Setting.Include("cupboard"))
+      }
     }
 
-    they("can occur multiple times") {
-      assert(parsed(">apple\n>orange") ==
-        PScene("", Seq(), Seq(PChoice("apple", Seq()),
-          PChoice("orange", Seq()))))
-    }
-
-    they("can occur after content and settings") {
-      assert(parsed("""|body
-                       |$settings
-                       |more body
-                       |>choice""".stripMargin).choices ==
-        Seq(PChoice("choice", Seq())))
-    }
-
-    they("consume their own choices, but not earlier ones") {
-      assert(parsed("body\n$bodysetting\n>choice\n$setting").
-        choices(0).settings ==
-        Seq("setting"))
+    describe("complex tests") {
+      it("for random values") {
+        assert(parsed("$ test: power > random(0,16)").settings(0) ==
+          model.Setting.Test(
+            model.Expression.Binary(model.Expression.Greater,
+              model.Expression.Quality("power"),
+              model.Expression.Random(0, 16))))
+      }
     }
   }
 }

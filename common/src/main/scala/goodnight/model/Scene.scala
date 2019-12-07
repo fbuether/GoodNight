@@ -8,7 +8,7 @@ object Setting {
   case class Name(name: String) extends Setting
 
   // Describes scenes that this scene can continue to
-  case class Continue(scene: String) extends Setting
+  case class Next(scene: String) extends Setting
 
   // Denotes this scene as a start for this game
   case object Start extends Setting
@@ -26,7 +26,7 @@ object Setting {
   case class Failure(consequence: Setting) extends Setting
 
   // a requirement for this scene
-  case class Requirement(quality: String, value: Expression) extends Setting
+  case class Require(value: Expression) extends Setting
 
   // always show this scene as an option, even if requirements are missing
   case object ShowAlways extends Setting
