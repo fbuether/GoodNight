@@ -1,5 +1,5 @@
 
-package goodnight.model
+package goodnight.db.model
 
 
 case class BearerToken (

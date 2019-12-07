@@ -1,7 +1,5 @@
 
-package goodnight.model
-
-import java.util.UUID
+package goodnight.db.model
 
 
 // stores association from way of login to account.

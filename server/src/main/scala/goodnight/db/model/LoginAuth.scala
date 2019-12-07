@@ -1,5 +1,5 @@
 
-package goodnight.model
+package goodnight.db.model
 
 import java.util.UUID
 

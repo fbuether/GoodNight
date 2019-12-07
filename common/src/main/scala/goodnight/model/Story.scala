@@ -1,16 +1,13 @@
 
 package goodnight.model
 
-import java.util.UUID
-
 
 case class Story(
-  id: UUID,
-  creator: UUID,
+  creator: String, // refers User.name
   name: String,
   urlname: String,
   image: String,
   description: String,
   // theme: String,
-  startLocation: Option[UUID]
+  startLocation: Option[String] // refers Location.name
 )

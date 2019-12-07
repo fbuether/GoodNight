@@ -1,12 +1,11 @@
 
 package goodnight.model
 
-import java.util.UUID
 
+// currently unused.
 
 case class Quality(
-  id: UUID,
-  story: UUID,
+  story: String,
 
   // the textual representation, uninterpreted.
   raw: String,
