@@ -1,7 +1,6 @@
 
 package goodnight.logic
 
-import java.util.UUID
 import fastparse._, NoWhitespace._
 import scala.util.{Try, Success, Failure}
 
@@ -76,11 +75,14 @@ object SceneParser {
   def urlnameOf(name: String) =
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
+
   private def titleOfContent(content: String): String =
     content.substring(0, content.length.min(20))
 
-  private def getLocationId(settings: Seq[String]): Option[UUID] =
+
+  private def getLocation(settings: Seq[String]): Option[String] =
     None
+
 
   private def isMandatory(settings: Seq[String]): Boolean =
     false
@@ -89,24 +91,23 @@ object SceneParser {
   def parseScene(story: model.Story, raw: String):
       Either[String, (model.Scene, Seq[model.Choice])] = {
     parsePScene(raw, false).map({ pScene =>
-      val title = titleOfContent(pScene.content)
 
-      val scene = model.Scene(UUID.randomUUID(),
-        story.id, // todo.
+      val sceneTitle = titleOfContent(pScene.content)
+      val scene = model.Scene(story.name,
         raw,
-        title,
-        urlnameOf(title),
+        sceneTitle,
+        urlnameOf(sceneTitle),
         pScene.content,
-        getLocationId(pScene.settings),
+        getLocation(pScene.settings),
         isMandatory(pScene.settings))
 
       val choices = pScene.choices.zipWithIndex.map({ case (pChoice, pos) =>
+        val title = titleOfContent(pChoice.content)
         // ignore choice.settings for now
-        model.Choice(UUID.randomUUID(),
-          scene.id,
+        model.Choice(sceneTitle,
           pos,
-          titleOfContent(pChoice.content),
-          urlnameOf(titleOfContent(pChoice.content)),
+          title,
+          urlnameOf(title),
           pChoice.content)
       })
 
