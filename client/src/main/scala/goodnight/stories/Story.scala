@@ -19,89 +19,56 @@ import goodnight.service.Conversions._
 
 object Story {
   case class Props(router: pages.Router, story: model.Story,
-    player: model.Player)
-  case class State(view: Option[VdomElement])
+    player: model.Player, firstSceneUrlname: String)
+  case class State(sceneUrlname: String,
+    scene: Option[(model.Scene, Seq[model.Scene])])
 
   class Backend(bs: BackendScope[Props, State]) {
-    def loadInitialActivity: Callback =
-      gotoLocation(None)
-
-    def gotoLocation(location: Option[model.Location]): Callback =
-      clearView >>
-      bs.props.flatMap(props =>
-        Request(ApiV1.AvailableScenes, props.story.urlname).send.
-          forStatus(200).forJson[List[model.Scene]].
-          body.flatMap(scenes =>
-            setView(ReadLocation.component(ReadLocation.Props(
-              props.router, props.player, location, scenes,
-              gotoScene))).
-              async).
+    def loadScene: Callback =
+      bs.props.zip(bs.state).flatMap(ps =>
+        Request(ApiV1.Scene, ps._1.story.urlname, ps._2.sceneUrlname).send.
+          forStatus(200).forJson[(model.Scene, Seq[model.Scene])].
+          body.flatMap(scene =>
+            bs.modState(_.copy(scene = Some(scene))).async).
           toCallback)
 
-    def gotoScene(scene: model.Scene): Callback =
-      clearView >>
-      bs.props.flatMap(props =>
-        Request(ApiV1.DoScene, props.story.urlname, scene.urlname).send.
-          forStatus(200).forJson[(model.Scene, Seq[model.Choice])].
-          body.flatMap(sceneChoices =>
-            setView(ReadScene.component(ReadScene.Props(
-              props.router, props.player, sceneChoices._1, sceneChoices._2,
-              gotoChoice(sceneChoices._1, _)))).
-              async).
-          toCallback)
-
-    def gotoChoice(scene: model.Scene, choice: model.Choice): Callback =
-      clearView >>
-      bs.props.flatMap(props =>
-        Request(ApiV1.DoChoice, props.story.urlname, scene.urlname,
-          choice.title).send.
-          forStatus(200).// forJson[model.Choice] what kind of results?
-          body.flatMap(_ =>
-            setView(ReadChoice.component(ReadChoice.Props(
-              props.router, props.player, scene, choice,
-              gotoLocation))).
-              async).
-          toCallback)
-
-    def clearView: Callback =
-      bs.setState(State(None))
-
-    def setView(newView: VdomElement): Callback =
-      bs.setState(State(Some(newView)))
+    def goto(next: model.Scene): Callback =
+      Callback.log(s"going to $next")
 
     def render(props: Props, state: State): VdomElement = {
-      val view: VdomElement = state.view match {
+      val inner: VdomElement = state.scene match {
         case None =>
           <.div(
             <.h2("Loading"),
             Loading.component(props.router))
-        case Some(component) => component
+        case Some((story, choices)) =>
+          Scene.component(Scene.Props(props.router, props.story,
+            props.player, story, choices, goto))
       }
 
       <.div(^.id := "matter",
         <.div(^.id := "centre",
-          view),
+          inner),
         <.div(^.id := "side",
           <.h4("Sir Archibald")))
     }
   }
 
   val component = ScalaComponent.builder[Props]("Story").
-    initialState(State(None)).
+    initialStateFromProps(props => State(props.firstSceneUrlname, None)).
     renderBackend[Backend].
-    componentDidMount(_.backend.loadInitialActivity).
+    componentDidMount(_.backend.loadScene).
     // componentWillUpdate(bs => bs.backend.updateProps(bs)).
     build
-
 
 
   def withStory(router: pages.Router, storyData: WithStory.StoryData) =
     storyData match {
       case (story, None) =>
-        CreatePlayer.component(CreatePlayer.Props(router, story, player =>
-          component(Props(router, story, player))))
-      case (story, Some(player)) =>
-        component(Props(router, story, player))
+        CreatePlayer.component(CreatePlayer.Props(router, story, playerData =>
+          component(Props(router, story, playerData._1, playerData._2.scene))))
+      case (story, Some(playerData)) =>
+        component(Props(router, story, playerData._1, playerData._2.scene))
     }
 
   def render(page: pages.Story, router: pages.Router) =

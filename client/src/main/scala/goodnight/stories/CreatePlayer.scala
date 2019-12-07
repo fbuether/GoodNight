@@ -14,29 +14,31 @@ import goodnight.service.Conversions._
 
 
 object CreatePlayer {
-  case class Props(router: pages.Router, story: model.Story,
-    child: model.Player => VdomElement)
+  type PlayerState = (model.Player, model.Activity)
 
-  case class State(player: Option[model.Player], saving: Boolean)
+  case class Props(router: pages.Router, story: model.Story,
+    child: PlayerState => VdomElement)
+  case class State(data: Option[PlayerState], saving: Boolean)
+
   class Backend(bs: BackendScope[Props, State]) {
     private val playerNameRef = Input.componentRef
 
     def callSave(storyUrlname: String, playerName: String):
-        AsyncCallback[model.Player] =
+        AsyncCallback[(model.Player, model.Activity)] =
       Request(ApiV1.CreatePlayer, storyUrlname).
         withBody(ujson.Obj("name" -> playerName)).
         send.
         forStatus(201).
-        forJson[model.Player].
+        forJson[PlayerState].
         body
 
     def doSave(props: Props): Callback =
       // e.preventDefaultCB >>
       bs.modState(_.copy(saving = true)) >>
       Input.withValue(playerNameRef, playerName =>
-        callSave(props.story.urlname, playerName).flatMap(player =>
-        bs.modState(_.copy(saving = false, player = Some(player))).async).
-        toCallback)
+        callSave(props.story.urlname, playerName).flatMap(ps =>
+          bs.modState(_.copy(saving = false, data = Some(ps))).async).
+          toCallback)
 
 
     def renderForm(props: Props, saving: Boolean) =
@@ -61,7 +63,7 @@ object CreatePlayer {
 
     def render(props: Props, state: State) = state match {
       case State(None, saving) => renderForm(props, saving)
-      case State(Some(player), _) => props.child(player)
+      case State(Some(playerState), _) => props.child(playerState)
     }
   }
 

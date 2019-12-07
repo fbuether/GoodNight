@@ -19,7 +19,6 @@ object EditStory {
   trait ItemType
   object SceneItem extends ItemType
   object QualityItem extends ItemType
-  object LocationItem extends ItemType
 
   case class ItemData(ty: ItemType, urlname: String,
     title: String, text: String, tags: List[String])
@@ -34,13 +33,11 @@ object EditStory {
       val itemClass = props.item.ty match {
         case SceneItem => "scene"
         case QualityItem => "quality"
-        case LocationItem => "location"
       }
 
       val icon = props.item.ty match {
         case SceneItem => "fas fa-scroll"
         case QualityItem => "fas fa-hammer"
-        case LocationItem => "fas fa-map-marked"
       }
 
       <.div(^.className := itemClass,
@@ -201,7 +198,7 @@ object EditStory {
             editItem(ItemProps(props.router, copyItem, deleteItem,
               props.story,
               ItemData(SceneItem, scene.urlname,
-                scene.title, scene.text, List())))).
+                scene.name, scene.text, List())))).
             toTagMod),
         renderOverlay(props, state))
     }

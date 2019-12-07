@@ -15,7 +15,8 @@ import goodnight.service.Conversions._
 
 
 object WithStory {
-  type StoryData = (model.Story, Option[model.Player])
+  // StoryData is the shape of the reply of ApiV1.Story
+  type StoryData = (model.Story, Option[CreatePlayer.PlayerState])
 
   case class Props(router: pages.Router,
     storyUrlname: String, child: StoryData => VdomElement)

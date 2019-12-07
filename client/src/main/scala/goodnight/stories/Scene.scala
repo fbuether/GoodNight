@@ -17,17 +17,26 @@ import goodnight.service.Conversions._
 
 
 object Scene {
-  case class Props(router: pages.Router, scene: model.Scene,
-    player: model.Player)
+  case class Props(router: pages.Router, story: model.Story,
+    player: model.Player, scene: model.Scene, choices: Seq[model.Scene],
+    goto: model.Scene => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
 
     def render(props: Props, state: State) =
       <.div(
-        <.h2(props.scene.title),
-        <.p(props.scene.text)
-      )
+        <.h2(props.scene.name),
+        <.p(props.scene.text),
+        <.ul(^.className := "choices as-items",
+          props.choices.map(choice =>
+            <.li(
+              <.p(choice.text,
+                <.button(^.className := "right",
+                  ^.onClick --> props.goto(choice),
+                  <.span(^.className := "fas fa-angle-double-right"))))
+          ).toTagMod
+        ))
   }
 
   def component = ScalaComponent.builder[Props]("StoryRoll").
@@ -35,3 +44,47 @@ object Scene {
     renderBackend[Backend].
     build
 }
+
+/*
+      <.div(
+        <.h2(props.player.name,
+          props.location.map(l => TagMod(", Willkommen in " + l.name)).
+            getOrElse(TagMod(", Willkommen."))),
+
+        // todo: location description
+
+        <.p(^.className := "call",
+          "Was möchtest du hier tun?"),
+
+        <.ul(^.className := "choices as-items",
+          props.scenes.map(scene =>
+            <.li(
+              // leading image
+              // <.img(^.className := "left",
+              //   ^.src := ("assets/images/buuf/" +
+              //     "I can help you my son, I am Paddle Paul..png"
+              //   )),
+
+              // requirements
+              // <.ul(^.className := "requirements as-icons",
+              //   <.li(^.className := "tooltip-anchor",
+              //     <.img(^.src := "assets/images/buuf/" + "Plasma TV.png"),
+              //     <.div(^.className := "tooltip",
+              //       <.strong("Rohe Kraft"),
+              //       <.span("benötigt: 20"),
+              //       <.span("du hast: 27"))),
+              //   <.li(^.className := "tooltip-anchor",
+              //     <.img(^.src := "assets/images/buuf/" + "Chea.png"),
+              //     <.div(^.className := "tooltip",
+              //       <.strong("Hammer"),
+              //       <.span("benötigt: vorhanden"),
+              //       <.span("du hast: vorhanden")))),
+
+              <.h4(scene.title),
+              <.p(scene.text,
+                <.button(^.className := "right",
+                  ^.onClick --> props.onClick(scene),
+                  <.span(^.className := "fas fa-angle-double-right")))
+            )
+          ).toTagMod
+ */

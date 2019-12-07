@@ -66,7 +66,7 @@ object EditScene {
       val isNew = props.scene.isEmpty
       val title =
         if (isNew) "Write a new Scene"
-        else "Edit: " + props.scene.get.title
+        else "Edit: " + props.scene.get.name
       var content = if (isNew) "# New Scene" else props.scene.get.raw
 
       <.div.withRef(overlayRef)(^.className := "edit-scene overlay",
