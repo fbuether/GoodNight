@@ -35,8 +35,6 @@ class Router(
   assets: Assets)
     extends SimpleRouter {
 
-  private def invalid = action { _ => ImATeapot }
-
   // type Routes = PartialFunction[RequestHeader, Handler]
   def routes: Routes = (header: RequestHeader) =>
   (header.method, header.target.path) match {
@@ -51,23 +49,23 @@ class Router(
 
     // Registration step 2: Confirmation of email via token.
     // -- is this required? How about social signup?
-    case EmailConfirm(token) => invalid
+    case EmailConfirm(token) => ???
 
     // Confirm user data, request authentication token
+    // returns Accepted(model.User) on success.
     case Authenticate() => authSignIn.authenticate
 
     // Confirm sign in via a social authentication provider
-    case SocialAuthenticate(provider) =>
-      authSignIn.socialAuthenticate(provider)
+    case SocialAuthenticate(provider) => ???
 
     // Sign out, remove all current sessions.
     case SignOut() => authSignIn.signOut
 
     // Password reset step 1: Post reset information form.
-    case RequestPasswordReset() => invalid
+    case RequestPasswordReset() => ???
 
     // Password reset step 2: Post refreshed password information.
-    case ConfirmPasswordReset(token) => invalid
+    case ConfirmPasswordReset(token) => ???
 
     // Profile data
     case Profile(user) => profile.show(user)

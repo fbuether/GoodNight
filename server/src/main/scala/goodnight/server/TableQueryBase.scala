@@ -6,12 +6,12 @@ import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
-import goodnight.model
+import goodnight.db.model
 
 import scala.reflect._
 
 
-class TableQueryBase[M, T <: Table[M]](cons: Tag => T) {
+class TableQueryBase[M <: model.DbModel, T <: Table[M]](cons: Tag => T) {
   def apply(): TableQuery[T] = TableQuery[T](cons)
 
   type Q = Query[T, M, Seq]
