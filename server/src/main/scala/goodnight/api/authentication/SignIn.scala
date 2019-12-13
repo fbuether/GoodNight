@@ -50,7 +50,7 @@ class SignIn(components: ControllerComponents,
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                val reply = Accepted(user.user)
+                val reply = Accepted(user.user.model)
                 authServ.embed(ident, reply)(request)
               })
           case None =>
@@ -62,9 +62,6 @@ class SignIn(components: ControllerComponents,
           "error" -> e.getMessage())))
       })
     })
-
-  def socialAuthenticate(provider: String) =
-    TODO
 
   def signOut = silhouette.SecuredAction.async { request =>
     val authServ = silhouette.env.authenticatorService

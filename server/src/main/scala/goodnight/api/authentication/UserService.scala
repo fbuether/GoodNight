@@ -10,8 +10,7 @@ import slick.jdbc.PostgresProfile.api._
 import slick.sql.SqlAction
 
 import goodnight.db
-import goodnight.model.Login
-import goodnight.model.User
+import goodnight.db.model
 import goodnight.server.PostgresProfile.Database
 
 

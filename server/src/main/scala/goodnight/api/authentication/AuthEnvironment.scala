@@ -5,10 +5,10 @@ import com.mohiva.play.silhouette.api.Env
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
 import com.mohiva.play.silhouette.api.Identity
 
-import goodnight.model.User
+import goodnight.db.model
 
 
-case class Id(user: User) extends Identity
+case class Id(user: model.User) extends Identity
 
 
 trait AuthEnvironment extends Env {

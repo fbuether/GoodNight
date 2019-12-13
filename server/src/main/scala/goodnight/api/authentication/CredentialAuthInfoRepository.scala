@@ -10,10 +10,9 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 
-import goodnight.server.PostgresProfile.Database
-import goodnight.model.Login
-import goodnight.model.LoginAuth
 import goodnight.db
+import goodnight.db.model
+import goodnight.server.PostgresProfile.Database
 
 
 class CredentialAuthInfoRepository(
@@ -27,7 +26,7 @@ class CredentialAuthInfoRepository(
 
   def add(loginInfo: LoginInfo, authInfo: PasswordInfo):
       Future[PasswordInfo] = {
-    val auth = LoginAuth(UUID.randomUUID(),
+    val auth = model.LoginAuth(UUID.randomUUID(),
       loginInfo.providerID, loginInfo.providerKey,
       authInfo.hasher, authInfo.password, authInfo.salt)
     database.run(db.LoginAuth().insert(auth)).map({ _ =>

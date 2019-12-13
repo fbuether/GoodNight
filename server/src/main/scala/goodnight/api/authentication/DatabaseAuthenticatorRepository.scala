@@ -11,7 +11,7 @@ import scala.concurrent.duration.{FiniteDuration, MILLISECONDS}
 import slick.jdbc.PostgresProfile.api._
 
 import goodnight.db
-import goodnight.model
+import goodnight.db.model
 import goodnight.server.PostgresProfile.Database
 
 

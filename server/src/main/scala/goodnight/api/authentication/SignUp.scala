@@ -24,8 +24,7 @@ import upickle.default.macroRW
 
 import goodnight.common.Serialise._
 import goodnight.db
-import goodnight.model.Login
-import goodnight.model.User
+import goodnight.db.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 
@@ -61,8 +60,9 @@ class SignUp(components: ControllerComponents,
 
           authServ.create(login)(request).flatMap({ authenticator =>
             authServ.init(authenticator)(request) }).flatMap({ ident =>
-              database.run(db.User().insert(User(userId, signUpData.username)).
-                andThen(db.Login().insert(Login(UUID.randomUUID(),
+              database.run(db.User().insert(model.User(userId,
+                signUpData.username)).
+                andThen(db.Login().insert(model.Login(UUID.randomUUID(),
                   userId, login.providerID, login.providerKey)))).
                 flatMap({ _ =>
                   authInfoRepository.add(login, authInfo).flatMap({ _ =>
