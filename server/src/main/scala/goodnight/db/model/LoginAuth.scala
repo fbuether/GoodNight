@@ -11,5 +11,5 @@ case class LoginAuth(
   providerKey: String,
   hasher: String,
   password: String,
-  salt: Option[String]
-)
+  salt: Option[String])
+    extends DbModel

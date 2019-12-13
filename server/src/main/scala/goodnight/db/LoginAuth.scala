@@ -7,7 +7,6 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
-import goodnight.model
 
 
 class LoginAuth(tag: Tag) extends Table[model.LoginAuth](tag, "login_auth") {

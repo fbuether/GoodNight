@@ -7,7 +7,6 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
-import goodnight.model
 
 
 class BearerToken(tag: Tag) extends Table[model.BearerToken](
@@ -24,6 +23,10 @@ class BearerToken(tag: Tag) extends Table[model.BearerToken](
 }
 
 
-object BearerToken extends TableQueryBase[model.BearerToken, BearerToken](
-  new BearerToken(_)) {
+object BearerToken {
+  def apply() = TableQuery[BearerToken]
+
+  def insert(obj: model.BearerToken): DBIO[model.BearerToken] =
+    apply().
+      returning(apply()) += obj
 }

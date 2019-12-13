@@ -8,5 +8,4 @@ case class BearerToken (
   key: String,
   lastUsed: Long,
   expiration: Long,
-  timeout: Option[Long]
-)
+  timeout: Option[Long])
