@@ -47,14 +47,6 @@ trait PostgresProfile extends ExPostgresProfile
       with HStoreImplicits
       with SearchImplicits
       with SearchAssistants {
-    implicit val strListTypeMapper =
-      new SimpleArrayJdbcType[String]("text").to(_.toList)
-    implicit val playJsonArrayTypeMapper =
-      new AdvancedArrayJdbcType[JsValue](pgjson,
-        (s) => utils.SimpleArrayUtils.
-          fromString[JsValue](Json.parse(_))(s).orNull,
-        (v) => utils.SimpleArrayUtils.mkString[JsValue](_.toString())(v)
-      ).to(_.toList)
   }
 
   type DbConfig = slick.basic.DatabaseConfig[PostgresProfile]

@@ -2,9 +2,9 @@
 package goodnight.db
 
 import java.util.UUID
-import slick.jdbc.PostgresProfile.api._
 
 import goodnight.server.PostgresProfile._
+import goodnight.server.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
 
@@ -24,10 +24,10 @@ class State(val tag: Tag) extends Table[model.State](tag, "state") {
     Player())((player => (player.user, player.story)),
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
-  // def qualityFk = foreignKey("state_fk_quality_quality_name", quality,
-  //   Quality())(_.name,
-  //     onUpdate = ForeignKeyAction.Cascade,
-  //     onDelete = ForeignKeyAction.Cascade)
+  def qualityFk = foreignKey("state_fk_story_quality_quality_story_name",
+    (story, quality), Quality())(quality => (quality.story, quality.name),
+      onUpdate = ForeignKeyAction.Cascade,
+      onDelete = ForeignKeyAction.Cascade)
 }
 
 

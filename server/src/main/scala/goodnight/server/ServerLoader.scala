@@ -145,7 +145,7 @@ class GoodnightComponents(context: Context)
     database, silhouette)
 
   lazy val readStories = new read.Stories(controllerComponents, database,
-    silhouette)
+    readPlayer, silhouette)
   lazy val readScenes = new read.Scenes(controllerComponents, database,
     silhouette)
   lazy val readChoices = new read.Choices(controllerComponents, database,

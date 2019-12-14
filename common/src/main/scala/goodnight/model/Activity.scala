@@ -4,8 +4,8 @@ package goodnight.model
 
 // a log of what a player has done in a story
 case class Activity(
-  story: String, // refers Story.name
-  player: String, // refers Player.name
+  story: String, // refers Player.story
+  user: String, // refers Player.user
 
   // the position in the sequence of activities of this player
   number: Int,
