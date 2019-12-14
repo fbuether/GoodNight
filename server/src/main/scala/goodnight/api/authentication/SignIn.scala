@@ -10,7 +10,6 @@ import com.mohiva.play.silhouette.impl.exceptions.InvalidPasswordException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import java.util.UUID
 import play.api.libs.functional.syntax._
-import play.api.libs.json._
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents

@@ -10,8 +10,6 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import java.util.UUID
 import play.api.libs.functional.syntax._
-import play.api.libs.json.JsValue
-import play.api.libs.json.{ Json, Reads, JsPath, JsSuccess, JsError, JsonValidationError }
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
