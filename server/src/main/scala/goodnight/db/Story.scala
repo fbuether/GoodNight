@@ -7,42 +7,40 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
-import goodnight.model
 
 
 class Story(tag: Tag) extends Table[model.Story](tag, "story") {
   def id = column[UUID]("id", O.PrimaryKey)
-  def creator = column[UUID]("creator")
+  def creator = column[String]("creator")
   def name = column[String]("name")
   def urlname = column[String]("urlname")
   def image = column[String]("image")
   def description = column[String]("description")
-  def startLocation = column[Option[UUID]]("start_location")
 
-  def * = ((id, creator, name, urlname, image, description, startLocation) <>
+  def * = ((id, creator, name, urlname, image, description) <>
     (model.Story.tupled, model.Story.unapply))
 
-  def userFk = foreignKey("story_fk_users_user", creator, User())(_.id,
+  def userFk = foreignKey("story_fk_creator_user_name", creator, User())(_.name,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade)
 }
 
 
 object Story extends TableQueryBase[model.Story, Story](new Story(_)) {
-  private def ofUrlnameQuery(urlname: Rep[String]) = apply().
-    filter(_.urlname === urlname).
-    take(1)
-  private val ofUrlnameCompiled = Compiled(ofUrlnameQuery _)
+  private val ofUrlnameQuery = Compiled((urlname: Rep[String]) =>
+    apply().
+      filter(_.urlname === urlname).
+      take(1))
   def ofUrlname(urlname: String): DBIO[Option[model.Story]] =
-    ofUrlnameCompiled(urlname).result.headOption
+    ofUrlnameQuery(urlname).result.headOption
 
-  private val allPublicCompiled = Compiled(apply())
+  private val allPublicQuery = Compiled(apply())
   def allPublic: DBIO[Seq[model.Story]] =
-    allPublicCompiled.result
+    allPublicQuery.result
 
-  private def ofUserQuery(userId: Rep[UUID]) = apply().
-    filter(_.creator === userId)
-  private val ofUserCompiled = Compiled(ofUserQuery _)
-  def ofUser(userId: UUID): DBIO[Seq[model.Story]] =
-    ofUserCompiled(userId).result
+  private val ofUserQuery = Compiled((userName: Rep[String]) =>
+    apply().
+      filter(_.creator === userName))
+  def ofUser(userName: String): DBIO[Seq[model.Story]] =
+    ofUserQuery(userName).result
 }

@@ -31,7 +31,10 @@ object ApiV1 {
   // Reading Stories
   //
 
-  // fetch all available stories.
+  // all available (to the user or publicly) stories.
+  // may be filtered by header parameters:
+  // - "myself" => stories written by the requester
+  // returns Ok(Seq[model.Story]) on success.
   object Stories extends ApiPath("GET", p, C("stories"))
 
 

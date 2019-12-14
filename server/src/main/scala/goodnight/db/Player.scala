@@ -7,37 +7,40 @@ import slick.jdbc.PostgresProfile.api._
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
-import goodnight.model
 
 
 class Player(val tag: Tag) extends Table[model.Player](tag, "player") {
   def id = column[UUID]("id", O.PrimaryKey)
-  def user = column[UUID]("user_id")
-  def story = column[UUID]("story")
-  def name = column[String]("player_name")
-  def location = column[Option[UUID]]("location")
+  def user = column[String]("user")
+  def story = column[String]("story")
+  def name = column[String]("name")
 
-  def * = ((id, user, story, name, location) <>
+  def * = ((id, user, story, name) <>
     (model.Player.tupled, model.Player.unapply))
 
-  def userFk = foreignKey("player_fk_users_user_id", user, User())(_.id,
+  def userFk = foreignKey("player_fk_user_user_name", user, User())(_.name,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade)
-  def storyFk = foreignKey("player_fk_story_story", story, Story())(_.id,
-    onUpdate = ForeignKeyAction.Cascade,
-    onDelete = ForeignKeyAction.Cascade)
-  def locationFk = foreignKey("player_fk_location_location", location,
-    Location())(_.id.?,
+  def storyFk = foreignKey("player_fk_story_story_urlname", story,
+    Story())(_.urlname,
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
 }
 
 
 object Player extends TableQueryBase[model.Player, Player](new Player(_)) {
-  private def ofStoryQuery(userId: Rep[UUID], storyId: Rep[UUID]) = apply().
-    filter(player => player.user === userId && player.story === storyId).
-    take(1)
-  private val ofStoryCompiled = Compiled(ofStoryQuery _)
-  def ofStory(userId: UUID, storyId: UUID): DBIO[Option[model.Player]] =
-    ofStoryCompiled(userId, storyId).result.headOption
+  private val ofStoryQuery = Compiled((user: Rep[String], story: Rep[String]) =>
+    apply().
+      filter(player => player.user === user && player.story === story).
+      take(1))
+  def ofStory(user: String, story: String): DBIO[Option[model.Player]] =
+    ofStoryQuery(user, story).result.headOption
+
+
+  private val ofNameQuery = Compiled((name: Rep[String]) =>
+    apply().
+      filter(_.name === name).
+      take(1))
+  def ofName(name: String): DBIO[Option[model.Player]] =
+    ofNameQuery(name).result.headOption
 }
