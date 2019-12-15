@@ -28,6 +28,7 @@ val versions = new {
 
   val scalaTest = "3.0.8"
   val scalaMock = "4.4.0"
+  val scalaTestPlay = "4.0.2"
 
   val playSlick = "4.0.2"
   val postgresql = "42.2.6"
@@ -156,13 +157,15 @@ lazy val server = project.in(file("server")).
       "com.typesafe.play" %% "play-slick-evolutions" % versions.playSlick,
       "org.postgresql" % "postgresql" % versions.postgresql,
       "com.github.tminglei" %% "slick-pg" % versions.slickPostgres,
-      "com.github.tminglei" %% "slick-pg_play-json" % versions.slickPostgres,
 
       "com.mohiva" %% "play-silhouette" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-password-bcrypt" % versions.silhouette,
       "com.mohiva" %% "play-silhouette-persistence" % versions.silhouette,
 
-	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % Test
+      "org.scalatestplus.play" %% "scalatestplus-play" % versions.scalaTestPlay,
+	    "com.mohiva" %% "play-silhouette-testkit" % versions.silhouette % Test,
+      // used for api tests
+      "fr.hmil" %% "roshttp" % versions.roshttp
     )
   )
 

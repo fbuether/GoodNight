@@ -23,9 +23,7 @@ trait PostgresProfile extends ExPostgresProfile
     with PgDate2Support
     with PgRangeSupport
     with PgHStoreSupport
-    with PgPlayJsonSupport
     with PgSearchSupport
-    // with PgPostGISSupport
     with PgNetSupport
     with PgLTreeSupport {
   // jsonb support is in postgres 9.4.0 onward; for 9.3.x use "json"
@@ -40,7 +38,6 @@ trait PostgresProfile extends ExPostgresProfile
 
   object MyAPI extends API with ArrayImplicits
       with DateTimeImplicits
-      with JsonImplicits
       with NetImplicits
       with LTreeImplicits
       with RangeImplicits
