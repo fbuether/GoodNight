@@ -47,11 +47,17 @@ abstract class GoodnightTest extends FunSpec with MockFactory {
 
 abstract class GoodnightServerTest extends GoodnightTest
     with OneServerPerTestWithComponents {
+  protected val GET = fr.hmil.roshttp.Method.GET
+  protected val POST = fr.hmil.roshttp.Method.POST
+  protected val PUT = fr.hmil.roshttp.Method.PUT
+  protected val DELETE = fr.hmil.roshttp.Method.DELETE
+
+
   override def components =
     new GoodnightNoHttpFiltersComponents(context)
 
-  protected def request(method: Method, url: String)(
-    cont: SimpleHttpResponse => Unit): Unit = {
+  protected def request[A](method: Method, url: String)(
+    cont: SimpleHttpResponse => A): A = {
     // move the path through java.net.URI, in order to encode any url bits
     // (for example, spaces).
     val uri = new URI("http", null, "localhost", port, url, null, null)
@@ -67,8 +73,8 @@ abstract class GoodnightServerTest extends GoodnightTest
     })
   }
 
-  protected def sendRequest(request: HttpRequest)(
-    cont: SimpleHttpResponse => Unit): Unit = {
+  protected def sendRequest[A](request: HttpRequest)(
+    cont: SimpleHttpResponse => A): A = {
     val replyFuture = request.send.
       recover({ case (e: HttpException[_]) => e.response match {
         case r: SimpleHttpResponse => r }})
