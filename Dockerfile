@@ -71,4 +71,4 @@ RUN ls -lah /goodnight/
 # DATABASE_PASSWORD=v8zrqsV7vFgzaNEVn1a4
 
 EXPOSE 9000
-CMD ["/goodnight/bin/goodnight-server"]
+CMD ["/goodnight/bin/goodnight-server", "-Dconfig.resource=production.conf"]

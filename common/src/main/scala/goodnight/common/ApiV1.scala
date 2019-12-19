@@ -12,12 +12,12 @@ object ApiV1 {
   //
   // Authentication
   //
-  object SignUp extends ApiPath("PUT", p, C("auth"))
+  object SignUp extends ApiPath("POST", p, C("auth"))
   object EmailConfirm extends ApiPath("POST", p, C("auth/confirm"), S)
   object Authenticate extends ApiPath("POST", p, C("auth/authenticate"))
   object SocialAuthenticate extends ApiPath("POST", p,
     C("auth/authenticate/social"), S)
-  object SignOut extends ApiPath("DELETE", p, C("auth"))
+  object SignOut extends ApiPath("POST", p, C("auth/logout"))
   object RequestPasswordReset extends ApiPath("POST", p, C("auth/reset"))
   object ConfirmPasswordReset extends ApiPath("POST", p, C("auth/reset"), S)
   object Self extends ApiPath("GET", p, C("self"))
@@ -51,7 +51,7 @@ object ApiV1 {
   // CreatePlayer returns the new player along with the first activity
   // item and its scene, similar to Story.
   // type: (model.Player, model.Activity, model.Scene)
-  object CreatePlayer extends ApiPath("PUT", p,
+  object CreatePlayer extends ApiPath("POST", p,
     C("story/"), S, C("/new-player"))
 
 
@@ -75,8 +75,8 @@ object ApiV1 {
   //
   // Editing Stories
   //
-  object CreateStory extends ApiPath("PUT", p, C("createStory"))
-  object CreateScene extends ApiPath("PUT", p, C("story/"), S, C("/scenes"))
+  object CreateStory extends ApiPath("POST", p, C("createStory"))
+  object CreateScene extends ApiPath("POST", p, C("story/"), S, C("/scenes"))
   object EditScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
   object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
 }

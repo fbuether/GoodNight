@@ -46,6 +46,7 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import play.api.Mode
 
 import goodnight.client.Frontend
 import goodnight.api.Profile
@@ -69,8 +70,26 @@ class ServerLoader extends ApplicationLoader {
 
 
 class GoodnightComponents(context: Context)
+    extends GoodnightRawComponents(context)
+    with HttpFiltersComponents {
+  override def httpFilters: Seq[EssentialFilter] = {
+    context.environment.mode match {
+      case Mode.Dev =>
+        super.httpFilters.filterNot(_.getClass == classOf[CSRFFilter])
+      case _ =>
+        super.httpFilters
+    }
+  }
+}
+
+
+class GoodnightNoHttpFiltersComponents(context: Context)
+    extends GoodnightRawComponents(context)
+    with NoHttpFiltersComponents
+
+
+abstract class GoodnightRawComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
-    with HttpFiltersComponents
     with SlickComponents
     with SlickEvolutionsComponents
     with EvolutionsComponents
@@ -80,14 +99,6 @@ class GoodnightComponents(context: Context)
 
   // run the database evolution scripts
   applicationEvolutions
-
-
-  // remove http filters that we do not use.
-  override def httpFilters: Seq[EssentialFilter] = {
-    super.httpFilters.
-      filterNot(_.getClass == classOf[CSRFFilter]).:+(new GzipFilter())
-  }
-
 
   lazy val bodyParsers = PlayBodyParsers()
   lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
