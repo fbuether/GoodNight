@@ -7,7 +7,7 @@ import java.util.UUID
 case class Player(
   id: UUID,
   user: String, // refers User.name
-  story: String, // refers Story.name
+  story: String, // refers Story.urlname
   name: String)
     extends DbModel {
   def model(state: Seq[State]) =

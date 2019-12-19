@@ -29,7 +29,7 @@ import goodnight.server.PostgresProfile.Database
 
 class SignUp(components: ControllerComponents,
   database: Database,
-  silhouette: AuthService,
+  auth: AuthService,
   passwordRegistry: PasswordHasherRegistry,
   authInfoRepository: AuthInfoRepository)(
   implicit ec: ExecutionContext)
@@ -38,13 +38,13 @@ class SignUp(components: ControllerComponents,
   case class SignUpData(identity: String, username: String, password: String)
   implicit val serialise_signUpData: Serialisable[SignUpData] = macroRW
 
-  def doSignUp = silhouette.UnsecuredAction.async(
-    parseFromJson[SignUpData])({ request =>
+  def doSignUp =
+    auth.UnsecuredAction.async(parseFromJson[SignUpData])({ request =>
       val signUpData = request.body
       // todo: check if signUpData.username as a username already exists.
 
       val login = LoginInfo(CredentialsProvider.ID, signUpData.identity)
-      silhouette.env.identityService.retrieve(login).flatMap({
+      auth.env.identityService.retrieve(login).flatMap({
         case Some(u) =>
           Future.successful(Forbidden(write(
             "success" -> false,
@@ -52,7 +52,7 @@ class SignUp(components: ControllerComponents,
 
         case None =>
           // this user has not been registered before, create a new one.
-          val authServ = silhouette.env.authenticatorService
+          val authServ = auth.env.authenticatorService
           val authInfo = passwordRegistry.current.hash(signUpData.password)
           val userId = UUID.randomUUID()
 

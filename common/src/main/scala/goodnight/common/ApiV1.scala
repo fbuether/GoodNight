@@ -48,13 +48,6 @@ object ApiV1 {
   object Story extends ApiPath("GET", p, C("story/"), S)
 
 
-  // CreatePlayer returns the new player along with the first activity
-  // item and its scene, similar to Story.
-  // type: (model.Player, model.Activity, model.Scene)
-  object CreatePlayer extends ApiPath("POST", p,
-    C("story/"), S, C("/new-player"))
-
-
   // load all info about a scene.
   // returns the scene model, as well as a list of next scenes.
   // type: (model.Scene, Seq[model.Scene])
@@ -64,6 +57,14 @@ object ApiV1 {
 
   //
   // Perform Player Activity:
+
+
+  // CreatePlayer returns the new player along with the first activity
+  // item and its scene, similar to Story.
+  // type: (model.Player, model.Activity, model.Scene)
+  object CreatePlayer extends ApiPath("POST", p,
+    C("story/"), S, C("/new-player"))
+
 
   // Return 202 (Accepted) on success, and 409 (Conflict) if anything is wrong.
   // Requires the the sceneUrlname as parameter.

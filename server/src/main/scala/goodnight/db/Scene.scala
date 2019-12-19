@@ -31,9 +31,8 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
   private val defaultOfStoryQuery = Compiled((story: Rep[String]) =>
     apply().
       filter(_.story === story).
-      map(_.name).
       take(1))
-  def defaultOfStory(story: String): DBIO[Option[String]] =
+  def defaultOfStory(story: String): DBIO[Option[model.Scene]] =
     defaultOfStoryQuery(story).result.headOption
 
 

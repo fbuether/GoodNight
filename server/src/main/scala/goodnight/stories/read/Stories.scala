@@ -17,6 +17,7 @@ import goodnight.server.PostgresProfile.Database
 
 class Stories(components: ControllerComponents,
   database: Database,
+  playerController: Player,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
@@ -35,21 +36,23 @@ class Stories(components: ControllerComponents,
           map(stories => Ok(stories.map(_.model)))))
 
 
-  // def defaultAction(story: model.Story, player: model.Player) =
-  //   model.PlayerAction(
-  //     UUID.randomUUID(),
-  //     story.id,
-  //     player.id,
-  //     0,
-  //     model.Action.Location,
-  //     None)//story.startLocation))
+  def defaultActivity(story: db.model.Story, player: db.model.Player,
+    defScene: String) =
+    model.Activity(
+      story.name,
+      player.name,
+      0,
+      defScene,
+      Seq(),
+      Map())
 
-  // def getStory(urlname: String) =
-  //   auth.SecuredAction.async(request =>
-  //     database.run(
-  //       GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
-  //         db.Player.ofStory(request.identity.user.id, story.id).
-  //           map(player => Ok((story, player))))))
-  //             // ,
-  //             // player.map(defaultAction(story, _))))))))
+  def getStory(urlname: String) =
+    auth.SecuredAction.async(request =>
+      database.run(
+        GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
+          playerController.loadPlayer(request.identity.user.name,
+            story.urlname).map(playerStateOpt =>
+            Ok(story.model, playerStateOpt.map(ps =>
+              // todo: insert activity and scene of current player.
+              (ps._1.model(ps._2), Unit, Unit)))))))
 }

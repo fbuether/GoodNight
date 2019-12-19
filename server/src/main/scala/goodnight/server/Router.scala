@@ -76,25 +76,13 @@ class Router(
     //
     case Stories() => readStories.getAvailableStories(header.target.queryMap)
     case Story(story) => readStories.getStory(story)
-    case AvailableScenes(story) => readScenes.getAvailableScenes(story, None)
-    case AvailableScenesAt(story, location) =>
-      readScenes.getAvailableScenes(story, Some(location))
+
     case CreatePlayer(story) => readPlayer.createPlayer(story)
 
-    case DoScene(story, scene) => readScenes.doScene(story, scene)
-    case DoChoice(story, scene, choice) =>
-      readChoices.doChoice(story, scene, choice)
-    case DoLocationNone(story) => readScenes.doLocation(story, None)
-    case DoLocation(story, location) =>
-      readScenes.doLocation(story, Some(location))
 
 
     //
     // Editing Stories
     //
-    case CreateStory() => writeStories.createStory
-    case Scenes(story) => readScenes.getAllScenes(story)
-    case CreateScene(story) => writeScenes.createScene(story)
-    case EditScene(story, scene) => writeScenes.updateScene(story, scene)
   }
 }

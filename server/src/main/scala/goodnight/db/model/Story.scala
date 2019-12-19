@@ -5,6 +5,7 @@ import java.util.UUID
 
 import goodnight.db
 
+
 case class Story(
   id: UUID,
   creator: String, // refers User.name
