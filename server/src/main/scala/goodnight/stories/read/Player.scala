@@ -37,13 +37,6 @@ class Player(components: ControllerComponents,
     db.Player.ofStory(user, story).flatMap(withState)
 
 
-  private def playerOf(user: db.model.User, story: db.model.Story,
-    name: String) =
-    db.model.Player(UUID.randomUUID(),
-      user.name,
-      story.urlname,
-      name)
-
   private def getFirstScene(story: db.model.Story) =
     db.Scene.defaultOfStory(story.urlname)
 
@@ -59,15 +52,11 @@ class Player(components: ControllerComponents,
           // todo: verify that this user does not yet have a player for
           // this story.
           GetOrNotFound(db.Scene.defaultOfStory(story.urlname)).flatMap(scene =>
-            db.Player.insert(playerOf(request.identity.user, story,
-              request.body.name)).map({ player =>
+            Activity.createNewPlayer(request.identity.user,
+              story, request.body.name).map(pi =>
                 // todo: fetch player state as given by first scene.
-                val playerState = Seq()
-                Created((player.model(playerState),
-                  model.Activity(story.name, request.identity.user.name,
-                    0, scene.name,
-                    // todo: well.
-                    List(), Map()),
-                  scene.model))
-              })))))
+                Created(
+                  (pi._1.model(pi._2),
+                    pi._3.model,
+                    pi._4.model)))))))
 }

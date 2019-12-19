@@ -6,10 +6,10 @@ import java.util.UUID
 
 case class Activity (
   id: UUID,
-  story: String,
-  user: String,
+  story: String, // refers story.urlname
+  user: String, // refers player.user
   number: Int,
-  scene: String,
+  scene: String, // refers scene.urlname
   random: List[Int])
     extends DbModel {
   def model// (effects: Seq[Effect])

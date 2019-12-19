@@ -14,7 +14,8 @@ import goodnight.service.Conversions._
 
 
 object CreatePlayer {
-  type PlayerState = (model.Player, model.Activity)
+  // StoryData is the shape of the reply of ApiV1.CreatePlayer
+  type PlayerState = (model.Player, model.Activity, model.Scene)
 
   case class Props(router: pages.Router, story: model.Story,
     child: PlayerState => VdomElement)
@@ -24,7 +25,7 @@ object CreatePlayer {
     private val playerNameRef = Input.componentRef
 
     def callSave(storyUrlname: String, playerName: String):
-        AsyncCallback[(model.Player, model.Activity)] =
+        AsyncCallback[PlayerState] =
       Request(ApiV1.CreatePlayer, storyUrlname).
         withBody(ujson.Obj("name" -> playerName)).
         send.

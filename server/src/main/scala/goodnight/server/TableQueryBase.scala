@@ -20,4 +20,7 @@ class TableQueryBase[M <: model.DbModel, T <: Table[M]](cons: Tag => T) {
   def insert(obj: M): DBIO[M] =
     apply().
       returning(apply()) += obj
+
+  def insert(obj: Seq[M]): DBIO[Unit] =
+    DBIO.seq(obj.map(insert) : _*)
 }

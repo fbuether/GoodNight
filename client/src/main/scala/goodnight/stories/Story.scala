@@ -65,7 +65,8 @@ object Story {
   def withStory(router: pages.Router, storyData: WithStory.StoryData) =
     storyData match {
       case (story, None) =>
-        CreatePlayer.component(CreatePlayer.Props(router, story, playerData =>
+        CreatePlayer.component(CreatePlayer.Props(router, story,
+          (playerData: CreatePlayer.PlayerState) =>
           component(Props(router, story, playerData._1, playerData._2.scene))))
       case (story, Some(playerData)) =>
         component(Props(router, story, playerData._1, playerData._2.scene))

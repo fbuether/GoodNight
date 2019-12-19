@@ -62,6 +62,7 @@ object ApiV1 {
   // CreatePlayer returns the new player along with the first activity
   // item and its scene, similar to Story.
   // type: (model.Player, model.Activity, model.Scene)
+  // compare ApiV1.Story() reply type.
   object CreatePlayer extends ApiPath("POST", p,
     C("story/"), S, C("/new-player"))
 
