@@ -1,27 +1,6 @@
 
 package goodnight.server
 
-import play.api.ApplicationLoader
-import play.api.Application
-import play.api.ApplicationLoader.Context
-import play.api.BuiltInComponentsFromContext
-import play.api.LoggerConfigurator
-import play.filters.HttpFiltersComponents
-import play.filters.csrf.CSRFComponents
-import controllers.AssetsComponents
-import play.api.db.slick.SlickComponents
-import play.api.db.slick.DbName
-import play.api.db.evolutions.EvolutionsComponents
-import play.api.db.slick.evolutions.SlickEvolutionsComponents
-import play.filters.csrf.CSRFFilter
-import play.filters.gzip.GzipFilter
-import play.api.mvc.EssentialFilter
-
-import play.api.mvc.DefaultActionBuilder
-import play.api.mvc.PlayBodyParsers
-import play.api.mvc.BodyParsers
-import play.api.cache.caffeine.CaffeineCacheComponents
-
 import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
 import com.mohiva.play.silhouette.api.SilhouetteProvider
@@ -35,29 +14,50 @@ import com.mohiva.play.silhouette.api.actions.DefaultUserAwareAction
 import com.mohiva.play.silhouette.api.actions.DefaultUserAwareRequestHandler
 import com.mohiva.play.silhouette.api.crypto.Base64AuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.persistence.repositories.CacheAuthenticatorRepository
-import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
-import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
+import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticatorService
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticatorSettings
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+import com.mohiva.play.silhouette.persistence.repositories.CacheAuthenticatorRepository
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import controllers.AssetsComponents
+import play.api.Application
+import play.api.ApplicationLoader
+import play.api.ApplicationLoader.Context
+import play.api.BuiltInComponentsFromContext
+import play.api.LoggerConfigurator
 import play.api.Mode
+import play.api.NoHttpFiltersComponents
+import play.api.cache.caffeine.CaffeineCacheComponents
+import play.api.db.evolutions.EvolutionsComponents
+import play.api.db.slick.DbName
+import play.api.db.slick.SlickComponents
+import play.api.db.slick.evolutions.SlickEvolutionsComponents
+import play.api.mvc.BodyParsers
+import play.api.mvc.DefaultActionBuilder
+import play.api.mvc.EssentialFilter
+import play.api.mvc.PlayBodyParsers
+import play.filters.HttpFiltersComponents
+import play.filters.csrf.CSRFComponents
+import play.filters.csrf.CSRFFilter
+import play.filters.gzip.GzipFilter
 
-import goodnight.client.Frontend
 import goodnight.api.Profile
-import goodnight.api.authentication.SignUp
-import goodnight.api.authentication.SignIn
-import goodnight.api.authentication.UserService
+import goodnight.api.authentication.AuthEnvironment
 import goodnight.api.authentication.CredentialAuthInfoRepository
 import goodnight.api.authentication.DatabaseAuthenticatorRepository
-import goodnight.api.authentication.AuthEnvironment
+import goodnight.api.authentication.SignIn
+import goodnight.api.authentication.SignUp
+import goodnight.api.authentication.UserService
+import goodnight.client.Frontend
 import goodnight.stories.read
 import goodnight.stories.write
+
 
 class ServerLoader extends ApplicationLoader {
   def load(context: Context): Application = {
