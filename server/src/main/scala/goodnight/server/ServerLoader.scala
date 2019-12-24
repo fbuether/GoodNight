@@ -75,9 +75,12 @@ class GoodnightComponents(context: Context)
   override def httpFilters: Seq[EssentialFilter] = {
     context.environment.mode match {
       case Mode.Dev =>
-        super.httpFilters.filterNot(_.getClass == classOf[CSRFFilter])
+        super.httpFilters.
+          filterNot(_.getClass == classOf[CSRFFilter]).
+          :+(new GzipFilter())
       case _ =>
-        super.httpFilters
+        super.httpFilters.
+          :+(new GzipFilter())
     }
   }
 }
