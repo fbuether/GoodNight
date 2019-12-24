@@ -30,7 +30,7 @@ class Stories(components: ControllerComponents,
     }
 
   def getAvailableStories(query: Map[String, Seq[String]]) =
-    auth.UserAwareAction.async( request =>
+    auth.UserAwareAction.async(request =>
       database.run(
         getStoryQuery(request.identity, query.contains("myself")).
           map(stories => Ok(stories.map(_.model)))))
