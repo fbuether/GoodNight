@@ -38,4 +38,11 @@ class Activity(val tag: Tag) extends Table[model.Activity](tag, "activity") {
 
 object Activity extends TableQueryBase[model.Activity, Activity](
   new Activity(_)) {
+  private val newestQuery = Compiled((story: Rep[String], user: Rep[String]) =>
+    apply().
+      filter(activity => activity.story === story && activity.user === user).
+      sortBy(_.number.desc).
+      take(1))
+  def newest(story: String, user: String): DBIO[Option[model.Activity]] =
+    newestQuery(story, user).result.headOption
 }

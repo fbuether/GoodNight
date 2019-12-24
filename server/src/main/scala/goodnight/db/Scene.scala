@@ -35,6 +35,13 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
   def defaultOfStory(story: String): DBIO[Option[model.Scene]] =
     defaultOfStoryQuery(story).result.headOption
 
+  def namedQuery = Compiled((story: Rep[String], urlname: Rep[String]) =>
+    apply().
+      filter(scene => scene.story === story && scene.urlname === urlname).
+      take(1))
+  def named(story: String, scene: String): DBIO[Option[model.Scene]] =
+    namedQuery(story, scene).result.headOption
+
 
 //   private def ofStoryQuery(storyUrlname: Rep[String],
 //     sceneUrlname: Rep[String]) =

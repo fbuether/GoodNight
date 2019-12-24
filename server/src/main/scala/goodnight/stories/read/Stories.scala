@@ -46,13 +46,20 @@ class Stories(components: ControllerComponents,
       Seq(),
       Map())
 
+  private def loadPlayerActivity(playerState: Option[(db.model.Player, _)]) =
+    playerState match {
+      case Some(state) => playerController.loadActivity(state._1)
+      case None => DBIO.successful(None)
+    }
+
   def getStory(urlname: String) =
     auth.SecuredAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
           playerController.loadPlayer(request.identity.user.name,
-            story.urlname).map(playerStateOpt =>
-            Ok(story.model, playerStateOpt.map(ps =>
-              // todo: insert activity and scene of current player.
-              (ps._1.model(ps._2), Unit, Unit)))))))
+            story.urlname).flatMap(playerStateOpt =>
+            loadPlayerActivity(playerStateOpt).map(playerActivityOpt =>
+              Ok(story.model, playerStateOpt.flatMap(ps =>
+                playerActivityOpt.map(pa =>
+                  (ps._1.model(ps._2), pa._1.model, pa._2.model)))))))))
 }

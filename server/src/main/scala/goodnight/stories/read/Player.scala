@@ -23,7 +23,7 @@ class Player(components: ControllerComponents,
     extends Controller(components) {
 
   type PlayerState = (db.model.Player, Seq[db.model.State])
-  // type PlayerActivity = (db.model.Activity, db.model.Scene)
+  type PlayerActivity = (db.model.Activity, db.model.Scene)
 
   private def withState(playerOpt: Option[db.model.Player]):
       DBIO[Option[PlayerState]] =
@@ -37,9 +37,14 @@ class Player(components: ControllerComponents,
     db.Player.ofStory(user, story).flatMap(withState)
 
 
-  private def getFirstScene(story: db.model.Story) =
-    db.Scene.defaultOfStory(story.urlname)
 
+  def loadActivity(player: db.model.Player): DBIO[Option[PlayerActivity]] =
+    db.Activity.newest(player.story, player.user).flatMap({
+      case None => DBIO.successful(None)
+      case Some(activity) =>
+        db.Scene.named(player.story, activity.scene).map(sceneOpt =>
+          sceneOpt.map(scene => (activity, scene)))
+    })
 
 
   case class WithName(name: String)
