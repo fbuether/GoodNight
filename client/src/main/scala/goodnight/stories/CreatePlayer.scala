@@ -15,7 +15,7 @@ import goodnight.service.Conversions._
 
 object CreatePlayer {
   // StoryData is the shape of the reply of ApiV1.CreatePlayer
-  type PlayerState = (model.Player, model.Activity, model.Scene)
+  type PlayerState = (model.Player, model.Activity, model.SceneView)
 
   case class Props(router: pages.Router, story: model.Story,
     child: PlayerState => VdomElement)
@@ -34,7 +34,6 @@ object CreatePlayer {
         body
 
     def doSave(props: Props): Callback =
-      // e.preventDefaultCB >>
       bs.modState(_.copy(saving = true)) >>
       Input.withValue(playerNameRef, playerName =>
         callSave(props.story.urlname, playerName).flatMap(ps =>

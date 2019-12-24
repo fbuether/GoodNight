@@ -3,6 +3,7 @@ package goodnight.stories.read
 
 import play.api.mvc.ControllerComponents
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
 import play.api.mvc.Result
 
@@ -42,4 +43,16 @@ class Scenes(components: ControllerComponents,
           flatMap(scene =>
             db.Choice.ofScene(scene.id).map(choices =>
               Ok((scene, choices))))))
+  def toView(scene: db.model.Scene): DBIO[model.SceneView] =
+    DBIO.successful(
+    model.SceneView(
+      "sceneview-story",
+      "sceneview-urlname",
+      "sceneview-text",
+      Seq(
+        model.NextScene("nextscene-1-urlname", "nextscene-1-text"),
+        model.NextScene("nextscene-2-urlname", "nextscene-2-text")))
+    )
+
+
 }

@@ -156,13 +156,13 @@ abstract class GoodnightRawComponents(context: Context)
     database, silhouette)
 
   lazy val readStories = new read.Stories(controllerComponents, database,
-    readPlayer, silhouette)
+    readPlayer, readScenes, silhouette)
   lazy val readScenes = new read.Scenes(controllerComponents, database,
     silhouette)
   lazy val readChoices = new read.Choices(controllerComponents, database,
     silhouette)
   lazy val readPlayer = new read.Player(controllerComponents, database,
-    silhouette)
+    readScenes, silhouette)
   lazy val writeStories = new write.Stories(controllerComponents, database,
     silhouette)
   lazy val writeScenes = new write.Scenes(controllerComponents, database,

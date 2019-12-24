@@ -38,19 +38,20 @@ object ApiV1 {
   object Stories extends ApiPath("GET", p, C("stories"))
 
 
+  // type: PlayerActivity = model.Player, model.Activity
+
   // Story returns a specific story, and, if it exists, the state of the
   // current player in this story.
   // type:
   // (model.Story, // this story
-  //  Option[(model.Player, // the player of the current user, if any
-  //          model.Activity, // the player's last activity
-  //          model.Scene)]) // the scene of the player's last activity
+  //  Option[(PlayerActivity, // user's player, if already created
+  //          SceneView)]) // the player's last scene
   object Story extends ApiPath("GET", p, C("story/"), S)
 
 
   // load all info about a scene.
   // returns the scene model, as well as a list of next scenes.
-  // type: (model.Scene, Seq[model.Scene])
+  // type: ReadingScene
   object Scene extends ApiPath("GET", p,
     C("story/"), S, C("/scene/"), S)
 
@@ -61,7 +62,7 @@ object ApiV1 {
 
   // CreatePlayer returns the new player along with the first activity
   // item and its scene, similar to Story.
-  // type: (model.Player, model.Activity, model.Scene)
+  // type: (PlayerActivity, SceneView)
   // compare ApiV1.Story() reply type.
   object CreatePlayer extends ApiPath("POST", p,
     C("story/"), S, C("/new-player"))
@@ -69,8 +70,9 @@ object ApiV1 {
 
   // Return 202 (Accepted) on success, and 409 (Conflict) if anything is wrong.
   // Requires the the sceneUrlname as parameter.
-  // on success, returns the outcome as well as the new scene and new options.
-  // type: (model.Activity, model.Scene, Seq[model.Scene])
+  // on success, returns the outcome as well as the new scene.
+  // todo: return results of activity and changes of state.
+  // type: (model.Activity, SceneView)
   object Do extends ApiPath("POST", p, C("story/"), S, C("/do/"), S)
 
 

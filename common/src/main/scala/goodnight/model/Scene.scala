@@ -41,6 +41,9 @@ object Setting {
 }
 
 
+// this is an editable scene, and represents closely the raw text that a
+// writer enters for the story.
+
 case class Scene(
   story: String, // refers Story.name
 
@@ -53,10 +56,22 @@ case class Scene(
   name: String,
   urlname: String,
 
-  // this is all non-setting text
+  // this is all non-setting text parts of `raw`.
   // todo: possibly containing dynamic elements.
   text: String,
 
   // all settings of this scene.
-  settings: Seq[Setting]
-)
+  settings: Seq[Setting])
+
+
+// this is a scene as it is read.
+
+case class SceneView(
+  story: String, // refers Scene.story
+  urlname: String, // refers Scene.urlname
+  text: String, // the text shown as this stories body, markdown
+  choices: Seq[NextScene])
+
+case class NextScene(
+  urlname: String, // refers Scene.urlname
+  text: String) // the text shown as a choice, markdown

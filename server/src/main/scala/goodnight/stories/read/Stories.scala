@@ -18,6 +18,7 @@ import goodnight.server.PostgresProfile.Database
 class Stories(components: ControllerComponents,
   database: Database,
   playerController: Player,
+  sceneController: Scenes,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
@@ -46,9 +47,17 @@ class Stories(components: ControllerComponents,
       Seq(),
       Map())
 
-  private def loadPlayerActivity(playerState: Option[(db.model.Player, _)]) =
+  private def loadPlayerActivity(playerState: Option[(db.model.Player, _)]):
+      DBIO[Option[(db.model.Activity, db.model.Scene)]] =
     playerState match {
       case Some(state) => playerController.loadActivity(state._1)
+      case None => DBIO.successful(None)
+    }
+
+  private def toView(pa: Option[(_, db.model.Scene)]):
+      DBIO[Option[model.SceneView]] =
+    pa match {
+      case Some((_, scene)) => sceneController.toView(scene).map(Some.apply)
       case None => DBIO.successful(None)
     }
 
@@ -58,8 +67,10 @@ class Stories(components: ControllerComponents,
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
           playerController.loadPlayer(request.identity.user.name,
             story.urlname).flatMap(playerStateOpt =>
-            loadPlayerActivity(playerStateOpt).map(playerActivityOpt =>
-              Ok(story.model, playerStateOpt.flatMap(ps =>
-                playerActivityOpt.map(pa =>
-                  (ps._1.model(ps._2), pa._1.model, pa._2.model)))))))))
+            loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
+              toView(playerActivityOpt).map(sceneViewOpt =>
+                Ok(story.model, playerStateOpt.flatMap(ps =>
+                  playerActivityOpt.flatMap(pa =>
+                    sceneViewOpt.map(sv =>
+                      (ps._1.model(ps._2), pa._1.model, sv)))))))))))
 }

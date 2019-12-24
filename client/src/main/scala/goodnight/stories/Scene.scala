@@ -18,18 +18,18 @@ import goodnight.service.Conversions._
 
 object Scene {
   case class Props(router: pages.Router, story: model.Story,
-    player: model.Player, scene: model.Scene, choices: Seq[model.Scene],
-    goto: model.Scene => Callback)
+    player: model.Player, scene: model.SceneView,
+    goto: model.NextScene => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
 
     def render(props: Props, state: State) =
       <.div(
-        <.h2(props.scene.name),
+        // todo: markdown scene.text
         <.p(props.scene.text),
         <.ul(^.className := "choices as-items",
-          props.choices.map(choice =>
+          props.scene.choices.map(choice =>
             <.li(
               <.p(choice.text,
                 <.button(^.className := "right",
