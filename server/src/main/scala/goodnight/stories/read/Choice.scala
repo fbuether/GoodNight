@@ -20,12 +20,12 @@ class Choices(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  // todo: do-actions do not return the next options. Create seperate call.
-  def doChoice(storyUrlname: String, sceneUrlname: String,
-    choiceUrlname: String) =
-    auth.SecuredAction.async(request =>
-    // todo: save the current player state to be at this scene.
-      database.run(
-        GetOrNotFound(db.Choice.ofUrlname(storyUrlname, sceneUrlname,
-          choiceUrlname)).map(Ok(_))))
+  // // todo: do-actions do not return the next options. Create seperate call.
+  // def doChoice(storyUrlname: String, sceneUrlname: String,
+  //   choiceUrlname: String) =
+  //   auth.SecuredAction.async(request =>
+  //   // todo: save the current player state to be at this scene.
+  //     database.run(
+  //       GetOrNotFound(db.Choice.ofUrlname(storyUrlname, sceneUrlname,
+  //         choiceUrlname)).map(Ok(_))))
 }

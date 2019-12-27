@@ -14,7 +14,8 @@ object Markdown {
     render_PC({case (text: Props, children: PropsChildren) =>
       // todo: actual markdown parsing and all that.
       <.p(
-        text.replace("\n", "<br>"),
+        text.split("\n").
+          foldRight(TagMod())((a,bl) => TagMod(a, <.br(), bl)),
         children)
     }).
     build

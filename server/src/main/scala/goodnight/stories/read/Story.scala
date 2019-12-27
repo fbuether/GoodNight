@@ -54,10 +54,11 @@ class Stories(components: ControllerComponents,
       case None => DBIO.successful(None)
     }
 
-  private def toView(pa: Option[(_, db.model.Scene)]):
+  private def toView(story: db.model.Story, pa: Option[(_, db.model.Scene)]):
       DBIO[Option[model.SceneView]] =
     pa match {
-      case Some((_, scene)) => sceneController.toView(scene).map(Some.apply)
+      case Some((_, scene)) =>
+        sceneController.toView(story, scene).map(Some.apply)
       case None => DBIO.successful(None)
     }
 
@@ -68,7 +69,7 @@ class Stories(components: ControllerComponents,
           playerController.loadPlayer(request.identity.user.name,
             story.urlname).flatMap(playerStateOpt =>
             loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
-              toView(playerActivityOpt).map(sceneViewOpt =>
+              toView(story, playerActivityOpt).map(sceneViewOpt =>
                 Ok(story.model, playerStateOpt.flatMap(ps =>
                   playerActivityOpt.flatMap(pa =>
                     sceneViewOpt.map(sv =>
