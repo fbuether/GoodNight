@@ -25,15 +25,26 @@ class Scenes(components: ControllerComponents,
   def toView(story: db.model.Story, dbScene: db.model.Scene):
       DBIO[model.SceneView] = {
 
-    val scene = SceneParser.parseScene(story.model, dbScene.raw) match {
-      case Left(a) => { println(dbScene.raw); println(a); dbScene.model }
+    // todo: better handling of \r\n-s
+    val scene = SceneParser.parseScene(story.model,
+      dbScene.raw.replace("\r\n", "\n")
+    ) match {
+      case Left(a) =>
+        println(dbScene.raw)
+        println(a)
+        dbScene.model
       case Right(r) => r
     }
 
-    val nexts = scene.settings.collect({ case model.Setting.Next(s) => s })
+    val nextNames = scene.settings.collect({ case model.Setting.Next(s) => s }).
+      toList
 
 
-    DBIO.successful(
+    // DBIO.successful(
+
+    db.Scene.namedList(story.urlname, nextNames).map({ nexts =>
+
+
       model.SceneView(
         scene.story,
         scene.urlname,
@@ -44,8 +55,9 @@ class Scenes(components: ControllerComponents,
 
         nexts.map(next =>
           model.NextScene(
-            next,
-            next + "-text",
+            next.urlname,
+            next.text,
+            // todo: requirements.
             Seq()
           )
         )
@@ -81,7 +93,8 @@ class Scenes(components: ControllerComponents,
           //       1d))
           // ),
       )
-    )
+
+    })
 
 
   }

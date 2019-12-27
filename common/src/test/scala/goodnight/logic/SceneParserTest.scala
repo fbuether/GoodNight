@@ -17,6 +17,15 @@ class SceneParserTest extends FunSpec with Inside {
       case Left(error) => throw new Error(error)
     }
 
+  val parserStory = model.Story("--", "storyname", "storyurlname",
+    "storyimage", "storydescription")
+
+  val fullParsed: (String => model.Scene) =
+    SceneParser.parseScene(parserStory, _) match {
+      case Right(scene) => scene
+      case Left(error) => throw new Error(error)
+    }
+
   describe("scene content") {
     it("can be a single line") {
       assert(parsed("main").content ==
@@ -155,6 +164,27 @@ class SceneParserTest extends FunSpec with Inside {
               model.Expression.Quality("power"),
               model.Expression.Random(0, 16))))
       }
+    }
+  }
+
+
+  describe("real scenes") {
+    it("from der-letzte-beutezug/und-es-beginnt") {
+      assert(fullParsed("""|$ start
+                       |$ name: und-es-beginnt
+                       |
+                       |# Und es beginnt...
+                       |
+                       |Endlich! Die lange Zeit der Planung zahlt sich aus: Vor dir, das Anwesen des (noch!) reichsten Mannes der Stadt, des Barons von Opulantz; über Dir der tief wolkenbehangene Nachthimmel; und in deiner Tasche: Die Zahlenkombination zum Tresor von Opulantz.
+                       |
+                       |Wenn alles klappt, wird dies der letzte Beutezug deines Lebens. Du hast dir deine Zukunft schon umfangreich ausgemalt: Ein kleines Haus, irgendwo auf dem Land, in dem du mit deiner großen Liebe gemütlich deinen Lebensabend verbringen wirst, bei Wein und Kaviar an einem warmen Kaminofen...
+                       |
+                       |Aber erstmal musst du den Baron um seinen monetären Ballast erleichtern. Du weißt, dass es diesmal klappt, denn immerhin...
+                       |
+                       |$ next: start-dieb
+                       |$ next: start-geraet
+                       |$ next: start-planer""".stripMargin).settings.
+        length == 5)
     }
   }
 }

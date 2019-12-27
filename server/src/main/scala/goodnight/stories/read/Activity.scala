@@ -54,12 +54,5 @@ object Activity {
               activity,
               scene)))))
 
-
   }
-
-
-
-
-
-
 }
