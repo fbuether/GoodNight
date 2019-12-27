@@ -62,14 +62,14 @@ object ApiV1 {
 
   // CreatePlayer returns the new player along with the first activity
   // item and its scene, similar to Story.
-  // type: (PlayerActivity, SceneView)
+  // type: (PlayerActivity, model.SceneView)
   // compare ApiV1.Story() reply type.
   object CreatePlayer extends ApiPath("POST", p,
     C("story/"), S, C("/new-player"))
 
 
   // Return 202 (Accepted) on success, and 409 (Conflict) if anything is wrong.
-  // Requires the the sceneUrlname as parameter.
+  // Requires the the storyUrlname and the sceneUrlname as parameter.
   // on success, returns the outcome as well as the new scene.
   // todo: return results of activity and changes of state.
   // type: (model.Activity, SceneView)

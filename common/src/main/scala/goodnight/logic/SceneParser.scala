@@ -130,7 +130,7 @@ object SceneParser {
       Either[String, model.Scene] =
     parsePScene(raw, false).map({ pScene =>
       val title = titleOfContent(pScene.content)
-      model.Scene(story.name,
+      model.Scene(story.urlname,
         raw,
         title,
         urlnameOf(title),

@@ -21,12 +21,11 @@ object Activity {
     db.Scene.defaultOfStory(story.urlname).map(_.get)
 
 
-  def doScene(story: db.model.Story, player: db.model.Player,
-    state: Seq[db.model.State], scene: db.model.Scene):
-      DBIO[(db.model.Activity, Seq[db.model.State])] = {
+  def doScene(player: db.model.Player, state: Seq[db.model.State],
+    scene: db.model.Scene): DBIO[(db.model.Activity, Seq[db.model.State])] = {
     // todo: properly apply the scene's effect to the player.
     val activity = db.model.Activity(UUID.randomUUID(),
-      story.urlname,
+      scene.story,
       player.user,
       0,
       scene.urlname,
@@ -48,7 +47,7 @@ object Activity {
 
     db.Player.insert(newPlayer).flatMap(player =>
       getFirstScene(story).flatMap(scene =>
-        doScene(story, player, playerState, scene).flatMap(as =>
+        doScene(player, playerState, scene).flatMap(as =>
           db.Activity.insert(as._1).map(activity =>
 //            db.State.updateOrInsert(as._2).flatMap(playerState =>
             (newPlayer, playerState,

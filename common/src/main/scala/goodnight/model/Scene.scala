@@ -31,7 +31,7 @@ object Setting {
   // always show this scene as an option, even if requirements are missing
   case object ShowAlways extends Setting
 
-  // adds a "return" button to return to a parent scen
+  // adds a "return" button to return to a parent scene
   case class Return(scene: String) extends Setting
 
   // literally includes another scene here, as if it's contents had been written
@@ -45,7 +45,7 @@ object Setting {
 // writer enters for the story.
 
 case class Scene(
-  story: String, // refers Story.name
+  story: String, // refers Story.urlname
 
   // the textual representation, uninterpreted.
   raw: String,
@@ -62,16 +62,3 @@ case class Scene(
 
   // all settings of this scene.
   settings: Seq[Setting])
-
-
-// this is a scene as it is read.
-
-case class SceneView(
-  story: String, // refers Scene.story
-  urlname: String, // refers Scene.urlname
-  text: String, // the text shown as this stories body, markdown
-  choices: Seq[NextScene])
-
-case class NextScene(
-  urlname: String, // refers Scene.urlname
-  text: String) // the text shown as a choice, markdown

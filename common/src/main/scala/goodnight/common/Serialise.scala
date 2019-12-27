@@ -69,8 +69,10 @@ object Serialise {
       macroRW[model.Setting.Include])
 
   implicit val serialise_scene: Serialisable[model.Scene] = macroRW
+
   implicit val serialise_sceneview: Serialisable[model.SceneView] = macroRW
   implicit val serialise_nextscene: Serialisable[model.NextScene] = macroRW
+  implicit val serialise_Requirement: Serialisable[model.Requirement] = macroRW
 
   implicit val serialise_story: Serialisable[model.Story] = macroRW
 

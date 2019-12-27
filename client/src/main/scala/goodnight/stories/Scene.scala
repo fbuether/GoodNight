@@ -19,21 +19,36 @@ import goodnight.service.Conversions._
 object Scene {
   case class Props(router: pages.Router, story: model.Story,
     player: model.Player, scene: model.SceneView,
-    goto: model.NextScene => Callback)
+    goto: String => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
 
     def render(props: Props, state: State) =
       <.div(
-        // todo: markdown scene.text
-        <.p(props.scene.text),
+        Markdown.component(props.scene.text)(),
         <.ul(^.className := "choices as-items",
           props.scene.choices.map(choice =>
             <.li(
-              <.p(choice.text,
+              <.ul(^.className := "requirements as-icons",
+                choice.tests.map(test =>
+                  <.li(^.className := "tooltip-anchor",
+                    <.img(^.src := (props.router.baseUrl +
+                      "assets/images/buuf/" +
+                      test.quality.image).value),
+                    <.div(^.className := "tooltip",
+                      <.strong(test.quality.name),
+                      <.span("required: ", test.minimum),
+                      <.span(
+                        if (test.hasMin) "true" else "false",
+                        "/",
+                        test.chance)))
+                ).toTagMod
+              ),
+              Markdown.component(choice.text)(
                 <.button(^.className := "right",
-                  ^.onClick --> props.goto(choice),
+                  ^.alt := "Pursue this choice",
+                  ^.onClick --> props.goto(choice.urlname),
                   <.span(^.className := "fas fa-angle-double-right"))))
           ).toTagMod
         ))

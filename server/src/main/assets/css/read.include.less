@@ -46,6 +46,7 @@ div#matter {
     position: relative;
     padding-right: 5.5rem;
     min-height: 2.6rem;
+    clear: right;
 
     & > button {
       position: absolute;
@@ -65,8 +66,11 @@ button.return {
 .requirements {
   float: right;
   margin-top: 0.3rem;
+  margin-right: 0.3rem;
 
   & > li {
+    z-index: 2;
+
     & > .tooltip {
       display: flex;
       flex-direction: column;

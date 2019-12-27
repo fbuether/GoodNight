@@ -23,16 +23,14 @@ object Story {
   case class State(scene: model.SceneView)
 
   class Backend(bs: BackendScope[Props, State]) {
-    // def loadScene(sceneUrlname: String): Callback =
-    //   bs.props.zip(bs.state).flatMap(ps =>
-    //     Request(ApiV1.Scene, ps._1.story.urlname, sceneUrlname).send.
-    //       forStatus(200).forJson[(model.Scene, Seq[model.Scene])].
-    //       body.flatMap(scene =>
-    //         bs.modState(_.copy(scene = Some(scene))).async).
-    //       toCallback)
-
-    def goto(next: model.NextScene): Callback =
-      Callback.log(s"going to ${next.urlname}")
+    def doScene(next: String): Callback =
+      bs.state.flatMap(state =>
+        Request(ApiV1.Do, state.scene.story, next).send.
+          forStatus(202).forJson[(model.Activity, model.SceneView)].
+          body.flatMap({ case (activity, scene) =>
+            bs.modState(_.copy(scene = scene)).async
+          }).
+          toCallback)
 
     def render(props: Props, state: State): VdomElement = {
       val inner: VdomElement =
@@ -43,7 +41,7 @@ object Story {
         //     Loading.component(props.router))
         // case Some((story, choices)) =>
           Scene.component(Scene.Props(props.router, props.story,
-            props.player, state.scene, goto))
+            props.player, state.scene, doScene))
       // }
 
       <.div(^.id := "matter",

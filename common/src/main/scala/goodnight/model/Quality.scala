@@ -5,8 +5,8 @@ package goodnight.model
 sealed trait Sort
 object Sort {
   // Boolean: Given to player or not given (e.g. "incapacitated")
-  // if a player has this quality, it is considered "true"; it's value usually
-  // is an empty string, but anything is allowed.
+  // if a player has this quality, it is considered "true"; it's value is
+  // "true" if the player possesses this quality, "false" otherwise.
   case object Boolean extends Sort
 
   // Enumeration: A value from a set of names (e.g. "psychic state")
