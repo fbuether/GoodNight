@@ -18,86 +18,28 @@ import goodnight.server.PostgresProfile.Database
 
 class Scenes(components: ControllerComponents,
   database: Database,
+  player: Player,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  def toView(story: db.model.Story, dbScene: db.model.Scene):
-      DBIO[model.SceneView] = {
 
-    // todo: better handling of \r\n-s
-    val scene = SceneParser.parseScene(story.model,
-      dbScene.raw.replace("\r\n", "\n")
-    ) match {
-      case Left(a) =>
-        println(dbScene.raw)
-        println(a)
-        dbScene.model
-      case Right(r) => r
-    }
-
-    val nextNames = scene.settings.collect({ case model.Setting.Next(s) => s }).
-      toList
+  def doScene(storyUrlname: String, sceneUrlname: String):
+      play.api.mvc.Handler  =
+    auth.SecuredAction.async(request =>
+      database.run(
+        GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
+          GetOrNotFound(player.loadPlayer(request.identity.user.name,
+            storyUrlname)).flatMap(playerState =>
+            GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).
+              flatMap(scene =>
+                SceneView.ofScene(story, scene).flatMap(sceneView =>
+                  Activity.doScene(playerState._1, playerState._2, scene).
+                    map(activityState =>
+                      Accepted((activityState._1.model, sceneView)))))))))
 
 
-    // DBIO.successful(
 
-    db.Scene.namedList(story.urlname, nextNames).map({ nexts =>
-
-
-      model.SceneView(
-        scene.story,
-        scene.urlname,
-        scene.text,
-        scene.settings.exists({
-          case model.Setting.Return(_) => true
-          case _ => false }),
-
-        nexts.map(next =>
-          model.NextScene(
-            next.urlname,
-            next.text,
-            // todo: requirements.
-            Seq()
-          )
-        )
-          // model.NextScene(
-          //   "nextscene-1-urlname",
-          //   "nextscene-1-text",
-          //   Seq(
-          //     model.Requirement(
-          //       model.Quality(
-          //         "quality-1-story",
-          //         "quality-1-raw",
-          //         "quality-1-name",
-          //         "quality-1-urlname",
-          //         model.Sort.Integer(None,None),
-          //         "Books.png",
-          //         "quality-1-description"
-          //       ),
-          //       2,
-          //       true,
-          //       0.75d),
-          //     model.Requirement(
-          //       model.Quality(
-          //         "quality-2-story",
-          //         "quality-2-raw",
-          //         "quality-2-name",
-          //         "quality-2-urlname",
-          //         model.Sort.Boolean,
-          //         "Boxing Glove.png",
-          //         "quality-2-description"
-          //       ),
-          //       1,
-          //       false,
-          //       1d))
-          // ),
-      )
-
-    })
-
-
-  }
   // def getAvailableScenes(storyUrlname: String, location: Option[String]) =
   //   auth.SecuredAction.async(request =>
   //     database.run(

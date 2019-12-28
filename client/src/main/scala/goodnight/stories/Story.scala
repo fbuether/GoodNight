@@ -25,7 +25,7 @@ object Story {
   class Backend(bs: BackendScope[Props, State]) {
     def doScene(next: String): Callback =
       bs.state.flatMap(state =>
-        Request(ApiV1.Do, state.scene.story, next).send.
+        Request(ApiV1.DoScene, state.scene.story, next).send.
           forStatus(202).forJson[(model.Activity, model.SceneView)].
           body.flatMap({ case (activity, scene) =>
             bs.modState(_.copy(scene = scene)).async

@@ -71,6 +71,7 @@ class Router(
     case Profile(user) => profile.show(user)
     case Self() => profile.showSelf
 
+
     //
     // Reading Stories
     //
@@ -78,7 +79,7 @@ class Router(
     case Story(story) => readStories.getStory(story)
 
     case CreatePlayer(story) => readPlayer.createPlayer(story)
-
+    case DoScene(story, scene) => readScenes.doScene(story, scene)
 
 
     //

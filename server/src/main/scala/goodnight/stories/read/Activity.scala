@@ -22,17 +22,24 @@ object Activity {
 
 
   def doScene(player: db.model.Player, state: Seq[db.model.State],
-    scene: db.model.Scene): DBIO[(db.model.Activity, Seq[db.model.State])] = {
-    // todo: properly apply the scene's effect to the player.
-    val activity = db.model.Activity(UUID.randomUUID(),
-      scene.story,
-      player.user,
-      0,
-      scene.urlname,
-      List())
-    val newState = state
+    scene: db.model.Scene)(implicit ec: ExecutionContext):
+      DBIO[(db.model.Activity, Seq[db.model.State])] = {
 
-    DBIO.successful((activity, state))
+    db.Activity.newest(player.story, player.user).flatMap({ previous =>
+
+      // todo: properly apply the scene's effect to the player.
+      val activity = db.model.Activity(UUID.randomUUID(),
+        scene.story,
+        player.user,
+        previous.map(_.number + 1).getOrElse(0),
+        scene.urlname,
+        List())
+      val newState = state
+
+      db.Activity.insert(activity).map(_ =>
+        (activity, state))
+    })
+
   }
 
 

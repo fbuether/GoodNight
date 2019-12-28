@@ -18,7 +18,6 @@ import goodnight.server.PostgresProfile.Database
 class Stories(components: ControllerComponents,
   database: Database,
   playerController: Player,
-  sceneController: Scenes,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
@@ -58,7 +57,7 @@ class Stories(components: ControllerComponents,
       DBIO[Option[model.SceneView]] =
     pa match {
       case Some((_, scene)) =>
-        sceneController.toView(story, scene).map(Some.apply)
+        SceneView.ofScene(story, scene).map(Some.apply)
       case None => DBIO.successful(None)
     }
 

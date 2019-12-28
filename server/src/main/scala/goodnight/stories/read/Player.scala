@@ -18,7 +18,6 @@ import goodnight.server.PostgresProfile.Database
 
 class Player(components: ControllerComponents,
   database: Database,
-  sceneController: Scenes,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
@@ -60,7 +59,7 @@ class Player(components: ControllerComponents,
           GetOrNotFound(db.Scene.defaultOfStory(story.urlname)).flatMap(scene =>
             Activity.createNewPlayer(request.identity.user,
               story, request.body.name).flatMap(pi =>
-              sceneController.toView(story, pi._4).map(sceneView =>
+              SceneView.ofScene(story, pi._4).map(sceneView =>
                 // todo: fetch player state as given by first scene.
                 Created(
                   (pi._1.model(pi._2),
