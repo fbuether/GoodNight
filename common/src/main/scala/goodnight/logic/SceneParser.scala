@@ -18,7 +18,7 @@ object SceneParser {
       map(_.trim)
 
   private def name[_:P]: P[String] =
-    P(CharsWhileIn("[a-zA-Z0-9 ]").!).
+    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9 ]").!).
       map(_.trim)
 
 

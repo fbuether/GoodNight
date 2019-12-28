@@ -24,8 +24,7 @@ class Scenes(components: ControllerComponents,
     extends Controller(components) {
 
 
-  def doScene(storyUrlname: String, sceneUrlname: String):
-      play.api.mvc.Handler  =
+  def doScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>

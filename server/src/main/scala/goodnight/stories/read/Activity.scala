@@ -25,6 +25,9 @@ object Activity {
     scene: db.model.Scene)(implicit ec: ExecutionContext):
       DBIO[(db.model.Activity, Seq[db.model.State])] = {
 
+    // todo: verify that the user is actually currently able to do this scene
+    // todo: check requirements as well as current scene of player
+
     db.Activity.newest(player.story, player.user).flatMap({ previous =>
 
       // todo: properly apply the scene's effect to the player.
