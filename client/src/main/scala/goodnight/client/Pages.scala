@@ -14,6 +14,7 @@ package pages {
   case object About extends Page
 
   case object Test extends Page
+  case object Test2 extends Page
 
 
   // authentication
