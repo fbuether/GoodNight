@@ -73,7 +73,7 @@ object Client {
       {dynamicRouteCT(("#write/story" / anyName / "new-scene").
         caseClass[pages.AddScene]) ~> dynRenderR(edit.EditStory.addScene)} |
       {dynamicRouteCT(("#write/story" / anyName / "scene" / anyName).
-        caseClass[pages.EditScene]) ~> dynRenderR(edit.EditStory.editScene)}
+        caseClass[pages.EditScene]) ~> dynRenderR(edit.Scene.render)}
       //
       // Editing Qualities
       // {dynamicRouteCT(("#write/story" / anyName / "quality" / anyName).

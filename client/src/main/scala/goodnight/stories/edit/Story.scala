@@ -39,7 +39,8 @@ object Story {
     private def renderScene(props: Props, scene: model.Scene) =
       <.div(^.className := "scene",
         <.div(
-          <.i(^.className := "fas fa-scroll"),
+          <.i(^.className := "fas fa-scroll" +
+            (if (scene.isStart) " start" else "")),
           <.span(scene.name),
           props.router.link(pages.EditScene(props.story.urlname,
             scene.urlname))(
@@ -53,7 +54,7 @@ object Story {
             ^.onClick --> deleteScene(scene.urlname),
             ^.title := "Delete this scene",
             <.i(^.className := "far fa-trash-alt"))),
-        <.p(scene.raw))
+        <.p(scene.text))
 
     def render(props: Props, state: State): VdomElement = state.scenes match {
       case None => Loading.component(props.router)

@@ -61,4 +61,10 @@ case class Scene(
   text: String,
 
   // all settings of this scene.
-  settings: Seq[Setting])
+  settings: Seq[Setting]) {
+
+
+  def isStart: Boolean = settings.exists({
+      case Setting.Start => true
+      case _ => false })
+}
