@@ -53,49 +53,9 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
     namedListQuery((story, scenes)).result
 
 
-
-//   private def ofStoryQuery(storyUrlname: Rep[String],
-//     sceneUrlname: Rep[String]) =
-//     apply().
-//       join(Story().filter(_.urlname === storyUrlname)).on(_.story === _.id).
-//       map(_._1).
-//       filter(_.urlname === sceneUrlname).
-//       take(1)
-//   private val ofStoryCompiled = Compiled(ofStoryQuery _)
-//   def ofStory(storyUrlname: String, sceneUrlname: String):
-//       DBIO[Option[model.Scene]] =
-//     ofStoryCompiled(storyUrlname, sceneUrlname).result.headOption
-
-
-//   private def allOfStoryQuery(storyUrlname: Rep[String]) =
-//     apply().
-//       join(Story().filter(_.urlname === storyUrlname)).on(_.story === _.id).
-//       map(_._1)
-//   private val allOfStoryCompiled = Compiled(allOfStoryQuery _)
-//   def allOfStory(storyUrlname: String): DBIO[Seq[model.Scene]] =
-//     allOfStoryCompiled(storyUrlname).result
-
-
-//   private def atLocationQuery(storyId: Rep[UUID],
-//     playerLocation: Option[UUID]) =
-//     apply().
-//       filter(_.story === storyId).
-//       filterOpt(playerLocation)(_.location === _).
-//       sortBy(_.title)
-//   // cannot precompile due to un-rep-value
-//   // private val atLocationCompiled = Compiled(atLocationQuery _)
-//   def atLocation(storyId: UUID, locationId: Option[UUID]):
-//       DBIO[Seq[model.Scene]] =
-//     atLocationQuery(storyId, locationId).result
-
-
-//   private def byIdQuery(id: Rep[UUID]) =
-//     apply().
-//       filter(_.id === id)
-//   private def byIdCompiled = Compiled(byIdQuery _)
-
-
-//   def update(id: UUID, newScene: model.Scene): DBIO[Int] =
-//     byIdCompiled(id).
-//       update(newScene.copy(id = id))
+  private val allOfStoryQuery = Compiled((story: Rep[String]) =>
+    apply().
+      filter(_.story === story))
+  def allOfStory(story: String): DBIO[Seq[model.Scene]] =
+    allOfStoryQuery(story).result
 }
