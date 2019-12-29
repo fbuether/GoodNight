@@ -19,7 +19,7 @@ object WithStory {
   type StoryData = (model.Story, Option[CreatePlayer.PlayerState])
 
   case class Props(router: pages.Router,
-    storyUrlname: String, child: StoryData => VdomElement)
+    storyUrlname: String, full: Boolean, child: StoryData => VdomElement)
   case class State(story: Option[StoryData])
 
   class Backend(bs: BackendScope[Props, State]) {

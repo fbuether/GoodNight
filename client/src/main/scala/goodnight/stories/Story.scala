@@ -72,6 +72,6 @@ object Story {
 
   def render(page: pages.Story, router: pages.Router) =
     Shell.component(router)(
-      WithStory.component(WithStory.Props(router, page.story,
+      WithStory.component(WithStory.Props(router, page.story, true,
         withStory(router, _))))
 }

@@ -10,7 +10,7 @@ import japgolly.scalajs.react.extra.router._
 import goodnight.home._
 import goodnight.home.authentication._
 import goodnight.stories._
-import goodnight.stories.edit._
+import goodnight.stories.edit
 import goodnight.community._
 
 import goodnight.service.AuthenticationService
@@ -65,15 +65,15 @@ object Client {
       // Editing Stories
       //
       {staticRoute("#createStory", pages.CreateStory) ~>
-        renderR(CreateStory.render)} |
+        renderR(edit.CreateStory.render)} |
       {dynamicRouteCT(("#write/story" / anyName).
-        caseClass[pages.EditStory]) ~> dynRenderR(EditStory.render)} |
+        caseClass[pages.EditStory]) ~> dynRenderR(edit.Story.render)}
       //
       // Editing Scenes
-      {dynamicRouteCT(("#write/story" / anyName / "new-scene").
-        caseClass[pages.AddScene]) ~> dynRenderR(EditStory.addScene)} |
-      {dynamicRouteCT(("#write/story" / anyName / "scene" / anyName).
-        caseClass[pages.EditScene]) ~> dynRenderR(EditStory.editScene)}
+      // {dynamicRouteCT(("#write/story" / anyName / "new-scene").
+      //   caseClass[pages.AddScene]) ~> dynRenderR(EditStory.addScene)} |
+      // {dynamicRouteCT(("#write/story" / anyName / "scene" / anyName).
+      //   caseClass[pages.EditScene]) ~> dynRenderR(EditStory.editScene)}
       //
       // Editing Qualities
       // {dynamicRouteCT(("#write/story" / anyName / "quality" / anyName).
