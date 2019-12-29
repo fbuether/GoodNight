@@ -25,14 +25,14 @@ div.edit-canvas {
     }
   }
 
-  div.location {
-    background: hsv(137, 0.02, 0.94);
-    border: 0.05em solid hsv(137, 0.12, 0.72);
-    &:hover {
-      background: hsv(137, 0.04, 0.96);
-      border: 0.05em solid hsv(137, 0.06, 0.76);
-    }
-  }
+  /* div.location { */
+  /*   background: hsv(137, 0.02, 0.94); */
+  /*   border: 0.05em solid hsv(137, 0.12, 0.72); */
+  /*   &:hover { */
+  /*     background: hsv(137, 0.04, 0.96); */
+  /*     border: 0.05em solid hsv(137, 0.06, 0.76); */
+  /*   } */
+  /* } */
 
   display: flex;
   flex-wrap: wrap;
@@ -40,7 +40,7 @@ div.edit-canvas {
   align-content: flex-start;
 
   & > div {
-    width: 15.7em;
+    width: ~"calc(33% - 2.2em)"; /* must be escaped to stop `less` compiling */
     border-radius: 0.3em;
 
     margin: 0.6em;
