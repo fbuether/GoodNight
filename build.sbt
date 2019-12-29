@@ -26,7 +26,7 @@ val versions = new {
   val upickle = "0.8.0"
   val fastParse = "2.1.3"
 
-  val scalaTest = "3.0.8"
+  val scalaTest = "3.0.5"
   val scalaMock = "4.4.0"
   val scalaTestPlay = "4.0.2"
 
