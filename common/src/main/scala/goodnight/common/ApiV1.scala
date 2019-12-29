@@ -49,11 +49,6 @@ object ApiV1 {
   object Story extends ApiPath("GET", p, C("story/"), S)
 
 
-  // load all info about a scene.
-  // returns the scene model, as well as a list of next scenes.
-  // type: ReadingScene
-  object Scene extends ApiPath("GET", p,
-    C("story/"), S, C("/scene/"), S)
 
 
   //
@@ -79,9 +74,21 @@ object ApiV1 {
   //
   // Editing Stories
   //
+  object CreateStory extends ApiPath("POST", p, C("createStory"))
+
+  // load all scenes of a story.
+  // type: Seq[model.Scene]
   object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
 
-  object CreateStory extends ApiPath("POST", p, C("createStory"))
+  // load all info about a scene.
+  // type: model.Scene
+  object Scene extends ApiPath("GET", p, C("story/"), S, C("/scene/"), S)
+
+  // create or update a story.
+  // both actions require a body with the scene text.
+  // replies 202 (Accepted) on success, and 409 (Conflict) if anything is
+  // wrong.
   object CreateScene extends ApiPath("POST", p, C("story/"), S, C("/scenes"))
-  object EditScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
+  object SaveScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
+
 }

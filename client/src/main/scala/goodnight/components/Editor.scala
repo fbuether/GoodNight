@@ -4,8 +4,10 @@ package goodnight.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.Attr.Generic
+import org.scalajs.dom.window
 import org.scalajs.dom.html
-// import org.scalajs.dom.document
+import scala.math.min
+import scala.math.floor
 
 // inspiration:
 // https://github.com/amirkarimi/neptune/blob/master/src/main/scala/com/..
@@ -30,6 +32,13 @@ object Editor {
 
     def get: CallbackTo[String] = contentRef.get.
       map(_.value).getOrElse("")
+
+    def fitTextarea: Callback =
+      contentRef.foreach({ ta =>
+        ta.style.height = min(
+          ta.scrollHeight,
+          floor(window.innerHeight * 0.6)) + "px"
+      })
 
     def onFirstChange: Callback =
       bs.state.flatMap({ state =>
@@ -82,6 +91,7 @@ object Editor {
   val component = ScalaComponent.builder[Props]("Editor").
     initialState[State](State(false)).
     renderBackend[Backend].
+    componentDidMount(_.backend.fitTextarea).
     build
 
   def componentRef = Ref.toScalaComponent(component)

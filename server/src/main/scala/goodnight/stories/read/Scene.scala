@@ -24,6 +24,13 @@ class Scenes(components: ControllerComponents,
     extends Controller(components) {
 
 
+  def getScene(storyUrlname: String, sceneUrlname: String) =
+    auth.SecuredAction.async(request =>
+      database.run(
+        GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).map(scene =>
+          Ok(scene.model))))
+
+
   def getAllScenes(storyUrlname: String) =
     auth.SecuredAction.async(request =>
       database.run(
