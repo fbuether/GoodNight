@@ -48,7 +48,7 @@ object Scene {
               scene)
           }
 
-          (request.withBody(rawText).send.forStatus(202) >>
+          (request.withPlainBody(rawText).send.forStatus(202) >>
             bs.modState(_.copy(saving = false, changed = false)).async).
             toCallback
       })

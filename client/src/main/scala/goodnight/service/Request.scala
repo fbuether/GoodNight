@@ -79,6 +79,11 @@ class Request(req: HttpRequest, authenticated: Boolean = true) {
       withBody(PlainTextBody(write(body))).
       withHeader("Content-Type", "application/json"))
 
+  def withPlainBody(body: String) =
+    Request(req.
+      withBody(PlainTextBody(body)).
+      withHeader("Content-Type", "text/plain; charset=UTF-8"))
+
   def noAuth: Request =
     Request(req, false)
 

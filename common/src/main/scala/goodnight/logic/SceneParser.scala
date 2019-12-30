@@ -129,7 +129,10 @@ object SceneParser {
   def parseScene(story: model.Story, raw: String):
       Either[String, model.Scene] =
     parsePScene(raw, false).map({ pScene =>
-      val title = titleOfContent(pScene.content)
+      val title = pScene.settings.
+        collect({ case model.Setting.Name(n) => n }).
+        headOption.
+        getOrElse(titleOfContent(pScene.content))
       model.Scene(story.urlname,
         raw,
         title,

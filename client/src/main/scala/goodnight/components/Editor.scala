@@ -73,6 +73,8 @@ object Editor {
         //     ^.title := "Turn selected paragraph into a list"),
         // ),
         <.textarea.withRef(contentRef)(^.className := "content",
+          ^.spellCheck := true,
+          ^.acceptCharset := "UTF-8",
           // ^.contentEditable := "true",
           // suppressContentEditableWarning := "true",
           ^.onInput --> onFirstChange,

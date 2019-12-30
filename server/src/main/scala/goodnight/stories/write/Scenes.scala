@@ -1,6 +1,7 @@
 
 package goodnight.stories.write
 
+import java.util.UUID
 import play.api.mvc.ControllerComponents
 import scala.concurrent.ExecutionContext
 import slick.jdbc.PostgresProfile.api._
@@ -21,58 +22,51 @@ class Scenes(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  case class WithText(text: String)
-  implicit val serialise_WithText: Serialisable[WithText] = macroRW
 
-  // todo: check if the data actually got inserted.
+  private def dbSceneOf(scene: model.Scene): db.model.Scene =
+    db.model.Scene(UUID.randomUUID(),
+      scene.story,
+      scene.raw,
+      scene.name,
+      scene.urlname,
+      scene.text)
+
   def createScene(storyUrlname: String) =
-    auth.SecuredAction.async(parseFromJson[WithText])(request =>
+    // todo: check if the data actually got inserted.
+    auth.SecuredAction.async(parse.text)(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-          SceneParser.parseScene(story, request.body.text).fold(
-            err => DBIO.successful(UnprocessableEntity(error(err))),
-            parsed =>
-            EmptyOrConflict(db.Scene.ofStory(storyUrlname, parsed._1.urlname)).
-              andThen(
-                db.Scene.insert(parsed._1).flatMap(insertedScene =>
-                  DBIO.sequence(parsed._2.map(db.Choice.insert)).
-                    map(_ => Created(insertedScene))))))))
+          SceneParser.parseScene(story.model, request.body) match {
+            case Right(scene) =>
+              val dbScene = dbSceneOf(scene)
+              db.Scene.insert(dbScene).map(_ =>
+                Accepted)
+            case Left(error) =>
+              DBIO.successful(Conflict(error))
+          })))
 
 
-  def replaceChoice(newChoice: model.Choice, oldChoices: Seq[model.Choice]) =
-    oldChoices.filter(_.pos == newChoice.pos).headOption match {
-      case Some(prev) => db.Choice.update(prev.id, newChoice)
-      case None => db.Choice.insert(newChoice)
-    }
+  private def updateScene(oldScene: db.model.Scene, newScene: model.Scene) =
+    db.model.Scene(oldScene.id,
+      oldScene.story,
+      newScene.raw,
+      newScene.name,
+      newScene.urlname,
+      newScene.text)
 
-  // todo: check if the data actually got updated.
-  def updateScene(storyUrlname: String, sceneUrlname: String) =
-    auth.SecuredAction.async(parseFromJson[WithText])(request =>
-      database.run(for (
-        story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
-        scene <- GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname));
-        choices <- db.Choice.ofScene(scene.id);
-        result <- SceneParser.parseScene(story, request.body.text).fold(
-          err => DBIO.successful(UnprocessableEntity(error(err))),
-          parsed => for (
-            _ <- db.Scene.update(scene.id, parsed._1);
-            _ <- DBIO.sequence(parsed._2.
-              map(_.copy(scene = scene.id)).
-              map(replaceChoice(_, choices)))
-          )
-          yield Accepted))
-      yield result))
-      // database.run(
-      //   GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-      //     GetOrNotFound(db.Scene.ofStory(storyUrlname, sceneUrlname)).
-      //       flatMap(scene =>
-      //         SceneParser.parseScene(story, request.body.text).fold(
-      //           err => DBIO.successful(UnprocessableEntity(error(err))),
-      //           parsed =>
-      //           db.Choice.ofScene(scene.id).flatMap(choices =>
-      //             db.Scene.update(scene.id, parsed._1).flatMap(_ =>
-      //               DBIO.sequence(parsed._2.
-      //                 map(_.copy(scene = parsed._1.id)).
-      //                 map(replaceChoice(_, choices))).
-      //                 map(_ => Accepted))))))))
+  def saveScene(storyUrlname: String, sceneUrlname: String) =
+    // todo: check if the data actually got inserted.
+    auth.SecuredAction.async(parse.text)(request =>
+      database.run(
+        GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
+          GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).
+            flatMap(scene =>
+              SceneParser.parseScene(story.model, request.body) match {
+                case Right(newScene) if newScene.urlname == scene.urlname =>
+                  db.Scene().insertOrUpdate(updateScene(scene, newScene)).
+                    map(_ =>
+                      Accepted)
+                case Left(error) =>
+                  DBIO.successful(Conflict(error))
+              }))))
 }
