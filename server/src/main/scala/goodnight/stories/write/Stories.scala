@@ -26,24 +26,35 @@ class Stories(components: ControllerComponents,
     name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
 
 
-
-  private def parseStory(user: model.User, name: String) =
-    model.Story(UUID.randomUUID(),
-      user.id,
+  private def newStoryOfName(user: String, name: String) =
+    db.model.Story(UUID.randomUUID(),
+      user,
       name,
       urlnameOf(name),
       "Moon.png",
-      "",
-      None)
+      "")
 
-  case class WithName(name: String)
-  implicit val serialise_WithName: Serialisable[WithName] = macroRW
+  private def initialScene(story: db.model.Story) =
+    db.model.Scene(UUID.randomUUID(),
+      story.urlname,
+      """|$start
+         |$name: First Scene
+         |This is a first scene for your new story.
+         |Change this scene to be the start of your story, or remove it,
+         |and create scenes as you like. Be aware though, that you always
+         |need one starting scene! (as given by $start).""".stripMargin,
+      "First Scene",
+      "first-scene",
+      """This is a first scene for your new story.
+         |Change this scene to be the start of your story, or remove it,
+         |and create scenes as you like. Be aware though, that you always
+         |need one starting scene! (as given by $start).""".stripMargin)
 
   def createStory =
-    auth.SecuredAction.async(parseFromJson[WithName])(request =>
+    auth.SecuredAction.async(parse.text)(request =>
       database.run(
-        EmptyOrConflict(db.Story.ofUrlname(urlnameOf(request.body.name))).
-          andThen(db.Story.insert(
-            parseStory(request.identity.user, request.body.name)).
-            map(Ok(_)))))
+        db.Story.insert(newStoryOfName(request.identity.user.name,
+          request.body)).flatMap(story =>
+          db.Scene.insert(initialScene(story)).map(_ =>
+            Created(story.model)))))
 }
