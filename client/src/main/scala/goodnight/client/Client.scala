@@ -64,7 +64,7 @@ object Client {
       //
       // Editing Stories
       //
-      {staticRoute("#createStory", pages.CreateStory) ~>
+      {staticRoute("#write/new-story", pages.CreateStory) ~>
         renderR(edit.CreateStory.render)} |
       {dynamicRouteCT(("#write/story" / anyName).
         caseClass[pages.EditStory]) ~> dynRenderR(edit.Story.render)} |

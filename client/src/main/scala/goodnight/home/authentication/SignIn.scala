@@ -120,8 +120,10 @@ object SignIn {
             <.button(^.tpe := "submit",
               (^.className := "loading").when(s.loading),
               (^.disabled := true).when(s.loading),
-              (<.i(^.className := "far fa-check-square label")).when(!s.loading),
-              (<.i(^.className := "far fa-spin fa-compass label")).when(s.loading),
+              (<.i(^.className := "far fa-check-square label")).
+                when(!s.loading),
+              (<.i(^.className := "far fa-spin fa-compass label")).
+                when(s.loading),
               "Sign in"),
             s.loginError.map(err =>
               <.p(^.className := "plain error",

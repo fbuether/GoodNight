@@ -74,6 +74,11 @@ object ApiV1 {
   //
   // Editing Stories
   //
+
+  // creates a new story.
+  // expects the new name as the body.
+  // returns 201 (Created) on success with the new story as body.
+  // returns 409 (Conflict) on error.
   object CreateStory extends ApiPath("POST", p, C("createStory"))
 
   // load all scenes of a story.
