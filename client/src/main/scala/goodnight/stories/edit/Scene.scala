@@ -100,7 +100,7 @@ object Scene {
   }
 
 
-  val component = ScalaComponent.builder[Props]("edit.Story").
+  val component = ScalaComponent.builder[Props]("edit.Scene").
     initialStateFromProps(props =>
       // if we create a new scene, we can save immediately.
       (State(None, props.sceneUrlname.isEmpty, false))).
