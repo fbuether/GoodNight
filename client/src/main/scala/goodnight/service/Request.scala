@@ -130,10 +130,7 @@ object Request {
   def apply(target: ApiPath, params: String*) = {
     val method = target.method match {
       case "GET" => Method.GET
-      case "PUT" => Method.PUT
       case "POST" => Method.POST
-      case "DELETE" => Method.DELETE
-      case _ => Method.GET
     }
     createRequest(method, target.write(params : _*))
   }
@@ -145,14 +142,11 @@ object Request {
 
   def get(url: String) = createRequest(Method.GET, url)
   def post(url: String) = createRequest(Method.POST, url)
-  def put(url: String) = createRequest(Method.PUT, url)
 
   def get(path: ApiPath, params: String*) =
     createRequest(Method.GET, path.write(params : _*))
   def post(path: ApiPath, params: String*) =
     createRequest(Method.POST, path.write(params : _*))
-  def put(path: ApiPath, params: String*) =
-    createRequest(Method.PUT, path.write(params : _*))
   def delete(path: ApiPath, params: String*) =
     createRequest(Method.DELETE, path.write(params : _*))
 }

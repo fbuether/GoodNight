@@ -40,7 +40,7 @@ object Register {
           passwordRef.get.flatMap(_.backend.get).map({ password =>
             (username, mail, password) }) }) }).asCallback.
         flatMap({ case Some((user, mail, password)) =>
-          Request.put(ApiV1.SignUp).
+          Request(ApiV1.SignUp).
             withBody(ujson.Obj(
               "identity" -> mail,
               "username" -> user,
