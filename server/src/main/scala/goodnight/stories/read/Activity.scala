@@ -57,12 +57,11 @@ object Activity {
 
     db.Player.insert(newPlayer).flatMap(player =>
       getFirstScene(story).flatMap(scene =>
-        doScene(player, playerState, scene).flatMap(as =>
-          db.Activity.insert(as._1).map(activity =>
-//            db.State.updateOrInsert(as._2).flatMap(playerState =>
-            (newPlayer, playerState,
-              activity,
-              scene)))))
+        doScene(player, playerState, scene).map(as =>
+          //            db.State.updateOrInsert(as._2).flatMap(playerState =>
+          (newPlayer, playerState,
+            as._1,
+            scene))))
 
   }
 }
