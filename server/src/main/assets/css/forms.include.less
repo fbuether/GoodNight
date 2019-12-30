@@ -49,14 +49,22 @@ button {
     background: greyscale(@action-background);
     border: @line-width solid greyscale(darken(@action-background, 72));
     color: greyscale(@action-font);
+
+    &:hover {
+      text-shadow: 0 0 0.05rem hsv(0, 0, 0.5, 0.5);
+    }
   }
 
   &.loading {
-    background: tint(black, 94);
-    color: tint(@font, 60);
+    background: @activity-background;
+    color: white;
 
     & > .fa-spin {
       display: inline-block;
+    }
+
+    &:hover {
+      text-shadow: 0 0 0.05rem hsv(0, 0, 0.5, 0.5);
     }
   }
 }

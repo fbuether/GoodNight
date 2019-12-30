@@ -65,24 +65,29 @@ object Scene {
 
     def renderEditor(props: Props, state: State, text: (String, String)) = {
       val (title, content) = text
+      val canSave = !state.saving && state.changed
 
       <.div(
         <.h3(title),
         editorRef.component(Editor.Props(content, setChanged)),
-        <.div(^.className := "buttons",
-          <.button(^.className := "inline",
-            ^.onClick --> cancel,
-            <.i(^.className := "fas fa-ban label"),
-            "Return / Discard"),
-          <.button(^.className := "inline",
-            ^.onClick --> save,
-            (^.className := "loading").when(state.saving),
-            (^.disabled := true).when(state.saving),
-            <.i(
-              (^.className := "far fa-spin fa-compass label").
-                when(state.saving),
-              (^.className := "fa fa-check-square label").when(!state.saving)),
-            "Save")))
+        <.div(^.className := "as-columns for-buttons",
+          <.div(
+            <.button(
+              ^.onClick --> cancel,
+              <.i(^.className := "fas fa-ban label"),
+              "Discard")),
+          <.div(
+            <.button(
+              ^.onClick --> save,
+              ^.className :=
+                (if (state.saving) " loading" else "") +
+                (if (!canSave) " locked" else ""),
+              (^.disabled := true).when(!canSave),
+              <.i(^.className :=
+                (if (state.saving) "far fa-spin fa-compass label"
+                else "fa fa-check-square label")),
+              (if (state.saving) "Saving…"
+              else "Save")))))
     }
 
     def render(props: Props, state: State): VdomElement =
@@ -96,7 +101,9 @@ object Scene {
 
 
   val component = ScalaComponent.builder[Props]("edit.Story").
-    initialState(State(None, false, false)).
+    initialStateFromProps(props =>
+      // if we create a new scene, we can save immediately.
+      (State(None, props.sceneUrlname.isEmpty, false))).
     renderBackend[Backend].
     componentDidMount(_.backend.loadScene).
     build
