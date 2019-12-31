@@ -25,12 +25,14 @@ class Activity(val tag: Tag) extends Table[model.Activity](tag, "activity") {
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
   def userFk = foreignKey("activity_fk_user_user_name", user,
-    User())(_.name,
-      onUpdate = ForeignKeyAction.Cascade,
+    User())(_.name, onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
   def sceneFk = foreignKey("activity_fk_story_scene_scene_story_urlname",
-    (story, scene),
-    Scene())(scene => (scene.story, scene.urlname),
+    (story, scene), Scene())(scene => (scene.story, scene.urlname),
+      onUpdate = ForeignKeyAction.Cascade,
+      onDelete = ForeignKeyAction.Cascade)
+  def playerFk = foreignKey("activity_fk_user_story_player_user_story",
+    (user, story), Player())(player => (player.user, player.story),
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade)
 }

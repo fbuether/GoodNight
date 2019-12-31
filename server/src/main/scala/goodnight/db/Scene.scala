@@ -48,7 +48,8 @@ object Scene extends TableQueryBase[model.Scene, Scene](new Scene(_)) {
     scenes: Rep[List[String]]) =>
     apply().
       filter(scene => scene.story === story &&
-        scene.urlname === scenes.any))
+        (scene.urlname === scenes.any ||
+          scene.name === scenes.any)))
   def namedList(story: String, scenes: List[String]): DBIO[Seq[model.Scene]] =
     namedListQuery((story, scenes)).result
 
