@@ -17,4 +17,17 @@
   </root>
 
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
+
+  <logger name="play" level="TRACE" />
+
+  <logger name="application" level="TRACE" />
+
+  <!-- all dbio actions -->
+  <!-- <logger name="slick.basic.BasicBackend.action" level="TRACE" /> -->
+
+  <!-- all slick sql variable bindings -->
+  <logger name="slick.jdbc.JdbcBackend.parameter" level="TRACE" />
+
+  <!-- all slick sql statements -->
+  <logger name="slick.jdbc.JdbcBackend.statement" level="TRACE" />
 </configuration>
