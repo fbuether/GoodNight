@@ -150,7 +150,7 @@ abstract class GoodnightRawComponents(context: Context)
     securedAction, unsecuredAction, userAwareAction)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder,
-    context.environment.mode)
+    csrfAddToken, context.environment.mode)
   lazy val authSignUp = new SignUp(controllerComponents, database,
     silhouette, passwordHasherRegistry, authInfoRepository)
   lazy val authSignIn = new SignIn(controllerComponents, database,
