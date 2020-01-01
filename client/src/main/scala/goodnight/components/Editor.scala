@@ -36,7 +36,6 @@ object Editor {
     // https://stackoverflow.com/a/25621277
     def fitTextarea: Callback =
       contentRef.foreach({ ta =>
-        println(ta.scrollHeight)
         ta.style.height = "auto"
         val targetHeight = min(ta.scrollHeight, floor(window.innerHeight * 0.6))
         ta.style.height = targetHeight + "px"
