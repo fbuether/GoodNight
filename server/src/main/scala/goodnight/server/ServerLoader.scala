@@ -43,7 +43,6 @@ import play.api.mvc.DefaultActionBuilder
 import play.api.mvc.EssentialFilter
 import play.api.mvc.PlayBodyParsers
 import play.filters.HttpFiltersComponents
-import play.filters.csrf.CSRFComponents
 import play.filters.csrf.CSRFFilter
 import play.filters.gzip.GzipFilter
 
@@ -73,15 +72,9 @@ class GoodnightComponents(context: Context)
     extends GoodnightRawComponents(context)
     with HttpFiltersComponents {
   override def httpFilters: Seq[EssentialFilter] = {
-    context.environment.mode match {
-      case Mode.Dev =>
-        super.httpFilters.
-          filterNot(_.getClass == classOf[CSRFFilter]).
-          :+(new GzipFilter())
-      case _ =>
-        super.httpFilters.
-          :+(new GzipFilter())
-    }
+    super.httpFilters.
+      filterNot(_.getClass == classOf[CSRFFilter]).
+      :+(new GzipFilter())
   }
 }
 
@@ -97,8 +90,7 @@ abstract class GoodnightRawComponents(context: Context)
     with SlickEvolutionsComponents
     with EvolutionsComponents
     with AssetsComponents
-    with CaffeineCacheComponents
-    with CSRFComponents {
+    with CaffeineCacheComponents {
 
   // run the database evolution scripts
   applicationEvolutions
@@ -150,7 +142,7 @@ abstract class GoodnightRawComponents(context: Context)
     securedAction, unsecuredAction, userAwareAction)
 
   lazy val frontend = new Frontend(controllerComponents, assetsFinder,
-    csrfAddToken, context.environment.mode)
+    context.environment.mode)
   lazy val authSignUp = new SignUp(controllerComponents, database,
     silhouette, passwordHasherRegistry, authInfoRepository)
   lazy val authSignIn = new SignIn(controllerComponents, database,
