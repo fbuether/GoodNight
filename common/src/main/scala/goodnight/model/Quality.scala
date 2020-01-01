@@ -20,7 +20,7 @@ object Sort {
 
 
 case class Quality(
-  story: String, // refers Story.name
+  story: String, // refers Story.urlname
 
   // the textual representation, uninterpreted.
   raw: String,
