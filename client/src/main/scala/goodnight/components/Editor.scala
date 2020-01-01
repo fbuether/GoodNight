@@ -33,11 +33,13 @@ object Editor {
     def get: CallbackTo[String] = contentRef.get.
       map(_.value).getOrElse("")
 
+    // https://stackoverflow.com/a/25621277
     def fitTextarea: Callback =
       contentRef.foreach({ ta =>
-        ta.style.height = min(
-          ta.scrollHeight,
-          floor(window.innerHeight * 0.6)) + "px"
+        println(ta.scrollHeight)
+        ta.style.height = "auto"
+        val targetHeight = min(ta.scrollHeight, floor(window.innerHeight * 0.6))
+        ta.style.height = targetHeight + "px"
       })
 
     def onFirstChange: Callback =
@@ -77,7 +79,7 @@ object Editor {
           ^.acceptCharset := "UTF-8",
           // ^.contentEditable := "true",
           // suppressContentEditableWarning := "true",
-          ^.onInput --> onFirstChange,
+          ^.onInput --> (onFirstChange >> fitTextarea),
           ^.defaultValue := props.content
         ))
 
