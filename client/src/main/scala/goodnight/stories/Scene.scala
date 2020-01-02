@@ -26,7 +26,7 @@ object Scene {
 
     def render(props: Props, state: State) =
       <.div(
-        Markdown.component(props.scene.text)(),
+        Markdown.component(props.scene.text, 1)(),
         <.ul(^.className := "choices as-items",
           props.scene.choices.map(choice =>
             <.li(
@@ -45,7 +45,7 @@ object Scene {
                         test.chance)))
                 ).toTagMod
               ),
-              Markdown.component(choice.text)(
+              Markdown.component(choice.text, 3)(
                 <.button(^.className := "right",
                   ^.alt := "Pursue this choice",
                   ^.onClick --> props.goto(choice.urlname),
