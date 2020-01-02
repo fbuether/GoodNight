@@ -44,11 +44,6 @@ object MarkdownParser {
   def trimmedText[_:P] :P[Inlines] =
     P(lineWhitespace ~ markdownLine ~ lineWhitespace ~ lineEnd)
 
-  // the remaining text of this line as plaintext, ignoring markup.
-  def trimmedPlainText[_:P] :P[String] =
-    P(lineWhitespace ~ anyText ~ lineWhitespace ~ lineEnd).
-      map(_.trim)
-
   def lineBreak[_:P] :P[Unit] =
     P("\n" | "\r\n")
 
@@ -75,8 +70,8 @@ object MarkdownParser {
     P(lineWhitespace ~ ("*" | "-" | "=").rep(3) ~/ lineWhitespace ~ lineEnd)
 
   // blockquotes start with > and contain only plain text.
-  def blockquote[_:P] :P[String] =
-    P(">" ~/ trimmedPlainText)
+  def blockquote[_:P] :P[Inlines] =
+    P(">" ~/ trimmedText)
 
   // ordered list items start with a number, followed by a dot.
   def enumItem[_:P] :P[(Int, Inlines)] =
@@ -120,7 +115,7 @@ object MarkdownParser {
 
   def blockquoteBlock[_:P] :P[Block] =
     P(blockquote.rep(1, sep = lineBreak)).
-      map(texts => Blockquote(texts.mkString("\n")))
+      map(texts => Blockquote(texts))
 
   def block[_:P] :P[Block] =
     P(ruler.map(_ => Ruler) |

@@ -30,6 +30,28 @@ div#matter {
 }
 
 
+.markdowned {
+  blockquote, pre {
+    margin: 0.4em @gn-padding 0.6em @gn-padding;
+    padding-left: 0.6em;
+    border-left: solid 0.2em @highlight-background;
+
+    font-family: inherit;
+  }
+
+  ol {
+    margin: 0.4em @gn-padding 0.6em (@gn-padding + 1.2em);
+    list-style-type: decimal;
+    list-style-position: outside;  }
+
+  li {
+    & > p {
+      margin-left: 0;
+      text-indent: 0;
+    }
+  }
+}
+
 
 // auswahl
 
@@ -42,7 +64,7 @@ div#matter {
     margin: 0 0.5rem;
   }
 
-  & > p {
+  & p {
     position: relative;
     padding-right: 5.5rem;
     min-height: 2.6rem;

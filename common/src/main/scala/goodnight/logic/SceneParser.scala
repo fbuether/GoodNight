@@ -17,8 +17,8 @@ object SceneParser {
 
   // todo: settings embedded into lines
   private def content[_:P]: P[Either[String, model.Setting]] =
-    P(!"$" ~/ BaseParser.remainingLine).
-      map(Left.apply)
+    P(!"$" ~/ CharsWhile(_ != '\n', 0).!).
+      map(text => Left(text.replaceAll("\\s+$", "")))
 
   // settings
 

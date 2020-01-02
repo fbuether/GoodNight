@@ -157,12 +157,12 @@ class MarkdownParserTest extends FunSpec {
 
     they("parse blockquotes") {
       assert(parseWith(block(_), "> quoted") ==
-        Blockquote("quoted"))
+        Blockquote(Seq(Seq(Text("quoted")))))
     }
 
     they("parse multi-line blockquotes") {
       assert(parseWith(block(_), "> this\n> that") ==
-        Blockquote("this\nthat"))
+        Blockquote(Seq(Seq(Text("this")), Seq(Text("that")))))
     }
   }
 
@@ -331,6 +331,48 @@ class MarkdownParserTest extends FunSpec {
           Paragraph(Seq(Text("Eat something"))))),
         Header(2, Seq(Text("Further instructions"))),
         Paragraph(Seq(Text("You'll receive those later on.")))))
+      assert(parsed(raw) == markdown)
+    }
+
+    they("parse multi-line items correctly") {
+      val raw =
+        """|# The very first scene
+           |
+           |Change this scene to be the *start* of you
+           |and create scenes as you like. Be aware th
+           |need one starting scene! (as given by $sta
+           |
+           |Otherwise, add these:
+           |* A dynamic text with *emphasis*
+           |* A blockquote, as shown later on
+           |* Items with multiple lines,
+           |  like this one.
+           |
+           |A blockquote looks like this:""".stripMargin
+      val markdown = Markdown(Seq(
+        Header(1, Seq(Text("The very first scene"))),
+        Paragraph(Seq(
+          Text("Change this scene to be the "),
+          Emph("start"),
+          Text(" of you"),
+          Text("and create scenes as you like. Be aware th"),
+          Text("need one starting scene! (as given by $sta"))),
+        Paragraph(Seq(
+          Text("Otherwise, add these:"))),
+        List(Seq(
+          Paragraph(Seq(Text("A dynamic text with "), Emph("emphasis"))),
+          Paragraph(Seq(Text("A blockquote, as shown later on"))),
+          Paragraph(Seq(Text("Items with multiple lines,"),
+            Text("like this one."))))),
+        Paragraph(Seq(Text("A blockquote looks like this:")))))
+      assert(parsed(raw).elements.take(3) == markdown.elements.take(3))
+      val pLs = parsed(raw).elements.collect({ case List(el) => el }).flatten
+      val mLs = markdown.elements.collect({ case List(el) => el }).flatten
+
+      pLs.zip(mLs).foreach({ case (p,m) =>
+        assert(p == m)
+      })
+
       assert(parsed(raw) == markdown)
     }
   }
