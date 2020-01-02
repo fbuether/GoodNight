@@ -2,25 +2,21 @@
 package goodnight.model.text
 
 
-
-sealed trait BlockElement
-// case class Heading(level: Int, content: Seq[InlineElement]) extends BlockElement
-// case class Paragraph(content: Seq[InlineElement]) extends BlockElement
-// // case class Enumeration(items: Seq[BlockElement]) extends BlockElement
-// // case class List(items: Seq[BlockElement]) extends BlockElement
-// // case class Blockquote(content: BlockElement) extends BlockElement
-
-// sealed trait InlineElement extends Markdown
-// case class Text(text: String) extends InlineElement
-// case class Emphasis(text: InlineElement) extends InlineElement
-// case class Strong(text: InlineElement) extends InlineElement
-// case object Linebreak extends InlineElement
+sealed trait Block
+case class Header(level: Int, content: Inlines) extends Block
+case class Paragraph(content: Inlines) extends Block
+case class Enum(items: Seq[(Int, Block)]) extends Block
+case class List(items: Blocks) extends Block
+case class Blockquote(content: String) extends Block
+case object Ruler extends Block
+// case class Image(path: String) extends Block
 
 
+sealed trait Inline
+case class Text(text: String) extends Inline
+case class Emph(text: String) extends Inline
+case class Strong(text: String) extends Inline
+case object Linebreak extends Inline
 
 
-case class Paragraph(content: String) extends BlockElement
-
-
-
-case class Markdown(elements: Seq[BlockElement])
+case class Markdown(elements: Blocks)
