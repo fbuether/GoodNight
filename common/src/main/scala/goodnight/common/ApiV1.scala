@@ -81,9 +81,9 @@ object ApiV1 {
   // returns 409 (Conflict) on error.
   object CreateStory extends ApiPath("POST", p, C("createStory"))
 
-  // load all scenes of a story.
-  // type: Seq[model.Scene]
-  object Scenes extends ApiPath("GET", p, C("story/"), S, C("/scenes"))
+  // load all scenes as well as qualities of a story.
+  // type: (Seq[model.Scene], Seq[model.Quality])
+  object Content extends ApiPath("GET", p, C("story/"), S, C("/content"))
 
   // load all info about a scene.
   // type: model.Scene
@@ -95,5 +95,11 @@ object ApiV1 {
   // wrong.
   object CreateScene extends ApiPath("POST", p, C("story/"), S, C("/scenes"))
   object SaveScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
+
+  // reading and changing qualities.
+  object Quality extends ApiPath("GET", p, C("story/"), S, C("/quality/"), S)
+  object CreateQuality extends ApiPath("POST", p,
+    C("story/"), S, C("/qualitys"))
+  object SaveQuality extends ApiPath("POST", p, C("story/"), S, C("/quality/"), S)
 
 }

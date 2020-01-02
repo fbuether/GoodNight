@@ -31,13 +31,6 @@ class Scenes(components: ControllerComponents,
           Ok(scene.model))))
 
 
-  def getAllScenes(storyUrlname: String) =
-    auth.SecuredAction.async(request =>
-      database.run(
-        db.Scene.allOfStory(storyUrlname).map(scenes =>
-          Ok(scenes.map(_.model)))))
-
-
   def doScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(request =>
       database.run(

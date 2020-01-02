@@ -87,8 +87,9 @@ class Router(
     //
     case CreateStory() => writeStories.createStory
 
+    case Content(story) => writeStories.getContent(story)
+
     case Scene(story, scene) => readScenes.getScene(story, scene)
-    case Scenes(story) => readScenes.getAllScenes(story)
 
     case CreateScene(story) => writeScenes.createScene(story)
     case SaveScene(story, scene) => writeScenes.saveScene(story, scene)

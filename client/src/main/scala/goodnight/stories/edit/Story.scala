@@ -16,16 +16,17 @@ import goodnight.stories.WithStory
 
 
 object Story {
+  type Content = (Seq[model.Scene], Seq[model.Quality])
   case class Props(router: pages.Router, story: model.Story)
-  case class State(scenes: Option[Seq[model.Scene]])
+  case class State(content: Option[Content])
 
   class Backend(bs: BackendScope[Props, State]) {
     def loadScenes: Callback =
       bs.props.flatMap(props =>
-        Request(ApiV1.Scenes, props.story.urlname).send.
-          forStatus(200).forJson[Seq[model.Scene]].
-          body.flatMap(scenes =>
-            bs.modState(_.copy(scenes = Some(scenes))).async).
+        Request(ApiV1.Content, props.story.urlname).send.
+          forStatus(200).forJson[Content].
+          body.flatMap(content =>
+            bs.modState(_.copy(content = Some(content))).async).
           toCallback)
 
     def copyScene(urlname: String): Callback = Callback {
@@ -33,6 +34,14 @@ object Story {
     }
 
     def deleteScene(urlname: String): Callback = Callback {
+      println("deleteing " + urlname)
+    }
+
+    def copyQuality(urlname: String): Callback = Callback {
+      println("copying " + urlname)
+    }
+
+    def deleteQuality(urlname: String): Callback = Callback {
       println("deleteing " + urlname)
     }
 
@@ -56,12 +65,33 @@ object Story {
             <.i(^.className := "far fa-trash-alt"))),
         <.p(scene.text))
 
-    def render(props: Props, state: State): VdomElement = state.scenes match {
+    private def renderQuality(props: Props, quality: model.Quality) =
+      <.div(^.className := "quality",
+        <.div(
+          <.i(^.className := "fas fa-hammer"),
+          <.span(quality.name),
+          props.router.link(pages.EditQuality(props.story.urlname,
+            quality.urlname))(
+            ^.title := "Edit this quality",
+              <.i(^.className := "fas fa-pen-fancy")),
+          <.a(^.className := "clickable",
+            ^.onClick --> copyQuality(quality.urlname),
+            ^.title := "Copy this quality",
+            <.i(^.className := "far fa-copy")),
+          <.a(^.className := "clickable danger",
+            ^.onClick --> deleteQuality(quality.urlname),
+            ^.title := "Delete this quality",
+            <.i(^.className := "far fa-trash-alt"))),
+        <.p(quality.description))
+
+
+    def render(props: Props, state: State): VdomElement = state.content match {
       case None => Loading.component(props.router)
-      case Some(scenes) =>
+      case Some(content) =>
         <.div(
           <.div(^.className := "edit-canvas",
-            scenes.map(renderScene(props, _)).toTagMod),
+            content._1.map(renderScene(props, _)).toTagMod,
+            content._2.map(renderQuality(props, _)).toTagMod),
           <.p(
             <.button(
               props.router.setOnClick(pages.AddScene(props.story.urlname)),

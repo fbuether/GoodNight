@@ -42,8 +42,6 @@ package pages {
 
   case class AddQuality(story: String) extends Page
   case class EditQuality(story: String, quality: String) extends Page
-
-  case class AddLocation(story: String) extends Page
 }
 
 package object pages {

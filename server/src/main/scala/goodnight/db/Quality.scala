@@ -31,4 +31,9 @@ class Quality(val tag: Tag) extends Table[model.Quality](tag, "quality") {
 
 
 object Quality extends TableQueryBase[model.Quality, Quality](new Quality(_)) {
+  private val allOfStoryQuery = Compiled((story: Rep[String]) =>
+    apply().
+      filter(_.story === story))
+  def allOfStory(story: String): DBIO[Seq[model.Quality]] =
+    allOfStoryQuery(story).result
 }

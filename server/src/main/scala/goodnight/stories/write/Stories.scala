@@ -57,4 +57,26 @@ class Stories(components: ControllerComponents,
           request.body)).flatMap(story =>
           db.Scene.insert(initialScene(story)).map(_ =>
             Created(story.model)))))
+
+
+  def getContent(storyUrlname: String) =
+    auth.SecuredAction.async(request =>
+      database.run(for (
+        scenes <- db.Scene.allOfStory(storyUrlname);
+        qualities <- db.Quality.allOfStory(storyUrlname))
+      yield Ok((scenes.map(_.model), qualities.map(_.model)))))
+
+      // database.run(
+      //   db.Scene.allOfStory(storyUrlname).flatMap(scenes =>
+      //     db.Quality.allOfStory(storyUrlname).map(qualities =>
+      //       Ok((scenes.map(_.model),
+      //         qualities.map(_.model)))))))
+
+
+    // auth.SecuredAction.async(request =>
+    //   database.run(
+    //     db.Scene.allOfStory(storyUrlname).flatMap(scenes =>
+    //       db.Quality.allOfStory(storyUrlname).map(qualities =>
+    //         Ok((scenes.map(_.model),
+    //           qualities.map(_.model)))))))
 }
