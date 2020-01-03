@@ -69,7 +69,8 @@ class Stories(components: ControllerComponents,
 
 
   type PlayerState = (model.Player, model.Activity, model.SceneView)
-  def loadPlayerState: DBIO[Option[PlayerState]] =
+  def loadPlayerState(story: db.model.Story, identity: Id):
+      DBIO[Option[PlayerState]] =
     playerController.loadPlayer(identity.user.name, story.urlname).
       flatMap(playerStateOpt =>
         loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
@@ -88,7 +89,7 @@ class Stories(components: ControllerComponents,
       // todo: denote in the reply that this is for a non-logged-in-user,
       // so the front end can request a temporary user.
       DBIO.successful(cont(None))
-    case Some(identity) => loadPlayerState().map(cont)
+    case Some(identity) => loadPlayerState(story, identity).map(cont)
   }
 
   def getStory(urlname: String) =
