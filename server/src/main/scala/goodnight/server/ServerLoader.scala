@@ -5,10 +5,8 @@ import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
 import com.mohiva.play.silhouette.api.SilhouetteProvider
 import com.mohiva.play.silhouette.api.actions.DefaultSecuredAction
-import com.mohiva.play.silhouette.api.actions.DefaultSecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.DefaultSecuredRequestHandler
 import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredAction
-import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.DefaultUnsecuredRequestHandler
 import com.mohiva.play.silhouette.api.actions.DefaultUserAwareAction
 import com.mohiva.play.silhouette.api.actions.DefaultUserAwareRequestHandler
@@ -45,6 +43,14 @@ import play.api.mvc.PlayBodyParsers
 import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFFilter
 import play.filters.gzip.GzipFilter
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration
+import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
+import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
+import scala.concurrent.Future
+import play.api.mvc.Result
+import play.api.mvc.RequestHeader
+import play.api.mvc.ControllerHelpers
 
 import goodnight.api.Profile
 import goodnight.api.authentication.AuthEnvironment
@@ -111,17 +117,6 @@ abstract class GoodnightRawComponents(context: Context)
   //
   // silhouette for authentication
 
-  lazy val silhouetteEnvironment =
-    Environment[AuthEnvironment](
-      new UserService(database),
-      new BearerTokenAuthenticatorService(
-        settings = new BearerTokenAuthenticatorSettings(),
-        repository = new DatabaseAuthenticatorRepository(database),
-        idGenerator = new SecureRandomIDGenerator(),
-        clock = Clock()),
-      Seq(),
-      EventBus())
-
   lazy val authInfoRepository = new DelegableAuthInfoRepository(
     new CredentialAuthInfoRepository(database))
 
@@ -131,18 +126,40 @@ abstract class GoodnightRawComponents(context: Context)
     authInfoRepository,
     passwordHasherRegistry)
 
-  lazy val silhouette = new SilhouetteProvider(silhouetteEnvironment,
+  lazy val silhouette = new SilhouetteProvider(
+    Environment[AuthEnvironment](
+      new UserService(database),
+      new BearerTokenAuthenticatorService(
+        settings = new BearerTokenAuthenticatorSettings(
+          authenticatorExpiry = FiniteDuration(30, duration.DAYS)
+        ),
+        repository = new DatabaseAuthenticatorRepository(database),
+        idGenerator = new SecureRandomIDGenerator(),
+        clock = Clock()),
+      Seq(),
+      EventBus()),
     new DefaultSecuredAction(
       new DefaultSecuredRequestHandler(
-        new DefaultSecuredErrorHandler(messagesApi)),
+        new SecuredErrorHandler {
+          def onNotAuthenticated(implicit request: RequestHeader):
+              Future[Result] =
+            Future.successful(ControllerHelpers.Unauthorized)
+          def onNotAuthorized(implicit request: RequestHeader):
+              Future[Result] =
+            Future.successful(ControllerHelpers.Forbidden)
+        }),
       defaultBodyParsers),
     new DefaultUnsecuredAction(
       new DefaultUnsecuredRequestHandler(
-        new DefaultUnsecuredErrorHandler(messagesApi)),
-      defaultBodyParsers)
-      new DefaultUserAwareAction(
-        new DefaultUserAwareRequestHandler(),
-        defaultBodyParsers))
+        new UnsecuredErrorHandler {
+          def onNotAuthorized(implicit request: RequestHeader):
+              Future[Result] =
+            Future.successful(ControllerHelpers.Forbidden)
+        }),
+      defaultBodyParsers),
+    new DefaultUserAwareAction(
+      new DefaultUserAwareRequestHandler(),
+      defaultBodyParsers))
 
   //
   // controllers.

@@ -64,7 +64,6 @@ class DatabaseAuthenticatorRepository(
     // println(s"updating authenticator ${bta.id} -> $bta")
     val query = db.BearerToken().
       filter(_.id === bta.id).
-      take(1).
       update(btOfBta(bta))
     database.run(query).map(_ => bta)
   }
