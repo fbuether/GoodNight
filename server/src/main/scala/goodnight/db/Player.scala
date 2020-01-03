@@ -15,8 +15,8 @@ class Player(val tag: Tag) extends Table[model.Player](tag, "player") {
   def story = column[String]("story")
   def name = column[String]("name")
 
-  def * = ((id, user, story, name) <>
-    (model.Player.tupled, model.Player.unapply))
+  def * = (id, user, story, name).
+    mapTo[model.Player]
 
   def userFk = foreignKey("player_fk_user_user_name", user, User())(_.name,
     onUpdate = ForeignKeyAction.Cascade,

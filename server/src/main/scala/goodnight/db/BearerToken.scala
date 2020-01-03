@@ -18,8 +18,8 @@ class BearerToken(tag: Tag) extends Table[model.BearerToken](
   def expiration = column[Long]("expiration")
   def timeout = column[Option[Long]]("timeout")
 
-  def * = ((id, provider, key, lastUsed, expiration, timeout) <>
-    (model.BearerToken.tupled, model.BearerToken.unapply))
+  def * = (id, provider, key, lastUsed, expiration, timeout).
+    mapTo[model.BearerToken]
 }
 
 

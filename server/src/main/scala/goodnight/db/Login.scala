@@ -15,8 +15,8 @@ class Login(tag: Tag) extends Table[model.Login](tag, "login") {
   def providerID = column[String]("provider_id")
   def providerKey = column[String]("provider_key")
 
-  def * = ((id, user, providerID, providerKey) <>
-    (model.Login.tupled, model.Login.unapply))
+  def * = (id, user, providerID, providerKey).
+    mapTo[model.Login]
 
   def userFk = foreignKey("login_fk_users_user", user, User())(_.id,
     onUpdate=ForeignKeyAction.Cascade,

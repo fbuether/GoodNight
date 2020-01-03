@@ -17,8 +17,8 @@ class Scene(tag: Tag) extends Table[model.Scene](tag, "scene") {
   def urlname = column[String]("urlname")
   def text = column[String]("text")
 
-  def * = ((id, story, raw, name, urlname, text) <>
-    (model.Scene.tupled, model.Scene.unapply))
+  def * = (id, story, raw, name, urlname, text).
+  mapTo[model.Scene]
 
   def storyFk = foreignKey("scene_fk_story_story_urlname", story,
     Story())(_.urlname,

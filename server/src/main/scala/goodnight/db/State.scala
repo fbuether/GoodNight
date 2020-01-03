@@ -16,8 +16,8 @@ class State(val tag: Tag) extends Table[model.State](tag, "state") {
   def quality = column[String]("quality")
   def value = column[String]("value")
 
-  def * = ((id, user, story, quality, value) <>
-    (model.State.tupled, model.State.unapply))
+  def * = (id, user, story, quality, value).
+  mapTo[model.State]
 
   def playerFk = foreignKey("state_fk_user_story_player_user_story",
     (user, story),

@@ -17,8 +17,8 @@ class Activity(val tag: Tag) extends Table[model.Activity](tag, "activity") {
   def scene = column[String]("scene")
   def random = column[List[Int]]("random")
 
-  def * = ((id, story, user, number, scene, random) <>
-    (model.Activity.tupled, model.Activity.unapply))
+  def * = (id, story, user, number, scene, random).
+    mapTo[model.Activity]
 
   def storyFk = foreignKey("activity_fk_story_story_urlname", story,
     Story())(_.urlname,

@@ -19,9 +19,9 @@ class Quality(val tag: Tag) extends Table[model.Quality](tag, "quality") {
   def image = column[String]("image")
   def description = column[String]("description")
 
-  def * = ((id, story, raw, name, urlname, //sort,
-    image, description) <>
-    (model.Quality.tupled, model.Quality.unapply))
+  def * = (id, story, raw, name, urlname, //sort,
+    image, description).
+    mapTo[model.Quality]
 
   def storyFk = foreignKey("quality_fk_story_story_urlname", story,
     Story())(_.urlname,

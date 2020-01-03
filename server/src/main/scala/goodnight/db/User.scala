@@ -13,9 +13,8 @@ class User(tag: Tag) extends Table[model.User](tag, "user") {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
 
-  def * = (id, name).<>(
-    model.User.tupled,
-    model.User.unapply)
+  def * = (id, name).
+    mapTo[model.User]
 }
 
 
