@@ -79,6 +79,8 @@ class Router(
     case Story(story) => readStories.getStory(story)
 
     case CreatePlayer(story) => readPlayer.createPlayer(story)
+    case CreateTemporary(story) => readPlayer.createTemporary(story)
+
     case DoScene(story, scene) => readScenes.doScene(story, scene)
 
 

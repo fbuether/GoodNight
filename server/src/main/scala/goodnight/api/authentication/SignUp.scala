@@ -42,6 +42,7 @@ class SignUp(components: ControllerComponents,
     auth.UnsecuredAction.async(parseFromJson[SignUpData])({ request =>
       val signUpData = request.body
       // todo: check if signUpData.username as a username already exists.
+      // todo: disallow user names starting with "temporary-"
 
       val login = LoginInfo(CredentialsProvider.ID, signUpData.identity)
       auth.env.identityService.retrieve(login).flatMap({
@@ -70,4 +71,26 @@ class SignUp(components: ControllerComponents,
             })
       })
     })
+
+  def createTemporaryUser(request: Request[_],
+    cont: model.User => DBIO[Result]): DBIO[Result] = {
+    val authServ = auth.env.authenticatorService
+
+    val uid = UUID.randomUUID()
+    val user = model.User(uid, "temporary-" + uid.toString)
+    val login = LoginInfo("temporary", uid.toString)
+    val loginData = model.Login(UUID.randomUUID(),
+      user.id, login.providerID, login.providerKey)
+
+    db.User().insert(user).andThen(
+      db.Login().insert(loginData).andThen(
+        DBIO.from(
+          authServ.create(login)(request).
+            flatMap(authenticator => authServ.init(authenticator)(request)).
+            map(ident =>
+              cont(user).flatMap(reply =>
+                DBIO.from(
+                  authServ.embed(ident, reply)(request))))).
+          flatten))
+  }
 }

@@ -48,6 +48,16 @@ class SignIn(components: ControllerComponents,
           case Some(user) =>
             val authServ = silhouette.env.authenticatorService
             authServ.create(login)(request).flatMap({ authenticator =>
+
+              // todo: Hints for "remember me" functionality
+          // case authenticator if signInData.rememberMe =>
+          //   val c = configuration.underlying
+          //   authenticator.copy(
+          //     expirationDateTime = clock.now + c.as[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorExpiry"),
+          //     idleTimeout = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorIdleTimeout")
+          //   )
+          // case authenticator => authenticator
+
               authServ.init(authenticator)(request) }).flatMap({ ident =>
                 val reply = Accepted(user.user.model)
                 authServ.embed(ident, reply)(request)
