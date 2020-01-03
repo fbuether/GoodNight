@@ -15,7 +15,7 @@ object SavingButton {
     render_PC((props, children) =>
       <.button(
         ^.className := props.className +
-          (if (props.saving) " saving" else "") +
+          (if (props.saving) " loading" else "") +
           (if (!props.enabled) " locked" else ""),
         ^.onClick --> props.action.when(props.enabled).void,
         (^.disabled := true).when(!props.enabled),

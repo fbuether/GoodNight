@@ -22,7 +22,6 @@ object TemporaryPlayer {
   case class State(data: Option[PlayerState], saving: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
-
     def createPlayer(storyUrlname: String): Callback =
       bs.modState(_.copy(saving = true)).>>(
         Request(ApiV1.CreateTemporary, storyUrlname).send.
@@ -30,7 +29,6 @@ object TemporaryPlayer {
           body.flatMap(ps =>
             bs.modState(_.copy(saving = false, data = Some(ps))).async).
           toCallback)
-
 
     def renderForm(props: Props, saving: Boolean) =
       <.div(
@@ -47,17 +45,20 @@ object TemporaryPlayer {
         <.h3("Start playing"),
         <.div(^.className := "as-columns",
           <.div(
-            <.p("If you don't want to register, you can still play!"),
+            <.p("But: You can also start playing right away!"),
             <.p("Every player needs a name. As a temporary player, you will ",
-              "play ", <.strong(props.story.name), " as:"),
+              "play \"", <.strong(props.story.name), "\" as:"),
             <.div(^.className := "inset",
               <.em("Mrs. Hollywoockle")),
             SavingButton.render("center", "fas fa-angle-double-right",
-              true, saving, createPlayer(props.story.urlname))("Start!")),
+              true, saving, createPlayer(props.story.urlname))(
+              if (saving) "Starting…" else "Start!")),
           <.div(^.className := "box",
-            <.p("Please note that your progress will be ", <.strong("lost"),
-              " when you quit playing. If you want to save your progress, ",
-              "just register, and we will keep your game."))))
+            <.p("Please note that, as a temporary player, your progress will ",
+              "be ", <.strong("lost"),
+              " when you quit playing."),
+            <.p("If you decide to register after playing, ",
+              "we will keep your progress with your new account."))))
 
     def render(props: Props, state: State) = state match {
       case State(None, saving) => renderForm(props, saving)
