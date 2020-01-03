@@ -312,13 +312,12 @@ i.fas.label, i.far.label, i.fa.label {
 
 .inset {
   margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
-
   padding: 0.8rem @gn-padding;
-
 
   border: @line-width solid @horizontal-line;
   border-radius: 0.3rem;
   background: tint(black, 96);
+  box-shadow: 0.2em 0.2em 0.4em hsv(0, 0, 0.9) inset;
 
   h2:first-child,
   h3:first-child {
@@ -350,6 +349,21 @@ i.fas.label, i.far.label, i.fa.label {
     margin-right: 0;
   }
 }
+
+.box {
+  margin: (@font-size * 0.6) @gn-padding (@font-size * 0.45) @gn-padding;
+  padding: 0.2em 0;
+
+  border: @line-width solid @horizontal-line;
+  border-radius: 0.3rem;
+  background: hsv(0, 0, 0.92);
+  box-shadow: 0.2em 0.2em 0.4em hsv(0, 0, 0.8) inset;
+
+  & > p {
+    text-indent: 0;
+  }
+}
+
 
 
 

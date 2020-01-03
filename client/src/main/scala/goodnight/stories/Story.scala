@@ -32,40 +32,33 @@ object Story {
           }).
           toCallback)
 
-    def render(props: Props, state: State): VdomElement = {
-      val inner: VdomElement =
-        // state.scene match {
-        // case None =>
-        //   <.div(
-        //     <.h2("Loading"),
-        //     Loading.component(props.router))
-        // case Some((story, choices)) =>
-          Scene.component(Scene.Props(props.router, props.story,
-            props.player, state.scene, doScene))
-      // }
-
+    def render(props: Props, state: State): VdomElement =
       <.div(^.id := "matter",
         <.div(^.id := "centre",
-          inner),
+          Scene.component(Scene.Props(props.router, props.story,
+            props.player, state.scene, doScene))),
         <.div(^.id := "side",
           <.h4("Sir Archibald")))
-    }
   }
 
   val component = ScalaComponent.builder[Props]("Story").
     initialStateFromProps(props => State(props.firstScene)).
     renderBackend[Backend].
-    // componentDidMount(_.backend.loadScene).
-    // componentWillUpdate(bs => bs.backend.updateProps(bs)).
     build
 
 
   def withStory(router: pages.Router, storyData: WithStory.StoryData) =
     storyData match {
-      case (story, None) =>
-        CreatePlayer.component(CreatePlayer.Props(router, story,
-          (playerData: CreatePlayer.PlayerState) =>
-          component(Props(router, story, playerData._1, playerData._3))))
+      case (story, None) => AuthenticationService.getUser match {
+        case Some(_) =>
+          CreatePlayer.component(CreatePlayer.Props(router, story,
+            (playerData: CreatePlayer.PlayerState) =>
+            component(Props(router, story, playerData._1, playerData._3))))
+        case None =>
+          TemporaryPlayer.component(TemporaryPlayer.Props(router, story,
+            (playerData: CreatePlayer.PlayerState) =>
+            component(Props(router, story, playerData._1, playerData._3))))
+      }
       case (story, Some(playerData)) =>
         component(Props(router, story, playerData._1, playerData._3))
     }

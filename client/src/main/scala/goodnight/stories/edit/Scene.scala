@@ -77,17 +77,8 @@ object Scene {
               <.i(^.className := "fas fa-ban label"),
               "Discard")),
           <.div(
-            <.button(
-              ^.onClick --> save,
-              ^.className :=
-                (if (state.saving) " loading" else "") +
-                (if (!canSave) " locked" else ""),
-              (^.disabled := true).when(!canSave),
-              <.i(^.className :=
-                (if (state.saving) "far fa-spin fa-compass label"
-                else "fa fa-check-square label")),
-              (if (state.saving) "Saving…"
-              else "Save")))))
+            SavingButton.render(canSave, state.saving, save)(
+              if (state.saving) "Saving…" else "Save"))))
     }
 
     def render(props: Props, state: State): VdomElement =

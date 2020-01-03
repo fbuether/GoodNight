@@ -62,6 +62,9 @@ object ApiV1 {
   object CreatePlayer extends ApiPath("POST", p,
     C("story/"), S, C("/new-player"))
 
+  object CreateTemporary extends ApiPath("POST", p,
+    C("story/"), S, C("/new-temporary-player"))
+
 
   // Return 202 (Accepted) on success, and 409 (Conflict) if anything is wrong.
   // Requires the the storyUrlname and the sceneUrlname as parameter.
