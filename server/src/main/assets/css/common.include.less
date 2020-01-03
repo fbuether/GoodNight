@@ -129,6 +129,17 @@ i.fas.label, i.far.label, i.fa.label {
       border: @line-width solid @link;
     }
 
+    & > div {
+      width: ~"calc(100% - 4rem)";
+      flex-shrink: 1;
+    }
+  }
+}
+
+// tiles in columns are only two per row.
+.as-columns .as-tiles {
+  & > * {
+    width: calc(100%/2 - 0.6rem);
   }
 }
 

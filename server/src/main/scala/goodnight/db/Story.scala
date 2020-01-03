@@ -35,7 +35,12 @@ object Story extends TableQueryBase[model.Story, Story](new Story(_)) {
   def ofUrlname(urlname: String): DBIO[Option[model.Story]] =
     ofUrlnameQuery(urlname).result.headOption
 
-  private val allPublicQuery = Compiled(apply())
+  private val allQuery = Compiled(apply())
+  def all: DBIO[Seq[model.Story]] =
+    allQuery.result
+
+  private val allPublicQuery = Compiled(apply().
+    filter(_.public))
   def allPublic: DBIO[Seq[model.Story]] =
     allPublicQuery.result
 

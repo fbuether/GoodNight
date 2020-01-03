@@ -17,27 +17,6 @@ import goodnight.service.{ Request, Reply }
 
 
 object Stories {
-  def renderStory(router: pages.Router, story: model.Story) =
-    <.li(
-      router.link(pages.Story(story.urlname))(
-        <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
-          story.image).value),
-        <.div(story.name)))
-
-  def renderStories(router: pages.Router, stories: Seq[model.Story]) =
-    <.ul(^.className := "story-list as-tiles links",
-      stories.map(renderStory(router, _)).toTagMod)
-
-  def loadStories(router: pages.Router) =
-    Request(ApiV1.Stories).send.
-      forStatus(200).
-      forJson[List[model.Story]].
-      body.
-      map(renderStories(router, _))
-
-  def storyList(router: pages.Router): VdomElement =
-    Loading.suspend(router, loadStories(router))
-
   val component = ScalaComponent.builder[pages.Router]("Stories").
     render_P(router =>
       <.div(
@@ -47,7 +26,8 @@ object Stories {
           characters and locations. The following shows all worlds
           and the stories within."""),
         <.h2("All Stories"),
-        storyList(router))).
+        StoryList.component(StoryList.Props(router,
+          publicOnly = false)))).
     build
 
   def render(router: pages.Router) =

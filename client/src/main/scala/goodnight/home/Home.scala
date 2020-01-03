@@ -6,8 +6,9 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 
 import goodnight.client.pages
-import goodnight.components.Shell
 import goodnight.components.Banner
+import goodnight.components.Shell
+import goodnight.stories.StoryList
 
 
 object Home {
@@ -25,10 +26,8 @@ object Home {
             <.p("GoodNight is in development! New things are bound to " +
               "appear any time.")),
           <.div(
-            <.h3("Available Worlds"),
-            <.ul(^.className := "worldList",
-              // WorldList()
-            ))))).
+            <.h3("Public Stories"),
+            StoryList.component(StoryList.Props(router, limit = Some(3))))))).
     build
 
 

@@ -23,16 +23,20 @@ class Stories(components: ControllerComponents,
     extends Controller(components) {
 
 
-  private def getStoryQuery(identity: Option[Id], myself: Boolean) =
-    (identity, myself) match {
-      case (Some(user), true) => db.Story.ofUser(user.user.name)
-      case _ => db.Story.allPublic
+  private def getStoryQuery(identity: Option[Id], myself: Boolean,
+    publicOnly: Boolean) =
+    (identity, myself, publicOnly) match {
+      case (Some(user), true, _) => db.Story.ofUser(user.user.name)
+      case (_, _, true) => db.Story.allPublic
+      case _ => db.Story.all
     }
 
   def getAvailableStories(query: Map[String, Seq[String]]) =
     auth.UserAwareAction.async(request =>
       database.run(
-        getStoryQuery(request.identity, query.contains("myself")).
+        getStoryQuery(request.identity, query.contains("myself"),
+          // send only public stories if requested or not logged in
+          query.contains("publicOnly") || !request.identity.isDefined).
           map(stories => Ok(stories.map(_.model)))))
 
 
