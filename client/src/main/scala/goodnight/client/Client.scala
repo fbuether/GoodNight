@@ -29,7 +29,12 @@ object Client {
       staticRoute("#community", pages.Community) ~> renderR(Community.render) |
       staticRoute("#about", pages.About) ~> renderR(About.render) |
       staticRoute("#test", pages.Test) ~> renderR(Test.render) |
-      staticRoute("#test2", pages.Test2) ~> renderR(Test2.render)
+      staticRoute("#test2", pages.Test2) ~> renderR(Test2.render) |
+
+      //
+      // reading stories, as they may be public.
+      {val route = ("#story" / anyName / "continue").caseClass[pages.Story]
+        dynamicRouteCT(route) ~> dynRenderR(Story.render)}
     )
 
     // pages that require no valid authentication (as opposed to any state).
@@ -58,8 +63,6 @@ object Client {
       // Reading Stories
       //
       staticRoute("#stories", pages.Stories) ~> renderR(Stories.render) |
-      {val route = ("#story" / anyName / "continue").caseClass[pages.Story]
-        dynamicRouteCT(route) ~> dynRenderR(Story.render)} |
 
       //
       // Editing Stories

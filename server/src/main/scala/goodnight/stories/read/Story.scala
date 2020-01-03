@@ -3,6 +3,7 @@ package goodnight.stories.read
 
 import java.util.UUID
 import play.api.mvc.ControllerComponents
+import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import slick.jdbc.PostgresProfile.api._
 
@@ -65,16 +66,35 @@ class Stories(components: ControllerComponents,
       case None => DBIO.successful(None)
     }
 
+
+
+  type PlayerState = (model.Player, model.Activity, model.SceneView)
+  def loadPlayerState: DBIO[Option[PlayerState]] =
+    playerController.loadPlayer(identity.user.name, story.urlname).
+      flatMap(playerStateOpt =>
+        loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
+          toView(story, playerActivityOpt).map(sceneViewOpt =>
+
+            playerStateOpt.flatMap(ps =>
+              playerActivityOpt.flatMap(pa =>
+                sceneViewOpt.map(sv =>
+                  (ps._1.model(ps._2), pa._1.model, sv)))))))
+
+
+  def withOptionalPlayerState(story: db.model.Story,
+    identity: Option[Id], cont: Option[PlayerState] => Result):
+      DBIO[Result] = identity match {
+    case None =>
+      // todo: denote in the reply that this is for a non-logged-in-user,
+      // so the front end can request a temporary user.
+      DBIO.successful(cont(None))
+    case Some(identity) => loadPlayerState().map(cont)
+  }
+
   def getStory(urlname: String) =
-    auth.SecuredAction.async(request =>
+    auth.UserAwareAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
-          playerController.loadPlayer(request.identity.user.name,
-            story.urlname).flatMap(playerStateOpt =>
-            loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
-              toView(story, playerActivityOpt).map(sceneViewOpt =>
-                Ok(story.model, playerStateOpt.flatMap(ps =>
-                  playerActivityOpt.flatMap(pa =>
-                    sceneViewOpt.map(sv =>
-                      (ps._1.model(ps._2), pa._1.model, sv)))))))))))
+          withOptionalPlayerState(story, request.identity, state =>
+            Ok(story.model, state)))))
 }
