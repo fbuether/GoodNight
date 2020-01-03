@@ -14,7 +14,9 @@ case class Story(
   urlname: String,
 
   image: String,
-  description: String)
+  description: String,
+  public: Boolean)
     extends DbModel {
-  def model = goodnight.model.Story(creator, name, urlname, image, description)
+  def model = goodnight.model.Story(creator, name, urlname, image, description,
+    public)
 }

@@ -32,7 +32,8 @@ class Stories(components: ControllerComponents,
       name,
       urlnameOf(name),
       "Moon.png",
-      "")
+      "",
+      false)
 
   private def initialScene(story: db.model.Story) =
     db.model.Scene(UUID.randomUUID(),

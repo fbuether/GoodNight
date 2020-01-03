@@ -16,9 +16,10 @@ class Story(tag: Tag) extends Table[model.Story](tag, "story") {
   def urlname = column[String]("urlname")
   def image = column[String]("image")
   def description = column[String]("description")
+  def public = column[Boolean]("public")
 
-  def * = ((id, creator, name, urlname, image, description) <>
-    (model.Story.tupled, model.Story.unapply))
+  def * = (id, creator, name, urlname, image, description, public).
+    mapTo[model.Story]
 
   def userFk = foreignKey("story_fk_creator_user_name", creator, User())(_.name,
     onUpdate = ForeignKeyAction.Cascade,

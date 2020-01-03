@@ -9,5 +9,5 @@ case class Story(
   urlname: String,
 
   image: String,
-  description: String
-)
+  description: String,
+  public: Boolean) // if this story is available to unregistered users as well.
