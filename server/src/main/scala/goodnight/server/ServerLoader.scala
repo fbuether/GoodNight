@@ -92,80 +92,82 @@ abstract class GoodnightRawComponents(context: Context)
     with AssetsComponents
     with CaffeineCacheComponents {
 
-  // run the database evolution scripts
-  applicationEvolutions
-
-  lazy val bodyParsers = PlayBodyParsers()
-  lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
+  //
+  // database
 
   lazy val database = slickApi.dbConfig[PostgresProfile](DbName("goodnight")).db
 
+  // run the database evolution scripts
+  applicationEvolutions
 
-  lazy val userService = new UserService(database)
+  //
+  // play components
 
-  lazy val silhouetteEnvironment = Environment[AuthEnvironment](
-    userService,
-    new BearerTokenAuthenticatorService(
-      settings = new BearerTokenAuthenticatorSettings(),
-      repository = new DatabaseAuthenticatorRepository(database),
-        // new CacheAuthenticatorRepository[BearerTokenAuthenticator](
-        //   new PlayCacheLayer(cacheApi("auth-token-cache"))),
-      idGenerator = new SecureRandomIDGenerator(),
-      clock = Clock()),
-    Seq(), // requestProvidersImpl: Seq[RequestProvider]
-    EventBus())
+  lazy val bodyParsers = PlayBodyParsers()
   lazy val defaultBodyParsers = new BodyParsers.Default(bodyParsers)
+
+  lazy val actionBuilder = DefaultActionBuilder(bodyParsers.defaultBodyParser)
+
+  //
+  // silhouette for authentication
+
+  lazy val silhouetteEnvironment =
+    Environment[AuthEnvironment](
+      new UserService(database),
+      new BearerTokenAuthenticatorService(
+        settings = new BearerTokenAuthenticatorSettings(),
+        repository = new DatabaseAuthenticatorRepository(database),
+        idGenerator = new SecureRandomIDGenerator(),
+        clock = Clock()),
+      Seq(),
+      EventBus())
 
   lazy val authInfoRepository = new DelegableAuthInfoRepository(
     new CredentialAuthInfoRepository(database))
 
-
   lazy val passwordHasherRegistry = new PasswordHasherRegistry(
       new BCryptSha256PasswordHasher())
-
   lazy val credentialsProvider = new CredentialsProvider(
     authInfoRepository,
     passwordHasherRegistry)
 
-  lazy val securedAction = new DefaultSecuredAction(
-    new DefaultSecuredRequestHandler(
-      new DefaultSecuredErrorHandler(messagesApi)),
-    defaultBodyParsers)
-  lazy val unsecuredAction = new DefaultUnsecuredAction(
-    new DefaultUnsecuredRequestHandler(
-      new DefaultUnsecuredErrorHandler(messagesApi)),
-    defaultBodyParsers)
-  lazy val userAwareAction = new DefaultUserAwareAction(
-     new DefaultUserAwareRequestHandler(),
-    defaultBodyParsers)
   lazy val silhouette = new SilhouetteProvider(silhouetteEnvironment,
-    securedAction, unsecuredAction, userAwareAction)
+    new DefaultSecuredAction(
+      new DefaultSecuredRequestHandler(
+        new DefaultSecuredErrorHandler(messagesApi)),
+      defaultBodyParsers),
+    new DefaultUnsecuredAction(
+      new DefaultUnsecuredRequestHandler(
+        new DefaultUnsecuredErrorHandler(messagesApi)),
+      defaultBodyParsers)
+      new DefaultUserAwareAction(
+        new DefaultUserAwareRequestHandler(),
+        defaultBodyParsers))
 
-  lazy val frontend = new Frontend(controllerComponents, assetsFinder,
-    context.environment.mode)
-  lazy val authSignUp = new SignUp(controllerComponents, database,
-    silhouette, passwordHasherRegistry, authInfoRepository)
-  lazy val authSignIn = new SignIn(controllerComponents, database,
-    silhouette, credentialsProvider)
-  lazy val profile = new Profile(controllerComponents,
-    database, silhouette)
+  //
+  // controllers.
 
-  lazy val readStories = new read.Stories(controllerComponents, database,
-    readPlayer, silhouette)
-  lazy val readScenes = new read.Scenes(controllerComponents, database,
-    readPlayer, silhouette)
-  lazy val readChoices = new read.Choices(controllerComponents, database,
-    silhouette)
-  lazy val readPlayer = new read.Player(controllerComponents, database,
-    silhouette)
-  lazy val writeStories = new write.Stories(controllerComponents, database,
-    silhouette)
-  lazy val writeScenes = new write.Scenes(controllerComponents, database,
-    silhouette)
+  lazy val cc = controllerComponents
+
+  lazy val frontend = new Frontend(cc, assetsFinder, context.environment.mode)
+
+  lazy val authSignUp = new SignUp(cc, database, silhouette,
+    passwordHasherRegistry, authInfoRepository)
+  lazy val authSignIn = new SignIn(cc, database, silhouette,
+    credentialsProvider)
+  lazy val profile = new Profile(cc, database, silhouette)
+
+  lazy val readStories = new read.Stories(cc, database, readPlayer, silhouette)
+  lazy val readScenes = new read.Scenes(cc, database, readPlayer, silhouette)
+  lazy val readChoices = new read.Choices(cc, database, silhouette)
+  lazy val readPlayer = new read.Player(cc, database, silhouette)
+  lazy val writeStories = new write.Stories(cc, database, silhouette)
+  lazy val writeScenes = new write.Scenes(cc, database, silhouette)
+
+  //
+  // router, combines routes with controllers.
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authSignUp, authSignIn, profile,
-    readStories, readScenes, readChoices, readPlayer,
-    writeStories, writeScenes,
-    assets)
+    authSignUp, authSignIn, profile, readStories, readScenes, readChoices,
+    readPlayer, writeStories, writeScenes, assets)
 }
