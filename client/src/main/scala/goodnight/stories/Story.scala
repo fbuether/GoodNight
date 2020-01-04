@@ -38,7 +38,7 @@ object Story {
           Scene.component(Scene.Props(props.router, props.story,
             props.player, state.scene, doScene))),
         <.div(^.id := "side",
-          <.h4("Sir Archibald")))
+          <.hr))
   }
 
   val component = ScalaComponent.builder[Props]("Story").
