@@ -33,3 +33,8 @@ case class Quality(
   image: String,
   description: String
 )
+
+
+// todo: further settings:
+// - hidden (does not show in the side bar)
+// - scene (a scene to link to when clicked)

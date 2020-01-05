@@ -7,6 +7,6 @@ case class Player(
   story: String, // refers Story.urlname
   name: String,
 
-  // this maps Quality.name -> value, where value may be a number as string
+  // this maps Quality.urlname -> value, where value may be a number as string
   state: Map[String, String]
 )

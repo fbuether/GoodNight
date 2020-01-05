@@ -75,19 +75,19 @@ Die schmalen, hohen Fenster sind leer, und das eingefallene Dach zeugt von lange
         )
 
         )
-        ),
+      ),
       <.div(^.id := "side",
         <.h4("Sir Archibald"),
-        <.ul(^.className := "quality small",
-          <.li(
+        <.ul(^.className := "quality",
+          <.li(^.className := "big",
             <.a(^.href := "#",
               <.img(^.className := "small inline",
                 ^.src := "assets/images/buuf/" +
                   "Plasma TV.png"),
-              <.span("Rohe Kraft")),
-            <.span(^.className := "level",
-              "(27)")),
-          <.li(
+              <.span("Rohe Kraft"),
+              <.span(^.className := "level",
+                "(27)"))),
+          <.li(^.className := "small",
             <.a(^.href := "#",
               <.img(^.className := "small inline",
                 ^.src := "assets/images/buuf/" +
@@ -95,12 +95,20 @@ Die schmalen, hohen Fenster sind leer, und das eingefallene Dach zeugt von lange
               <.span("Vitalität")),
             <.span(^.className := "level",
               "(22)")),
-          <.li(
+          <.li(^.className := "tiny",
             <.a(^.href := "#",
               <.img(^.className := "small inline",
                 ^.src := "assets/images/buuf/" +
                   "Spit, eject.png"),
-              <.span("Hammer")))
+              <.span("Hammer"))),
+          <.li(^.className := "tiny",
+            <.a(^.href := "#",
+              <.img(^.className := "small inline",
+                ^.src := "assets/images/buuf/" +
+                  "Spit, eject.png"),
+              <.span("Wurstbrot")),
+            <.span(^.className := "level",
+              "(22)"))
 
       )))
     ).
