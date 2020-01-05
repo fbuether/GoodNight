@@ -40,7 +40,7 @@ object WithStory {
     def render(props: Props, state: State): VdomElement =
       state.story match {
         case None => <.div(
-          Banner.component(props.router, "Alien World.png", "Loading story..."),
+          Banner.component(props.router, "Alien World.png", "Loading story…"),
           Loading.component(props.router))
         case Some(storyData) => <.div(
           Banner.component(props.router, storyData._1.image, storyData._1.name),

@@ -7,13 +7,13 @@ import japgolly.scalajs.react.vdom.html_<^._
 import goodnight.client.pages
 
 
-object Banner {
-  type Props = (pages.Router, String, String)
+object Image {
+  type Props = (pages.Router, String)
 
   val component = ScalaComponent.builder[Props]("Banner").
-    render_P({ case (router, icon, title) =>
-      <.h1(^.className := "banner",
-        Image.component(router, icon),
-        <.span(title)) }).
+    render_P({ case (router, image) =>
+      <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
+        image).value)
+    }).
     build
 }

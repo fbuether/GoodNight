@@ -11,9 +11,8 @@ object Loading {
   val component = ScalaComponent.builder[pages.Router]("Loading").
     render_P({ router =>
       <.div(^.className := "loadingBanner",
-        <.img(^.src := (router.baseUrl +
-          "assets/images/buuf/Less Boring Clock.png").value),
-        <.span("Loading..."))
+        Image.component(router, "Less Boring Clock.png"),
+        <.span("Loading…"))
     }).
     build
 

@@ -28,8 +28,7 @@ object Qualities {
       <.li(^.className := "small",
         router.link(pages.Story(quality.urlname))(
           ^.title := quality.description,
-          <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
-            quality.image).value),
+          Image(router, quality.image),
           <.span(quality.name)),
         state.get(quality.urlname).
           map(<.span(^.className := "level", _)).getOrElse(TagMod("")))

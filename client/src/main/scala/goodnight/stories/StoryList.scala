@@ -38,8 +38,7 @@ object StoryList {
     def renderStory(router: pages.Router, story: model.Story) =
       <.li(
         router.link(pages.Story(story.urlname))(
-          <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
-            story.image).value),
+          Image.component(router, story.image),
           <.div(story.name)))
 
     def renderStories(router: pages.Router, stories: Seq[model.Story]) =

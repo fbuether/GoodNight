@@ -33,9 +33,7 @@ object Scene {
               <.ul(^.className := "requirements as-icons",
                 choice.tests.map(test =>
                   <.li(^.className := "tooltip-anchor",
-                    <.img(^.src := (props.router.baseUrl +
-                      "assets/images/buuf/" +
-                      test.quality.image).value),
+                    Image.component(router, test.quality.image),
                     <.div(^.className := "tooltip",
                       <.strong(test.quality.name),
                       <.span("required: ", test.minimum),
