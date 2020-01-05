@@ -107,14 +107,8 @@ object SceneParser {
     }
 
 
-
-  def urlnameOf(name: String) =
-    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
-
-
   private def titleOfContent(content: String): String =
     content.substring(0, content.length.min(20))
-
 
   def parseScene(story: model.Story, raw: String):
       Either[String, model.Scene] =
@@ -126,7 +120,7 @@ object SceneParser {
       model.Scene(story.urlname,
         raw,
         title,
-        urlnameOf(title),
+        goodnight.urlnameOf(title),
         pScene.content,
         pScene.settings)
     })

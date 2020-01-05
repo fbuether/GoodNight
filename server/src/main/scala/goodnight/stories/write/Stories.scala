@@ -21,16 +21,11 @@ class Stories(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  // todo: merge with sceneParser.urlnameOf
-  def urlnameOf(name: String) =
-    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
-
-
   private def newStoryOfName(user: String, name: String) =
     db.model.Story(UUID.randomUUID(),
       user,
       name,
-      urlnameOf(name),
+      goodnight.urlnameOf(name),
       "Moon.png",
       "",
       false)

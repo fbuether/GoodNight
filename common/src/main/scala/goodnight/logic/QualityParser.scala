@@ -71,10 +71,6 @@ object QualityParser {
 
   case class PQuality(text: String, settings: Seq[QSetting])
 
-
-  def urlnameOf(name: String) =
-    name.trim.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase
-
   private def nameOfText(text: String): String =
     text.substring(0, text.length.min(20))
 
@@ -104,7 +100,7 @@ object QualityParser {
           storyUrlname,
           raw,
           name,
-          urlnameOf(name),
+          goodnight.urlnameOf(name),
           sort,
           value.settings.collect({ case Image(i) => i }).headOption.
             getOrElse("X.png"),
