@@ -53,7 +53,11 @@ object Profile {
         Loading.suspend(p.router, loadMyStories(p.router)),
         <.p("Fancy something not read before? ",
           p.router.link(pages.CreateStory)(
-            "Create a new story!")))
+            "Create a new story!")),
+        <.p("To help you get started, we have a ",
+          <.a(^.href := "https://goodnight.jasminefields.net/documentation/",
+            "documentation how to create stories with GoodNight"),
+          "."))
   }
 
   val component = ScalaComponent.builder[Props]("Profile").
