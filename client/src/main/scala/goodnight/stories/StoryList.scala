@@ -8,9 +8,7 @@ import scala.util.{ Try, Success, Failure }
 import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
-import goodnight.components.Banner
-import goodnight.components.Loading
-import goodnight.components.Shell
+import goodnight.components._
 import goodnight.model
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }

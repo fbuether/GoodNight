@@ -10,7 +10,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model
+import goodnight.model.play
 import goodnight.service.Request
 import goodnight.service.Reply
 import goodnight.service.AuthenticationService
@@ -18,39 +18,27 @@ import goodnight.service.Conversions._
 
 
 object Qualities {
-  case class Props(router: pages.Router, story: model.Story,
-    player: model.Player)
+  case class Props(router: pages.Router, story: play.Story,
+    state: Seq[play.State])
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def renderSmallQuality(router: pages.Router, story: model.Story,
-      state: Map[String, String], quality: model.Quality) =
+    def renderSmallQuality(router: pages.Router, story: play.Story,
+      state: play.State) =
       <.li(^.className := "small",
-        router.link(pages.Story(quality.urlname))(
-          ^.title := quality.description,
-          Image(router, quality.image),
-          <.span(quality.name)),
-        state.get(quality.urlname).
-          map(<.span(^.className := "level", _)).getOrElse(TagMod("")))
-
-
-    val qualities = Seq(
-      model.Quality("das-labyrinth",
-        "$ name: Feige\n\n$ image: Hubernate.png",
-        "Feige", "feige", model.Sort.Integer(Some(0), Some(10)),
-        "Hubernate.png", "Wie sehr hast du Angst vor der Welt?"),
-      model.Quality("das-labyrinth",
-        "$ name: Gierig\n\n$ image: Q-tip has the lamest voice ever. Nice beats though..png",
-        "Gierig", "gierig", model.Sort.Integer(Some(0), Some(10)),
-        "Q-tip has the lamest voice ever. Nice beats though..png", "Gold. Geld. Juwelen. Egal, solange sie dir gehören."))
+        router.link(pages.Story(state.quality.urlname))(
+          // ^.title := quality.description,
+          Image.component(router, state.quality.image),
+          <.span(state.quality.name)),
+        <.span(^.className := "level", (state match {
+          case play.State.Boolean(_, value) => ""
+          case play.State.Integer(_, value) => value.toString
+        })))
 
     def render(props: Props, state: State): VdomElement =
       <.ul(^.className := "quality",
-        qualities.map(
-          renderSmallQuality(props.router, props.story,
-            Map("gierig" -> "8", "feige" -> "2")
-            // props.player.state
-              , _)).
+        props.state.map(
+          renderSmallQuality(props.router, props.story, _)).
           toTagMod)
 
         // <.li(^.className := "big",

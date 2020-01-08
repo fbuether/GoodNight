@@ -9,7 +9,8 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model
+import goodnight.model.play
+import goodnight.model.Expression
 import goodnight.service.Request
 import goodnight.service.Reply
 import goodnight.service.AuthenticationService
@@ -17,38 +18,74 @@ import goodnight.service.Conversions._
 
 
 object Scene {
-  case class Props(router: pages.Router, story: model.Story,
-    player: model.Player, scene: model.SceneView,
+  case class Props(router: pages.Router, story: play.Story,
+    player: play.Player, state: Seq[play.State], scene: play.Scene,
     goto: String => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
+    def requiredOfTest(test: play.Test) = test match {
+      case play.Test.Boolean(_, _, value) =>
+        if (value) "have this" else "do not have this"
+      case play.Test.Integer(_, _, op, other) =>
+        (op match {
+          case Expression.Greater => "more than"
+          case Expression.GreaterOrEqual => "at least"
+          case Expression.Less => "less than"
+          case Expression.LessOrEqual => "at most"
+          case Expression.Equal => "exactly"
+          case Expression.NotEqual => "not" }) +
+        " " + other.toString
+    }
+
+    def haveOfTest(quality: play.Quality[_], state: Seq[play.State]) =
+      state.filter(_.quality.urlname == quality.urlname).headOption match {
+        case Some(play.State.Boolean(_, value)) =>
+          if (value) "have this" else "do not have this"
+        case Some(play.State.Integer(_, value)) => value.toString
+        case None => quality.sort match {
+          case play.Sort.Boolean => "do not have this"
+          case play.Sort.Integer => "0"
+        }
+      }
+
+    def renderTest(router: pages.Router, state: Seq[play.State],
+      test: play.Test) =
+      <.li(^.className := "tooltip-anchor" +
+        (if (test.succeeded) "" else " disabled"),
+        Image(router, test.quality.image),
+        <.div(^.className := "tooltip",
+          <.strong(test.quality.name),
+          <.span("required: ", requiredOfTest(test)),
+          <.span("you have: ", haveOfTest(test.quality,
+            state))))
+
+    def renderChoice(router: pages.Router, state: Seq[play.State],
+      goto: String => Callback,
+      choice: play.Choice) =
+      <.li(^.className := (if (choice.available) "" else "disabled"),
+        ^.title :=
+          (if (choice.available) ""
+          else "You do not meet the requirements for this choice."),
+        <.ul(^.className := "requirements as-icons",
+          choice.tests.map(renderTest(router, state, _)).
+            toTagMod),
+        Markdown.component(choice.text, 3)(
+          if (choice.available)
+            <.button(^.className := "right",
+              ^.alt := "Pursue this choice",
+              ^.onClick --> goto(choice.urlname),
+              <.span(^.className := "fas fa-angle-double-right"))
+          else
+            <.span()))
 
     def render(props: Props, state: State) =
       <.div(
         Markdown.component(props.scene.text, 1)(),
         <.ul(^.className := "choices as-items",
-          props.scene.choices.map(choice =>
-            <.li(
-              <.ul(^.className := "requirements as-icons",
-                choice.tests.map(test =>
-                  <.li(^.className := "tooltip-anchor",
-                    Image.component(router, test.quality.image),
-                    <.div(^.className := "tooltip",
-                      <.strong(test.quality.name),
-                      <.span("required: ", test.minimum),
-                      <.span(
-                        if (test.hasMin) "true" else "false",
-                        "/",
-                        test.chance)))
-                ).toTagMod
-              ),
-              Markdown.component(choice.text, 3)(
-                <.button(^.className := "right",
-                  ^.alt := "Pursue this choice",
-                  ^.onClick --> props.goto(choice.urlname),
-                  <.span(^.className := "fas fa-angle-double-right"))))
-          ).toTagMod
+          props.scene.choices.map(renderChoice(props.router, props.state,
+            props.goto, _)).
+            toTagMod
         ))
   }
 
@@ -57,47 +94,3 @@ object Scene {
     renderBackend[Backend].
     build
 }
-
-/*
-      <.div(
-        <.h2(props.player.name,
-          props.location.map(l => TagMod(", Willkommen in " + l.name)).
-            getOrElse(TagMod(", Willkommen."))),
-
-        // todo: location description
-
-        <.p(^.className := "call",
-          "Was möchtest du hier tun?"),
-
-        <.ul(^.className := "choices as-items",
-          props.scenes.map(scene =>
-            <.li(
-              // leading image
-              // <.img(^.className := "left",
-              //   ^.src := ("assets/images/buuf/" +
-              //     "I can help you my son, I am Paddle Paul..png"
-              //   )),
-
-              // requirements
-              // <.ul(^.className := "requirements as-icons",
-              //   <.li(^.className := "tooltip-anchor",
-              //     <.img(^.src := "assets/images/buuf/" + "Plasma TV.png"),
-              //     <.div(^.className := "tooltip",
-              //       <.strong("Rohe Kraft"),
-              //       <.span("benötigt: 20"),
-              //       <.span("du hast: 27"))),
-              //   <.li(^.className := "tooltip-anchor",
-              //     <.img(^.src := "assets/images/buuf/" + "Chea.png"),
-              //     <.div(^.className := "tooltip",
-              //       <.strong("Hammer"),
-              //       <.span("benötigt: vorhanden"),
-              //       <.span("du hast: vorhanden")))),
-
-              <.h4(scene.title),
-              <.p(scene.text,
-                <.button(^.className := "right",
-                  ^.onClick --> props.onClick(scene),
-                  <.span(^.className := "fas fa-angle-double-right")))
-            )
-          ).toTagMod
- */

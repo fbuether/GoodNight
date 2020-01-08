@@ -77,6 +77,10 @@ p, .as-p {
 
 a {
   color: @link;
+
+  &:hover {
+    color: @link-hover;
+  }
 }
 
 
@@ -161,12 +165,12 @@ i.fas.label, i.far.label, i.fa.label {
     &.disabled {
       border: @line-width solid tint(@horizontal-line, 50);
 
-      & > h4,
-      & > p {
+      & h1, & h2, & h3, & h4, & h5, & h6,
+      & p {
         color: hsv(0, 0, 0.5);
       }
 
-      & > img {
+      & img {
         filter: grayscale(1);
       }
     }
