@@ -16,4 +16,7 @@ object Image {
         image).value)
     }).
     build
+
+  def apply(router: pages.Router, image: String) =
+    component(router, image)
 }
