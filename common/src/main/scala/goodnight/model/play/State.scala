@@ -6,6 +6,7 @@ import java.lang.{Boolean => Bool}
 
 abstract class State {
   def quality: Quality[_]
+  // def order: Int // the order in which these states should be shown
 }
 object State {
   case class Boolean(quality: Quality[Sort.Boolean.type], value: Bool)
