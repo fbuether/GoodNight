@@ -19,7 +19,7 @@ import goodnight.service.Conversions._
 
 object Qualities {
   case class Props(router: pages.Router, story: play.Story,
-    state: Seq[play.State])
+    state: play.States)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
@@ -31,7 +31,7 @@ object Qualities {
           Image.component(router, state.quality.image),
           <.span(state.quality.name)),
         <.span(^.className := "level", (state match {
-          case play.State.Boolean(_, value) => ""
+          case play.State.Bool(_, value) => ""
           case play.State.Integer(_, value) => value.toString
         })))
 

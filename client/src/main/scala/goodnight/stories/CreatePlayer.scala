@@ -8,29 +8,26 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model
+import goodnight.model.play
 import goodnight.service.Request
 import goodnight.service.Conversions._
 
 
 object CreatePlayer {
-  // StoryData is the shape of the reply of ApiV1.CreatePlayer
-  type PlayerState = (model.Player, model.Activity, model.SceneView)
-
-  case class Props(router: pages.Router, story: model.Story,
-    child: PlayerState => VdomElement)
-  case class State(data: Option[PlayerState], saving: Boolean)
+  case class Props(router: pages.Router, story: play.Story,
+    child: play.PlayerState => VdomElement)
+  case class State(data: Option[play.PlayerState], saving: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
     private val playerNameRef = Input.componentRef
 
     def callSave(storyUrlname: String, playerName: String):
-        AsyncCallback[PlayerState] =
+        AsyncCallback[play.PlayerState] =
       Request(ApiV1.CreatePlayer, storyUrlname).
         withBody(ujson.Obj("name" -> playerName)).
         send.
         forStatus(201).
-        forJson[PlayerState].
+        forJson[play.PlayerState].
         body
 
     def doSave(props: Props): Callback =

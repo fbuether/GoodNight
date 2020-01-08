@@ -11,7 +11,7 @@ object SavingButton {
   case class Props(className: String, icon: String,
     enabled: Boolean, saving: Boolean, action: Callback)
 
-  val component = ScalaComponent.builder[Props]("Banner").
+  val component = ScalaComponent.builder[Props]("SavingButton").
     render_PC((props, children) =>
       <.button(
         ^.className := props.className +

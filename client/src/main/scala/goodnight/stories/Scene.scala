@@ -19,13 +19,13 @@ import goodnight.service.Conversions._
 
 object Scene {
   case class Props(router: pages.Router, story: play.Story,
-    player: play.Player, state: Seq[play.State], scene: play.Scene,
+    player: play.Player, state: play.States, scene: play.Scene,
     goto: String => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
     def requiredOfTest(test: play.Test) = test match {
-      case play.Test.Boolean(_, _, value) =>
+      case play.Test.Bool(_, _, value) =>
         if (value) "have this" else "do not have this"
       case play.Test.Integer(_, _, op, other) =>
         (op match {
@@ -38,18 +38,18 @@ object Scene {
         " " + other.toString
     }
 
-    def haveOfTest(quality: play.Quality[_], state: Seq[play.State]) =
+    def haveOfTest(quality: play.Quality[_], state: play.States) =
       state.filter(_.quality.urlname == quality.urlname).headOption match {
-        case Some(play.State.Boolean(_, value)) =>
+        case Some(play.State.Bool(_, value)) =>
           if (value) "have this" else "do not have this"
         case Some(play.State.Integer(_, value)) => value.toString
         case None => quality.sort match {
-          case play.Sort.Boolean => "do not have this"
+          case play.Sort.Bool => "do not have this"
           case play.Sort.Integer => "0"
         }
       }
 
-    def renderTest(router: pages.Router, state: Seq[play.State],
+    def renderTest(router: pages.Router, state: play.States,
       test: play.Test) =
       <.li(^.className := "tooltip-anchor" +
         (if (test.succeeded) "" else " disabled"),
@@ -60,7 +60,7 @@ object Scene {
           <.span("you have: ", haveOfTest(test.quality,
             state))))
 
-    def renderChoice(router: pages.Router, state: Seq[play.State],
+    def renderChoice(router: pages.Router, state: play.States,
       goto: String => Callback,
       choice: play.Choice) =
       <.li(^.className := (if (choice.available) "" else "disabled"),

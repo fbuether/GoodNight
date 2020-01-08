@@ -1,9 +1,6 @@
 
 package goodnight.model.play
 
-import java.lang.{Boolean => Bool}
-import goodnight.model.Expression.BinaryOperator
-
 
 case class Scene(
   story: String, // refers Story.urlname

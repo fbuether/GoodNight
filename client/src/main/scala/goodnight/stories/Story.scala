@@ -20,7 +20,7 @@ import goodnight.service.Conversions._
 object Story {
   case class Props(router: pages.Router, story: play.Story,
     player: play.Player,
-    state: Seq[play.State],
+    state: play.States,
     activity: play.Activity,
     firstScene: play.Scene)
   case class State(scene: play.Scene)
@@ -52,7 +52,7 @@ object Story {
     build
 
 
-  def withStory(router: pages.Router, storyData: WithStory.StoryData) =
+  def withStory(router: pages.Router, storyData: play.StoryState) =
     storyData match {
       case (story, None) => AuthenticationService.getUser match {
         case Some(_) =>

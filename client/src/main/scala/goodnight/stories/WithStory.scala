@@ -18,20 +18,7 @@ import goodnight.model.Expression.BinaryOperator
 
 
 object WithStory {
-  // StoryData is the shape of the reply of ApiV1.Story
-  // it contains all data required to re-render the current state of
-  // a player.
-  type StoryData =
-    (play.Story,
-      Option[( // this is set if the current user already has a player
-        play.Player,
-        Seq[play.State],
-        play.Activity,
-        play.Scene
-)])
-
-
-  val testData: StoryData = (play.Story("das-schloss",
+  val testData: play.StoryState = (play.Story("das-schloss",
     "Das Schloss",
     "fbuether",
     "Newer Looking, But Older Rocket.png"),
@@ -42,7 +29,7 @@ object WithStory {
         play.State(
           play.Quality("das-schloss",
             "fleissig",
-            play.Sort.Boolean,
+            play.Sort.Bool,
             "Fleißig",
             "I can help you my son, I am Paddle Paul..png"),
           true),
@@ -89,7 +76,7 @@ object WithStory {
               play.Test(
                 play.Quality("das-schloss",
                   "fleissig",
-                  play.Sort.Boolean,
+                  play.Sort.Bool,
                   "Fleißig",
                   "Blue Soap.png"),
                 true,
@@ -102,7 +89,7 @@ object WithStory {
               play.Test(
                 play.Quality("das-schloss",
                   "unerfuellbar",
-                  play.Sort.Boolean,
+                  play.Sort.Bool,
                   "Unerfüllbar",
                   "Tree.png"),
                 false,
@@ -111,14 +98,12 @@ object WithStory {
 
 
 
-  // type StoryData = (model.Story, Option[CreatePlayer.PlayerState])
-
   case class Props(router: pages.Router,
-    storyUrlname: String, full: Boolean, child: StoryData => VdomElement)
-  case class State(story: Option[StoryData])
+    storyUrlname: String, full: Boolean, child: play.StoryState => VdomElement)
+  case class State(story: Option[play.StoryState])
 
   class Backend(bs: BackendScope[Props, State]) {
-    def setStoryOrFail(result: Try[StoryData]): Callback = result match {
+    def setStoryOrFail(result: Try[play.StoryState]): Callback = result match {
       case Success(storyData) => bs.setState(State(Some(storyData)))
       case Failure(e) =>
         Callback.log(s"Error while fetching story: $e") >>
@@ -128,7 +113,7 @@ object WithStory {
     def loadIfRequired(storyUrlname: String): Callback =
       Request(ApiV1.Story, storyUrlname).send.
         forStatus(200).
-        // forJson[StoryData].
+        forJson[play.StoryState].
         body.
         completeWith(//setStoryOrFail)
           _ => setStoryOrFail(

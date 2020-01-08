@@ -7,6 +7,7 @@ import upickle.default.macroRW
 import ujson.ParseException
 
 import goodnight.model
+import goodnight.model.play
 
 
 object Serialise {
@@ -77,6 +78,42 @@ object Serialise {
   implicit val serialise_story: Serialisable[model.Story] = macroRW
 
   implicit val serialise_user: Serialisable[model.User] = macroRW
+
+
+  // serialise model.play
+
+  implicit val serialise_play_activity: Serialisable[play.Activity] = macroRW
+
+  implicit val serialise_play_choice: Serialisable[play.Choice] = macroRW
+
+  implicit val serialise_play_player: Serialisable[play.Player] = macroRW
+
+  implicit val serialise_play_quality: Serialisable[play.Quality[play.Sort]] =
+    macroRW
+  implicit val serialise_play_quality_b:
+      Serialisable[play.Quality[play.Sort.Bool.type]] = macroRW
+  implicit val serialise_play_quality_i:
+      Serialisable[play.Quality[play.Sort.Integer.type]] = macroRW
+
+  implicit val serialise_play_scene: Serialisable[play.Scene] = macroRW
+
+  implicit val serialise_play_sort: Serialisable[play.Sort] =
+    ReadWriter.merge(
+      macroRW[play.Sort.Bool.type],
+      macroRW[play.Sort.Integer.type])
+
+  implicit val serialise_play_state: Serialisable[play.State] =
+    ReadWriter.merge(
+      macroRW[play.State.Bool],
+      macroRW[play.State.Integer])
+
+  implicit val serialise_play_story: Serialisable[play.Story] = macroRW
+
+  implicit val serialise_play_test: Serialisable[play.Test] =
+    ReadWriter.merge(
+      macroRW[play.Test.Bool],
+      macroRW[play.Test.Integer])
+
 
 
   def write[A](a: A)(implicit rw: Serialisable[A]): String =

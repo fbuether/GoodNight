@@ -9,7 +9,7 @@ object Sort {
   // use like:
   // $ set: Incapacitated
   // $ set: Incapacitated = false
-  case object Boolean extends Sort
+  case object Bool extends Sort
 
   // Integer: An integral value (e.g. "Hitpoints")
   // Scenes can perform basic arithmetic on this

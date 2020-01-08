@@ -10,7 +10,7 @@ import goodnight.client.pages
 object Image {
   type Props = (pages.Router, String)
 
-  val component = ScalaComponent.builder[Props]("Banner").
+  val component = ScalaComponent.builder[Props]("Image").
     render_P({ case (router, image) =>
       <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
         image).value)
