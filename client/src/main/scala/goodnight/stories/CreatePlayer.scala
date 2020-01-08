@@ -21,20 +21,14 @@ object CreatePlayer {
   class Backend(bs: BackendScope[Props, State]) {
     private val playerNameRef = Input.componentRef
 
-    def callSave(storyUrlname: String, playerName: String):
-        AsyncCallback[play.PlayerState] =
-      Request(ApiV1.CreatePlayer, storyUrlname).
-        withBody(ujson.Obj("name" -> playerName)).
-        send.
-        forStatus(201).
-        forJson[play.PlayerState].
-        body
-
     def doSave(props: Props): Callback =
       bs.modState(_.copy(saving = true)) >>
       Input.withValue(playerNameRef, playerName =>
-        callSave(props.story.urlname, playerName).flatMap(ps =>
-          bs.modState(_.copy(saving = false, data = Some(ps))).async).
+        Request(ApiV1.CreatePlayer, props.story.urlname).
+          withBody(ujson.Obj("name" -> playerName)).send.
+          forStatus(201).forJson[play.PlayerState].
+          body.flatMap(ps =>
+            bs.modState(_.copy(saving = false, data = Some(ps))).async).
           toCallback)
 
 
@@ -44,19 +38,12 @@ object CreatePlayer {
         <.p("""To read or play this story, you will need a name first.
           Please tell us how you will be addressed henceforth in this world.
           """),
-        <.div(^.className := "simple centered inset",
+        <.div(^.className := "simple centered half inset",
           playerNameRef.component(Input.Props(
             "Name", "playerName",
             List(^.autoFocus := true, ^.required := true))),
-          <.button(^.tpe := "submit",
-            ^.className := "small atRight",
-            ^.onClick --> doSave(props),
-            (^.className := "loading").when(saving),
-            (^.disabled := true).when(saving),
-            <.i(
-              (^.className := "far fa-spin fa-compass label").when(saving),
-              (^.className := "far fa-check-square label").when(!saving)),
-            "Enter")))
+          SavingButton.render("small atRight", "far fa-check-square",
+            true, saving, doSave(props))("Begin the adventure!")))
 
     def render(props: Props, state: State) = state match {
       case State(None, saving) => renderForm(props, saving)

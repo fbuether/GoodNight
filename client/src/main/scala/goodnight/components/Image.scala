@@ -17,6 +17,6 @@ object Image {
     }).
     build
 
-  def apply(router: pages.Router, image: String) =
+  def render(router: pages.Router, image: String) =
     component(router, image)
 }

@@ -51,22 +51,23 @@ object Story {
     renderBackend[Backend].
     build
 
+  def build(router: pages.Router, story: play.Story,
+    ps: play.PlayerState) =
+    component(Props(router, story, ps._1, ps._2, ps._3, ps._4))
+
 
   def withStory(router: pages.Router, storyData: play.StoryState) =
     storyData match {
       case (story, None) => AuthenticationService.getUser match {
         case Some(_) =>
           CreatePlayer.component(CreatePlayer.Props(router, story,
-            (playerData: CreatePlayer.PlayerState) =>
-            component(Props(router, story, playerData._1, playerData._3))))
+            playerState => build(router, story, playerState)))
         case None =>
           TemporaryPlayer.component(TemporaryPlayer.Props(router, story,
-            (playerData: CreatePlayer.PlayerState) =>
-            component(Props(router, story, playerData._1, playerData._3))))
+            playerState => build(router, story, playerState)))
       }
-      case (story, Some(pd)) =>
-        component(Props(router, story,
-          pd._1, pd._2, pd._3, pd._4))
+      case (story, Some(playerState)) =>
+        build(router, story, playerState)
     }
 
   def render(page: pages.Story, router: pages.Router) =

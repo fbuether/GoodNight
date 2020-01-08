@@ -53,7 +53,7 @@ object Scene {
       test: play.Test) =
       <.li(^.className := "tooltip-anchor" +
         (if (test.succeeded) "" else " disabled"),
-        Image(router, test.quality.image),
+        Image.render(router, test.quality.image),
         <.div(^.className := "tooltip",
           <.strong(test.quality.name),
           <.span("required: ", requiredOfTest(test)),
