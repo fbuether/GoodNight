@@ -26,8 +26,7 @@ object Stories {
           characters and locations. The following shows all worlds
           and the stories within."""),
         <.h2("All Stories"),
-        StoryList.component(StoryList.Props(router,
-          publicOnly = false)))).
+        StoryList.component(StoryList.Props(router)))).
     build
 
   def render(router: pages.Router) =

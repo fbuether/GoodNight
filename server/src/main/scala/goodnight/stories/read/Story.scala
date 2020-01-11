@@ -80,9 +80,6 @@ class Story(components: ControllerComponents,
       player.story,
       player.name)
 
-  // def toReadState(state: db.model.State): model.read.State =
-  //   model.read.State(
-
 
   def toReadActivity(activity: db.model.Activity) =
     model.read.Activity(activity.story,
@@ -97,6 +94,11 @@ class Story(components: ControllerComponents,
       scene.text,
       Seq() // todo: choices
     )
+
+
+
+
+
 
 
   def asReadState(player: db.model.Player,
@@ -170,35 +172,6 @@ class Story(components: ControllerComponents,
         SceneView.getChoices(story, scene).toList))
     yield Some(asReadState(player, states, activity, scene, choices))
 
-
-    // playerController.loadPlayer(identity.user.name, story.urlname).
-    //   flatMap(playerStateOpt =>
-    //     loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
-    //       toView(story, playerActivityOpt).map(sceneViewOpt =>
-
-    //         playerStateOpt.flatMap(ps =>
-    //           playerActivityOpt.flatMap(pa =>
-    //             sceneViewOpt.map(sv =>
-    //               {
-
-    //                 val player = toReadPlayer(ps.player)
-    //                 val
-
-    //                 (player,
-    //                   states,
-    //                   activity,
-    //                   scene)
-    //               }
-    //             ))))))
-
-                  // (toReadPlayer(ps.player),
-                  // Seq(),// ps.state.map(toReadState),
-                  // toReadActivity(pa.activity),
-                  // toReadScene(sv))))))))
-
-                  // (Player, Seq[State], Activity, Scene)
-
-                  // (ps._1.model(ps._2), pa._1.model, sv)))))))
 
 
   def withOptionalPlayerState(story: db.model.Story,

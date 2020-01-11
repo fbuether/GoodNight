@@ -27,7 +27,8 @@ object Home {
               "appear any time.")),
           <.div(
             <.h3("Public Stories"),
-            StoryList.component(StoryList.Props(router, limit = Some(3))))))).
+            StoryList.component(StoryList.Props(router, limit = Some(4),
+              query = "publicOnly")))))).
     build
 
 

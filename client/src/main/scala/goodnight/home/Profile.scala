@@ -15,6 +15,7 @@ import goodnight.model
 import goodnight.service.AuthenticationService
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }
+import goodnight.stories.StoryList
 
 
 object Profile {
@@ -22,37 +23,15 @@ object Profile {
   case class State(i: Int)
 
   class Backend(bs: BackendScope[Props, State]) {
-    val changer = bs.modState(s => s.copy(i = s.i + 1))
-
-  def renderStory(router: pages.Router, story: model.Story) =
-    <.li(
-      router.link(pages.EditStory(story.urlname))(
-        <.img(^.src := (router.baseUrl + "assets/images/buuf/" +
-          story.image).value),
-        <.div(story.name)))
-
-    def loadMyStories(router: pages.Router) =
-      Request.get(ApiV1.Stories).query("authorMyself").send.
-        forJson[List[model.Story]].
-        map({
-          case Reply(_, stories) =>
-            if (stories.isEmpty)
-              <.p("You have not written any stories yet.")
-            else
-              <.ul(^.className := "story-list as-tiles links",
-                stories.map({ story =>
-                  renderStory(router, story)
-                }).toTagMod)
-        })
-
-    def render(p: Props, s: State): VdomElement =
+    def render(props: Props, state: State): VdomElement =
       <.div(
         <.h2("Profile"),
         <.p("This area will show a bit of info about yourself, at some point."),
         <.h2("My Stories"),
-        Loading.suspend(p.router, loadMyStories(p.router)),
+        StoryList.component(StoryList.Props(props.router, query ="authorMyself",
+          storyPage = pages.EditStory(_))),
         <.p("Fancy something not read before? ",
-          p.router.link(pages.CreateStory)(
+          props.router.link(pages.CreateStory)(
             "Create a new story!")),
         <.p("To help you get started, we have a ",
           <.a(^.href := "https://goodnight.jasminefields.net/documentation/",

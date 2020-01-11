@@ -15,16 +15,16 @@ import goodnight.service.{ Request, Reply }
 
 
 object StoryList {
-  case class Props(router: pages.Router, limit: Option[Int] = None,
-    publicOnly: Boolean = true)
+  case class Props(router: pages.Router,
+    query: String = "",
+    limit: Option[Int] = None,
+    storyPage: String => pages.Page = pages.Story(_))
   case class State(stories: Option[Seq[read.Story]])
 
   class Backend(bs: BackendScope[Props, State]) {
     def load: Callback =
       bs.props.flatMap(props =>
-        Request(ApiV1.Stories).
-          query(if (props.publicOnly) "publicOnly" else "").
-          send.
+        Request(ApiV1.Stories).query(props.query).send.
           forStatus(200).forJson[List[read.Story]].
           body.completeWith({
             case Success(stories) => bs.setState(State(Some(stories)))
@@ -33,20 +33,20 @@ object StoryList {
     val renderNoStories =
       <.p("No stories found. Sorry about that.")
 
-    def renderStory(router: pages.Router, story: read.Story) =
+    def renderStory(props: Props, story: read.Story) =
       <.li(
-        router.link(pages.Story(story.urlname))(
-          Image.component(router, story.image),
+        props.router.link(props.storyPage(story.urlname))(
+          Image.component(props.router, story.image),
           <.div(story.name)))
 
-    def renderStories(router: pages.Router, stories: Seq[read.Story]) =
+    def renderStories(props: Props, stories: Seq[read.Story]) =
       <.ul(^.className := "story-list as-tiles links",
-        stories.map(renderStory(router, _)).toTagMod)
+        stories.map(renderStory(props, _)).toTagMod)
 
     def render(props: Props, state: State): VdomElement = state.stories match {
       case None => Loading.component(props.router)
       case Some(Seq()) => renderNoStories
-      case Some(stories) => renderStories(props.router,
+      case Some(stories) => renderStories(props,
         stories.take(props.limit.getOrElse(stories.length))) }
   }
 
