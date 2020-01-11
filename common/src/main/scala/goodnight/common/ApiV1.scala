@@ -27,6 +27,7 @@ object ApiV1 {
   //
   object Profile extends ApiPath("GET", p, C("profile/"), S)
 
+
   //
   // Reading Stories
   //
@@ -34,7 +35,7 @@ object ApiV1 {
   // all available (to the user or publicly) stories.
   // may be filtered by header parameters:
   // - "myself" => stories written by the requester
-  // returns Ok(Seq[model.Story]) on success.
+  // returns Ok(Seq[model.play.Story]) on success.
   object Stories extends ApiPath("GET", p, C("stories"))
 
 
@@ -72,6 +73,7 @@ object ApiV1 {
   // todo: return results of activity and changes of state.
   // type: (model.Activity, model.SceneView)
   object DoScene extends ApiPath("POST", p, C("story/"), S, C("/do/"), S)
+
 
 
   //

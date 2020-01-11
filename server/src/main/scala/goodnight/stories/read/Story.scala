@@ -32,13 +32,19 @@ class Stories(components: ControllerComponents,
       case _ => db.Story.all
     }
 
+  private def toReadStory(story: db.model.Story): model.read.Story =
+    model.read.Story(story.urlname,
+      story.name,
+      story.creator,
+      story.image)
+
   def getAvailableStories(query: Map[String, Seq[String]]) =
     auth.UserAwareAction.async(request =>
       database.run(
         getStoryQuery(request.identity, query.contains("myself"),
           // send only public stories if requested or not logged in
           query.contains("publicOnly") || !request.identity.isDefined).
-          map(stories => Ok(stories.map(_.model)))))
+          map(stories => Ok(stories.map(toReadStory)))))
 
 
   def defaultActivity(story: db.model.Story, player: db.model.Player,

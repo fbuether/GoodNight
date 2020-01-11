@@ -9,7 +9,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model
+import goodnight.model.read
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }
 
@@ -17,7 +17,7 @@ import goodnight.service.{ Request, Reply }
 object StoryList {
   case class Props(router: pages.Router, limit: Option[Int] = None,
     publicOnly: Boolean = true)
-  case class State(stories: Option[Seq[model.Story]])
+  case class State(stories: Option[Seq[read.Story]])
 
   class Backend(bs: BackendScope[Props, State]) {
     def load: Callback =
@@ -25,7 +25,7 @@ object StoryList {
         Request(ApiV1.Stories).
           query(if (props.publicOnly) "publicOnly" else "").
           send.
-          forStatus(200).forJson[List[model.Story]].
+          forStatus(200).forJson[List[read.Story]].
           body.completeWith({
             case Success(stories) => bs.setState(State(Some(stories)))
             case Failure(_) => bs.setState(State(Some(Seq()))) }))
@@ -33,13 +33,13 @@ object StoryList {
     val renderNoStories =
       <.p("No stories found. Sorry about that.")
 
-    def renderStory(router: pages.Router, story: model.Story) =
+    def renderStory(router: pages.Router, story: read.Story) =
       <.li(
         router.link(pages.Story(story.urlname))(
           Image.component(router, story.image),
           <.div(story.name)))
 
-    def renderStories(router: pages.Router, stories: Seq[model.Story]) =
+    def renderStories(router: pages.Router, stories: Seq[read.Story]) =
       <.ul(^.className := "story-list as-tiles links",
         stories.map(renderStory(router, _)).toTagMod)
 
