@@ -13,6 +13,29 @@
   </head>
   <body>
     <div id="goodnight-client"></div>
+    <script type="text/javascript">
+      var _paq = window._paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u = "//stat.jasminefields.net/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '2']);
+        var d = document;
+        var g = d.createElement('script');
+        var s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript';
+        g.async = true;
+        g.defer = true;
+        g.src = u+'matomo.js';
+        s.parentNode.insertBefore(g,s);
+      })();
+
+      window.trackPageview = function(location) {
+        _paq.push(['setGenerationTimeMs', 0]);
+        _paq.push(['trackPageView']);
+      }
+    </script>
     <script src="@resolve("goodnight-client-" + jsMode + "-library.js")"></script>
     <script src="@resolve("goodnight-client-" + jsMode + "-loader.js")"></script>
     <script src="@resolve("goodnight-client-" + jsMode + ".js")"></script>

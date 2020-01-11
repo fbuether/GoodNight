@@ -2,6 +2,8 @@
 package goodnight.client
 
 import org.scalajs.dom.document
+import scala.scalajs.js.annotation._
+import scala.scalajs.js
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router._
@@ -101,8 +103,17 @@ object Client {
       publicPages)
 
     finalRoute.
-      notFound(redirectToPage(pages.Home)(Redirect.Push))
+      notFound(redirectToPage(pages.Home)(Redirect.Push)).
+      onPostRender((_, next) => Callback({
+        JSGlobal.trackPageview(finalRoute.path(next).value)
+      }))
   })
+
+  @js.native
+  @JSGlobalScope
+  private object JSGlobal extends js.Object {
+    def trackPageview(nextPath: String): Unit = js.native
+  }
 
   def main(args: Array[String]): Unit = {
     val router = Router(BaseUrl.fromWindowOrigin_/, routes)
