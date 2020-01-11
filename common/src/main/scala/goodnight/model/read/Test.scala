@@ -14,11 +14,11 @@ object Test {
   @upickle.implicits.key("Test.Bool")
   case class Bool(quality: Quality.Bool,
     succeeded: Boolean, // did the player satisfy this test?
-    value: Boolean)
+    value: Boolean) // which value should the player have to pass?
       extends Test
 
   // check if the player quality amount satifies `value op other`
-  // for example, for IntegerOp(Greater, 7), `quality(player) > 7` must be true.
+  // for example, for Integer(Greater, 7), `quality(player) > 7` must be true.
   @upickle.implicits.key("Test.Integer")
   case class Integer(quality: Quality.Integer,
     succeeded: Boolean, // did the player satisfy this test?

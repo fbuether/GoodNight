@@ -33,7 +33,7 @@ class Quality(val tag: Tag) extends Table[model.Quality](tag, "quality") {
   def image = column[String]("image")
   def description = column[String]("description")
 
-  def * = (id, story, raw, name, urlname, lsort,
+  def * = (id, story, raw, name, urlname, sort,
     image, description).
     mapTo[model.Quality]
 

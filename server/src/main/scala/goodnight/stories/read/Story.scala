@@ -106,42 +106,42 @@ class Story(components: ControllerComponents,
     choices: Seq[db.model.Scene]
   ): model.read.PlayerState = {
 
-    def asReadQualityBool(quality: db.model.Quality):
-        model.read.Quality[model.read.Sort.Bool.type] =
-      model.read.Quality(quality.story,
-        quality.urlname,
-        model.read.Sort.Bool,
-        quality.name,
-        quality.image)
-
-    def asReadQualityInt(quality: db.model.Quality):
-        model.read.Quality[model.read.Sort.Integer.type] =
-      model.read.Quality(quality.story,
-        quality.urlname,
-        model.read.Sort.Integer,
-        quality.name,
-        quality.image)
-
     def asReadState(state: db.model.State, quality: db.model.Quality):
         model.read.State = {
       quality.sort match {
         case db.model.Sort.Bool =>
-          model.read.State(asReadQualityBool(quality),
+          model.read.State(model.read.Quality.Bool(quality.story,
+            quality.urlname, quality.name, quality.image),
             state.value == "true")
         case db.model.Sort.Integer =>
-          model.read.State(asReadQualityInt(quality),
+          model.read.State(model.read.Quality.Integer(quality.story,
+            quality.urlname, quality.name, quality.image),
             Try(state.value.toInt).getOrElse(0))
       }
     }
 
-    val effects = Seq() // ???
+    val effects = Seq(
+        // todo: generate actual values.
+      model.read.State(model.read.Quality.Integer("das-schloss",
+        "gut-situiert",
+        "Gut situiert",
+        "Chea.png"),
+        7))
 
-    def toReadChoice(scene: db.model.Scene): model.read.Choice =
+    def toReadChoice(scene: db.model.Scene): model.read.Choice = {
+      val tests = Seq(
+        // todo: generate actual values.
+          model.read.Test(model.read.Quality.Bool(scene.story,
+            "ab", "ab", "ab.png"),
+            true,
+            true))
+
       model.read.Choice(scene.urlname,
         scene.text,
-        true,
-        Seq() // ???
+        tests.forall(_.succeeded),
+        tests
       )
+    }
 
 
     // (player, states, activity, scene)
