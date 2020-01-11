@@ -44,9 +44,7 @@ object ApiV1 {
   // Story returns a specific story, and, if it exists, the state of the
   // current player in this story.
   // type:
-  // (model.Story, // this story
-  //  Option[(PlayerActivity, // user's player, if already created
-  //          SceneView)]) // the player's last scene
+  // read.StoryState = (Story, Option[PlayerState])
   object Story extends ApiPath("GET", p, C("story/"), S)
 
 

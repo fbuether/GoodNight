@@ -95,15 +95,10 @@ object QualityParser {
           else if (!enumValues.values.isEmpty) enumValues
           else if (imageSort.isDefined) imageSort.get
           else model.Sort.Boolean
+        val image = value.settings.collect({ case Image(i) => i }).headOption.
+            getOrElse("X.png")
 
-        Right(model.Quality(
-          storyUrlname,
-          raw,
-          name,
-          goodnight.urlnameOf(name),
-          sort,
-          value.settings.collect({ case Image(i) => i }).headOption.
-            getOrElse("X.png"),
-          value.text))
+        Right(model.Quality(storyUrlname, name,
+          sort, false, None, image, value.text))
     }
 }

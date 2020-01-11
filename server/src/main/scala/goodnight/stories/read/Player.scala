@@ -24,28 +24,27 @@ class Player(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  type PlayerState = (db.model.Player, Seq[db.model.State])
-  type PlayerActivity = (db.model.Activity, db.model.Scene)
-
   private def withState(playerOpt: Option[db.model.Player]):
-      DBIO[Option[PlayerState]] =
+      DBIO[Option[db.model.PlayerState]] =
     playerOpt match {
       case Some(player) => db.State.ofPlayer(player.user, player.story).
-          map(state => Some(player, state))
+          map(state => Some(db.model.PlayerState(player, state)))
       case None => DBIO.successful(None)
     }
 
-  def loadPlayer(user: String, story: String): DBIO[Option[PlayerState]] =
+  def loadPlayer(user: String, story: String):
+      DBIO[Option[db.model.PlayerState]] =
     db.Player.ofStory(user, story).flatMap(withState)
 
 
 
-  def loadActivity(player: db.model.Player): DBIO[Option[PlayerActivity]] =
+  def loadActivity(player: db.model.Player):
+      DBIO[Option[db.model.PlayerActivity]] =
     db.Activity.newest(player.story, player.user).flatMap({
       case None => DBIO.successful(None)
       case Some(activity) =>
         db.Scene.named(player.story, activity.scene).map(sceneOpt =>
-          sceneOpt.map(scene => (activity, scene)))
+          sceneOpt.map(scene => db.model.PlayerActivity(activity, scene)))
     })
 
 
@@ -56,9 +55,10 @@ class Player(components: ControllerComponents,
         Activity.createNewPlayer(user, story, name).flatMap(pi =>
           SceneView.ofScene(story, pi._4).map(sceneView =>
             // todo: fetch player state as given by first scene.
-            Created((pi._1.model(pi._2),
-              pi._3.model,
-              sceneView))))))
+            ???))))
+            // Created((pi._1.model(pi._2),
+            //   pi._3.model,
+            //   sceneView))))))
 
 
   case class WithName(name: String)

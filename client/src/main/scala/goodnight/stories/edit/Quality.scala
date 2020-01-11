@@ -112,7 +112,8 @@ object Quality {
   def render(router: pages.Router, story: String, quality: Option[String]) =
     Shell.component(router)(
       WithStory.component(WithStory.Props(router, story, false, storyData =>
-        component(Props(router, storyData._1, quality)))))
+        component(Props(router, ???// storyData._1
+          , quality)))))
 
   def renderEdit(page: pages.EditQuality, router: pages.Router) =
     render(router, page.story, Some(page.quality))

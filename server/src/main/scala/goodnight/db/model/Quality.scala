@@ -14,8 +14,8 @@ case class Quality (
   image: String,
   description: String)
     extends DbModel {
-  def model = goodnight.model.Quality(
-    story, raw, name, urlname,
-    goodnight.model.Sort.Boolean, // todo.
-    image, description)
+  // def model = goodnight.model.Quality(
+  //   story, raw, name, urlname,
+  //   goodnight.model.Sort.Boolean, // todo.
+  //   image, description)
 }

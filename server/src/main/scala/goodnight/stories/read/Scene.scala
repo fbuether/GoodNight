@@ -40,7 +40,7 @@ class Scenes(components: ControllerComponents,
             GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).
               flatMap(scene =>
                 SceneView.ofScene(story, scene).flatMap(sceneView =>
-                  Activity.doScene(playerState._1, playerState._2, scene).
-                    map(activityState =>
-                      Accepted((activityState._1.model, sceneView)))))))))
+                  Activity.doScene(playerState.player, playerState.state,
+                    scene).map(activityState =>
+                    Accepted((activityState._1.model, sceneView)))))))))
 }

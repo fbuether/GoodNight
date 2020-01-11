@@ -2,8 +2,8 @@
 package goodnight.model
 
 
-package object play {
-  type States = Seq[play.State]
+package object read {
+  type States = Seq[State]
 
   // the current state of a player, along with all info required to show it.
   type PlayerState = (

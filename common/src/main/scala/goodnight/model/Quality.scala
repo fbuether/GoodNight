@@ -21,20 +21,13 @@ object Sort {
 
 case class Quality(
   story: String, // refers Story.urlname
-
-  // the textual representation, uninterpreted.
-  raw: String,
-
-  // interpreted data, dependent on `raw`.
   name: String,
-  urlname: String,
 
   sort: Sort,
+  hidden: Boolean,
+  scene: Option[String], // refers Scene.urlname
   image: String,
-  description: String
-)
+  description: String) {
 
-
-// todo: further settings:
-// - hidden (does not show in the side bar)
-// - scene (a scene to link to when clicked)
+  def urlname = goodnight.urlnameOf(name)
+}

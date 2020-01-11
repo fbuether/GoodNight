@@ -103,7 +103,8 @@ object Scene {
   def render(router: pages.Router, story: String, scene: Option[String]) =
     Shell.component(router)(
       WithStory.component(WithStory.Props(router, story, false, storyData =>
-        component(Props(router, storyData._1, scene)))))
+        component(Props(router, ???// storyData._1
+          , scene)))))
 
   def renderEdit(page: pages.EditScene, router: pages.Router) =
     render(router, page.story, Some(page.scene))

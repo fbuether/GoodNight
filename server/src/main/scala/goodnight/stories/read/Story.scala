@@ -57,26 +57,49 @@ class Stories(components: ControllerComponents,
       Seq(),
       Map())
 
-  private def loadPlayerActivity(playerState: Option[(db.model.Player, _)]):
-      DBIO[Option[(db.model.Activity, db.model.Scene)]] =
+  private def loadPlayerActivity(playerState: Option[db.model.PlayerState]):
+      DBIO[Option[db.model.PlayerActivity]] =
     playerState match {
-      case Some(state) => playerController.loadActivity(state._1)
+      case Some(state) => playerController.loadActivity(state.player)
       case None => DBIO.successful(None)
     }
 
-  private def toView(story: db.model.Story, pa: Option[(_, db.model.Scene)]):
-      DBIO[Option[model.SceneView]] =
+  private def toView(story: db.model.Story,
+    pa: Option[db.model.PlayerActivity]): DBIO[Option[model.SceneView]] =
     pa match {
-      case Some((_, scene)) =>
-        SceneView.ofScene(story, scene).map(Some.apply)
+      case Some(activity) =>
+        SceneView.ofScene(story, activity.scene).map(Some.apply)
       case None => DBIO.successful(None)
     }
 
 
+  def toReadPlayer(player: db.model.Player): model.read.Player =
+    model.read.Player(player.user,
+      player.story,
+      player.name)
 
-  type PlayerState = (model.Player, model.Activity, model.SceneView)
+  // def toReadState(state: db.model.State): model.read.State =
+  //   model.read.State(
+
+
+  def toReadActivity(activity: db.model.Activity) =
+    model.read.Activity(activity.story,
+      activity.user,
+      activity.scene,
+      Seq() // todo: effects
+    )
+
+  def toReadScene(scene: model.SceneView) =
+    model.read.Scene(scene.story,
+      scene.urlname,
+      scene.text,
+      Seq() // todo: choices
+    )
+
+
+  // type PlayerState = (model.Player, model.Activity, model.SceneView)
   def loadPlayerState(story: db.model.Story, identity: Id):
-      DBIO[Option[PlayerState]] =
+      DBIO[Option[model.read.PlayerState]] =
     playerController.loadPlayer(identity.user.name, story.urlname).
       flatMap(playerStateOpt =>
         loadPlayerActivity(playerStateOpt).flatMap(playerActivityOpt =>
@@ -85,16 +108,20 @@ class Stories(components: ControllerComponents,
             playerStateOpt.flatMap(ps =>
               playerActivityOpt.flatMap(pa =>
                 sceneViewOpt.map(sv =>
-                  (ps._1.model(ps._2), pa._1.model, sv)))))))
+                  (toReadPlayer(ps.player),
+                  Seq(),// ps.state.map(toReadState),
+                  toReadActivity(pa.activity),
+                  toReadScene(sv))))))))
+
+                  // (Player, Seq[State], Activity, Scene)
+
+                  // (ps._1.model(ps._2), pa._1.model, sv)))))))
 
 
   def withOptionalPlayerState(story: db.model.Story,
-    identity: Option[Id], cont: Option[PlayerState] => Result):
+    identity: Option[Id], cont: Option[model.read.PlayerState] => Result):
       DBIO[Result] = identity match {
-    case None =>
-      // todo: denote in the reply that this is for a non-logged-in-user,
-      // so the front end can request a temporary user.
-      DBIO.successful(cont(None))
+    case None => DBIO.successful(cont(None))
     case Some(identity) => loadPlayerState(story, identity).map(cont)
   }
 
@@ -102,6 +129,8 @@ class Stories(components: ControllerComponents,
     auth.UserAwareAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
-          withOptionalPlayerState(story, request.identity, state =>
-            Ok(story.model, state)))))
+          withOptionalPlayerState(story, request.identity, { state =>
+            val result: model.read.StoryState = (toReadStory(story), state)
+            Ok(result)
+          }))))
 }

@@ -10,6 +10,7 @@ import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
 import goodnight.model
+import goodnight.model.read
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }
 import goodnight.stories.WithStory
@@ -108,8 +109,9 @@ object Story {
     build
 
 
-  def withStory(router: pages.Router, storyData: WithStory.StoryData) =
-    component(Props(router, storyData._1))
+  def withStory(router: pages.Router, storyData: read.StoryState) =
+    component(Props(router, ???// storyData._1
+    ))
 
   def render(page: pages.EditStory, router: pages.Router) =
     Shell.component(router)(

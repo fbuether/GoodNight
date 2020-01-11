@@ -60,7 +60,9 @@ class Stories(components: ControllerComponents,
       database.run(for (
         scenes <- db.Scene.allOfStory(storyUrlname);
         qualities <- db.Quality.allOfStory(storyUrlname))
-      yield Ok((scenes.map(_.model), qualities.map(_.model)))))
+      yield Ok(
+        ???)))
+// (scenes.map(_.model), qualities.map(_.model)))))
 
       // database.run(
       //   db.Scene.allOfStory(storyUrlname).flatMap(scenes =>
