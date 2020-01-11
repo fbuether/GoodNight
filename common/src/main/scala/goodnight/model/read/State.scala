@@ -2,20 +2,22 @@
 package goodnight.model.read
 
 
-abstract class State {
-  def quality: Quality[_]
+sealed trait State {
+  def quality: Quality
   // def order: Int // the order in which these states should be shown
 }
 object State {
-  case class Bool(quality: Quality[Sort.Bool.type], value: Boolean)
+  @upickle.implicits.key("State.Bool")
+  case class Bool(quality: Quality.Bool, value: Boolean)
       extends State
 
-  case class Integer(quality: Quality[Sort.Integer.type], value: Int)
+  @upickle.implicits.key("State.Integer")
+  case class Integer(quality: Quality.Integer, value: Int)
       extends State
 
-  def apply(quality: Quality[Sort.Bool.type], value: Boolean) =
+  def apply(quality: Quality.Bool, value: Boolean) =
     Bool(quality, value)
 
-  def apply(quality: Quality[Sort.Integer.type], value: Int) =
+  def apply(quality: Quality.Integer, value: Int) =
     Integer(quality, value)
 }

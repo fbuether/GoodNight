@@ -18,7 +18,7 @@ class SceneParserTest extends FunSpec with Inside {
     }
 
   val parserStory = model.Story("--", "storyname", "storyurlname",
-    "storyimage", "storydescription")
+    "storyimage", "storydescription", true)
 
   val fullParsed: (String => model.Scene) =
     SceneParser.parseScene(parserStory, _) match {

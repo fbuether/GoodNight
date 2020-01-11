@@ -38,7 +38,7 @@ object Scene {
         " " + other.toString
     }
 
-    def haveOfTest(quality: read.Quality[_], state: read.States) =
+    def haveOfTest(quality: read.Quality, state: read.States) =
       state.filter(_.quality.urlname == quality.urlname).headOption match {
         case Some(read.State.Bool(_, value)) =>
           if (value) "have this" else "do not have this"
