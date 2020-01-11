@@ -10,7 +10,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model.play
+import goodnight.model.read
 import goodnight.service.Request
 import goodnight.service.Reply
 import goodnight.service.AuthenticationService
@@ -18,18 +18,18 @@ import goodnight.service.Conversions._
 
 
 object Story {
-  case class Props(router: pages.Router, story: play.Story,
-    player: play.Player,
-    state: play.States,
-    activity: play.Activity,
-    firstScene: play.Scene)
-  case class State(scene: play.Scene)
+  case class Props(router: pages.Router, story: read.Story,
+    player: read.Player,
+    state: read.States,
+    activity: read.Activity,
+    firstScene: read.Scene)
+  case class State(scene: read.Scene)
 
   class Backend(bs: BackendScope[Props, State]) {
     def doScene(next: String): Callback =
       bs.state.flatMap(state =>
         Request(ApiV1.DoScene, state.scene.story, next).send.
-          forStatus(202).//forJson[(play.Activity, play.Scene)].
+          forStatus(202).//forJson[(read.Activity, read.Scene)].
           body. // flatMap({ case (activity, scene) =>
             // bs.modState(_.copy(scene = scene)).async
           // }).
@@ -51,12 +51,12 @@ object Story {
     renderBackend[Backend].
     build
 
-  def build(router: pages.Router, story: play.Story,
-    ps: play.PlayerState) =
+  def build(router: pages.Router, story: read.Story,
+    ps: read.PlayerState) =
     component(Props(router, story, ps._1, ps._2, ps._3, ps._4))
 
 
-  def withStory(router: pages.Router, storyData: play.StoryState) =
+  def withStory(router: pages.Router, storyData: read.StoryState) =
     storyData match {
       case (story, None) => AuthenticationService.getUser match {
         case Some(_) =>

@@ -9,7 +9,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model.play
+import goodnight.model.read
 import goodnight.model
 import goodnight.service.Request
 import goodnight.service.Conversions._
@@ -18,92 +18,98 @@ import goodnight.model.Expression.BinaryOperator
 
 
 object WithStory {
-  val testData: play.StoryState = (play.Story("das-schloss",
+  val testData: read.StoryState = (read.Story("das-schloss",
     "Das Schloss",
     "fbuether",
     "Newer Looking, But Older Rocket.png"),
-    Some((play.Player("fbuether",
+    Some((read.Player("fbuether",
       "das-schloss",
       "Sir Archibald"),
       Seq(
-        play.State(
-          play.Quality("das-schloss",
+        read.State(
+          read.Quality("das-schloss",
             "fleissig",
-            play.Sort.Bool,
+            read.Sort.Bool,
             "Fleißig",
             "I can help you my son, I am Paddle Paul..png"),
           true),
-        play.State(
-          play.Quality("das-schloss",
+        read.State(
+          read.Quality("das-schloss",
             "fleissig TV",
-            play.Sort.Integer,
+            read.Sort.Integer,
             "Fleißig TV",
             "Plasma TV.png"),
           11),
-        play.State(
-          play.Quality("das-schloss",
+        read.State(
+          read.Quality("das-schloss",
             "gut-situiert",
-            play.Sort.Integer,
+            read.Sort.Integer,
             "Gut situiert",
             "Chea.png"),
           7)),
-      play.Activity("das-schloss",
+      read.Activity("das-schloss",
         "fbuether",
         "abwarten",
         Seq(
-          play.State(play.Quality("das-schloss",
+          read.State(read.Quality("das-schloss",
             "gut-situiert",
-            play.Sort.Integer,
+            read.Sort.Integer,
             "Gut situiert",
             "Chea.png"),
             7))),
-      play.Scene("das-schloss",
+      read.Scene("das-schloss",
         "abwarten",
         "# Erstmal abwarten.\n\nIrgendetwas wird schon passieren.",
         Seq(
-          play.Choice("abwarten-continue",
+          read.Choice("abwarten-continue",
             "Mal sehen, yes?",
             true,
             Seq(
-              play.Test(
-                play.Quality("das-schloss",
+              read.Test(
+                read.Quality("das-schloss",
                   "gierig",
-                  play.Sort.Integer,
+                  read.Sort.Integer,
                   "Gierig",
                   "Bomb.png"),
                 true,
                 Expression.LessOrEqual, 5),
-              play.Test(
-                play.Quality("das-schloss",
+              read.Test(
+                read.Quality("das-schloss",
                   "fleissig",
-                  play.Sort.Bool,
+                  read.Sort.Bool,
                   "Fleißig",
                   "Blue Soap.png"),
                 true,
                 true)
             )),
-          play.Choice("abwarten-hesitate",
+          read.Choice("abwarten-hesitate",
             "# Wirklich abwarten?\nBist Du Dir ganz sicher?",
             false,
             Seq(
-              play.Test(
-                play.Quality("das-schloss",
+              read.Test(
+                read.Quality("das-schloss",
                   "unerfuellbar",
-                  play.Sort.Bool,
+                  read.Sort.Bool,
                   "Unerfüllbar",
                   "Tree.png"),
                 false,
                 true)))
             )))))
 
+  val testData2: read.StoryState = (read.Story("das-schloss",
+      "Das Schloss",
+      "fbuether",
+      "Newer Looking, But Older Rocket.png"),
+      None)
+
 
 
   case class Props(router: pages.Router,
-    storyUrlname: String, full: Boolean, child: play.StoryState => VdomElement)
-  case class State(story: Option[play.StoryState])
+    storyUrlname: String, full: Boolean, child: read.StoryState => VdomElement)
+  case class State(story: Option[read.StoryState])
 
   class Backend(bs: BackendScope[Props, State]) {
-    def setStoryOrFail(result: Try[play.StoryState]): Callback = result match {
+    def setStoryOrFail(result: Try[read.StoryState]): Callback = result match {
       case Success(storyData) => bs.setState(State(Some(storyData)))
       case Failure(e) =>
         Callback.log(s"Error while fetching story: $e") >>
@@ -113,7 +119,7 @@ object WithStory {
     def loadIfRequired(storyUrlname: String): Callback =
       Request(ApiV1.Story, storyUrlname).send.
         forStatus(200).
-        forJson[play.StoryState].
+        forJson[read.StoryState].
         body.
         completeWith(//setStoryOrFail)
           _ => setStoryOrFail(

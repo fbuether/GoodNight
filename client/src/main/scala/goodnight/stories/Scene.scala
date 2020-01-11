@@ -9,7 +9,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model.play
+import goodnight.model.read
 import goodnight.model.Expression
 import goodnight.service.Request
 import goodnight.service.Reply
@@ -18,16 +18,16 @@ import goodnight.service.Conversions._
 
 
 object Scene {
-  case class Props(router: pages.Router, story: play.Story,
-    player: play.Player, state: play.States, scene: play.Scene,
+  case class Props(router: pages.Router, story: read.Story,
+    player: read.Player, state: read.States, scene: read.Scene,
     goto: String => Callback)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def requiredOfTest(test: play.Test) = test match {
-      case play.Test.Bool(_, _, value) =>
+    def requiredOfTest(test: read.Test) = test match {
+      case read.Test.Bool(_, _, value) =>
         if (value) "have this" else "do not have this"
-      case play.Test.Integer(_, _, op, other) =>
+      case read.Test.Integer(_, _, op, other) =>
         (op match {
           case Expression.Greater => "more than"
           case Expression.GreaterOrEqual => "at least"
@@ -38,19 +38,19 @@ object Scene {
         " " + other.toString
     }
 
-    def haveOfTest(quality: play.Quality[_], state: play.States) =
+    def haveOfTest(quality: read.Quality[_], state: read.States) =
       state.filter(_.quality.urlname == quality.urlname).headOption match {
-        case Some(play.State.Bool(_, value)) =>
+        case Some(read.State.Bool(_, value)) =>
           if (value) "have this" else "do not have this"
-        case Some(play.State.Integer(_, value)) => value.toString
+        case Some(read.State.Integer(_, value)) => value.toString
         case None => quality.sort match {
-          case play.Sort.Bool => "do not have this"
-          case play.Sort.Integer => "0"
+          case read.Sort.Bool => "do not have this"
+          case read.Sort.Integer => "0"
         }
       }
 
-    def renderTest(router: pages.Router, state: play.States,
-      test: play.Test) =
+    def renderTest(router: pages.Router, state: read.States,
+      test: read.Test) =
       <.li(^.className := "tooltip-anchor" +
         (if (test.succeeded) "" else " disabled"),
         Image.render(router, test.quality.image),
@@ -60,9 +60,9 @@ object Scene {
           <.span("you have: ", haveOfTest(test.quality,
             state))))
 
-    def renderChoice(router: pages.Router, state: play.States,
+    def renderChoice(router: pages.Router, state: read.States,
       goto: String => Callback,
-      choice: play.Choice) =
+      choice: read.Choice) =
       <.li(^.className := (if (choice.available) "" else "disabled"),
         ^.title :=
           (if (choice.available) ""

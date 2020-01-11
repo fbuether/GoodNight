@@ -10,7 +10,7 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model.play
+import goodnight.model.read
 import goodnight.service.Request
 import goodnight.service.Reply
 import goodnight.service.AuthenticationService
@@ -18,21 +18,21 @@ import goodnight.service.Conversions._
 
 
 object Qualities {
-  case class Props(router: pages.Router, story: play.Story,
-    state: play.States)
+  case class Props(router: pages.Router, story: read.Story,
+    state: read.States)
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def renderSmallQuality(router: pages.Router, story: play.Story,
-      state: play.State) =
+    def renderSmallQuality(router: pages.Router, story: read.Story,
+      state: read.State) =
       <.li(^.className := "small",
         router.link(pages.Story(state.quality.urlname))(
           // ^.title := quality.description,
           Image.component(router, state.quality.image),
           <.span(state.quality.name)),
         <.span(^.className := "level", (state match {
-          case play.State.Bool(_, value) => ""
-          case play.State.Integer(_, value) => value.toString
+          case read.State.Bool(_, value) => ""
+          case read.State.Integer(_, value) => value.toString
         })))
 
     def render(props: Props, state: State): VdomElement =

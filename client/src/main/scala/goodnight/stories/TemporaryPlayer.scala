@@ -8,21 +8,21 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model.play
+import goodnight.model.read
 import goodnight.service.Request
 import goodnight.service.Conversions._
 
 
 object TemporaryPlayer {
-  case class Props(router: pages.Router, story: play.Story,
-    child: play.PlayerState => VdomElement)
-  case class State(data: Option[play.PlayerState], saving: Boolean)
+  case class Props(router: pages.Router, story: read.Story,
+    child: read.PlayerState => VdomElement)
+  case class State(data: Option[read.PlayerState], saving: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
     def createPlayer(storyUrlname: String): Callback =
       bs.modState(_.copy(saving = true)).>>(
         Request(ApiV1.CreateTemporary, storyUrlname).send.
-          forStatus(201).forJson[play.PlayerState].
+          forStatus(201).forJson[read.PlayerState].
           body.flatMap(ps =>
             bs.modState(_.copy(saving = false, data = Some(ps))).async).
           toCallback)

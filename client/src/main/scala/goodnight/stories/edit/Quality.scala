@@ -61,7 +61,7 @@ object Quality {
     val editorRef = Editor.componentRef
 
     val newQuality = ("Write a new Quality", "# New Quality")
-    def ofQuality(quality: model.Quality) = ("Edit: " + quality.name, quality.raw)
+    def ofQuality(quality: model.Quality) = ("Edit: " + quality.name, quality.description)
 
     def renderEditor(props: Props, state: State, text: (String, String)) = {
       val (title, content) = text
