@@ -17,6 +17,24 @@ import goodnight.server.PostgresProfile.Database
 
 
 object SceneView {
+  def parse(story: db.model.Story, scene: db.model.Scene): model.Scene = {
+    SceneParser.parseScene(story.model, scene.raw.replace("\r\n", "\n")) match {
+      case Left(a) =>
+        println(scene.raw)
+        println(a)
+        scene.model
+      case Right(r) => r
+    }
+  }
+
+
+  // extracts all scenes refered by next and include
+  def getChoices(story: db.model.Story, dbScene: db.model.Scene): Seq[String] =
+    parse(story, dbScene).settings.collect({
+      case model.Setting.Next(scene) => scene
+      case model.Setting.Include(scene) => scene })
+
+
   def ofScene(story: db.model.Story, dbScene: db.model.Scene)(
     implicit ec: ExecutionContext): DBIO[model.SceneView] = {
 

@@ -174,7 +174,7 @@ abstract class GoodnightRawComponents(context: Context)
     credentialsProvider)
   lazy val profile = new Profile(cc, database, silhouette)
 
-  lazy val readStories = new read.Stories(cc, database, readPlayer, silhouette)
+  lazy val readStories = new read.Story(cc, database, readPlayer, silhouette)
   lazy val readScenes = new read.Scenes(cc, database, readPlayer, silhouette)
   lazy val readChoices = new read.Choices(cc, database, silhouette)
   lazy val readPlayer = new read.Player(cc, database, silhouette, authSignUp)

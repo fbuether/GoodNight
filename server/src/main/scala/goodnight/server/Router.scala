@@ -26,7 +26,7 @@ class Router(
   authSignUp: authentication.SignUp,
   authSignIn: authentication.SignIn,
   profile: Profile,
-  readStories: read.Stories,
+  readStory: read.Story,
   readScenes: read.Scenes,
   readChoices: read.Choices,
   readPlayer: read.Player,
@@ -75,8 +75,8 @@ class Router(
     //
     // Reading Stories
     //
-    case Stories() => readStories.getAvailableStories(header.target.queryMap)
-    case Story(story) => readStories.getStory(story)
+    case Stories() => readStory.getAvailableStories(header.target.queryMap)
+    case Story(story) => readStory.getStory(story)
 
     case CreatePlayer(story) => readPlayer.createPlayer(story)
     case CreateTemporary(story) => readPlayer.createTemporary(story)

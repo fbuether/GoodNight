@@ -35,7 +35,12 @@ object State extends TableQueryBase[model.State, State](new State(_)) {
   private val ofPlayerQuery = Compiled((user: Rep[String],
     story: Rep[String]) =>
     apply().
-      filter(state => state.user === user && state.story === story))
-  def ofPlayer(user: String, story: String): DBIO[Seq[model.State]] =
+      filter(state => state.user === user && state.story === story).
+      join(Quality()).on((state, quality) =>
+        state.story === quality.story &&
+          state.quality === quality.urlname))
+
+  def ofPlayer(user: String, story: String):
+      DBIO[Seq[(model.State, model.Quality)]] =
     ofPlayerQuery(user, story).result
 }

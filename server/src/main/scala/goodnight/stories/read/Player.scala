@@ -27,8 +27,10 @@ class Player(components: ControllerComponents,
   private def withState(playerOpt: Option[db.model.Player]):
       DBIO[Option[db.model.PlayerState]] =
     playerOpt match {
-      case Some(player) => db.State.ofPlayer(player.user, player.story).
-          map(state => Some(db.model.PlayerState(player, state)))
+      case Some(player) =>
+        println("loading player and state!")
+        db.State.ofPlayer(player.user, player.story).
+          map(state => Some(db.model.PlayerState(player, state.map(_._1))))
       case None => DBIO.successful(None)
     }
 
