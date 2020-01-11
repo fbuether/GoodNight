@@ -7,7 +7,6 @@ import upickle.default.macroRW
 import ujson.ParseException
 
 import goodnight.model
-import goodnight.model.read
 
 
 object Serialise {
@@ -82,37 +81,37 @@ object Serialise {
 
   // serialise model.play
 
-  implicit val serialise_play_activity: Serialisable[read.Activity] = macroRW
+  implicit val serialise_play_activity: Serialisable[model.read.Activity] = macroRW
 
-  implicit val serialise_play_choice: Serialisable[read.Choice] = macroRW
+  implicit val serialise_play_choice: Serialisable[model.read.Choice] = macroRW
 
-  implicit val serialise_play_player: Serialisable[read.Player] = macroRW
+  implicit val serialise_play_player: Serialisable[model.read.Player] = macroRW
 
-  implicit val serialise_play_quality: Serialisable[read.Quality[read.Sort]] =
+  implicit val serialise_play_quality: Serialisable[model.read.Quality[model.read.Sort]] =
     macroRW
   implicit val serialise_play_quality_b:
-      Serialisable[read.Quality[read.Sort.Bool.type]] = macroRW
+      Serialisable[model.read.Quality[model.read.Sort.Bool.type]] = macroRW
   implicit val serialise_play_quality_i:
-      Serialisable[read.Quality[read.Sort.Integer.type]] = macroRW
+      Serialisable[model.read.Quality[model.read.Sort.Integer.type]] = macroRW
 
-  implicit val serialise_play_scene: Serialisable[read.Scene] = macroRW
+  implicit val serialise_play_scene: Serialisable[model.read.Scene] = macroRW
 
-  implicit val serialise_play_sort: Serialisable[read.Sort] =
+  implicit val serialise_play_sort: Serialisable[model.read.Sort] =
     ReadWriter.merge(
-      macroRW[read.Sort.Bool.type],
-      macroRW[read.Sort.Integer.type])
+      macroRW[model.read.Sort.Bool.type],
+      macroRW[model.read.Sort.Integer.type])
 
-  implicit val serialise_play_state: Serialisable[read.State] =
+  implicit val serialise_play_state: Serialisable[model.read.State] =
     ReadWriter.merge(
-      macroRW[read.State.Bool],
-      macroRW[read.State.Integer])
+      macroRW[model.read.State.Bool],
+      macroRW[model.read.State.Integer])
 
-  implicit val serialise_play_story: Serialisable[read.Story] = macroRW
+  implicit val serialise_play_story: Serialisable[model.read.Story] = macroRW
 
-  implicit val serialise_play_test: Serialisable[read.Test] =
+  implicit val serialise_play_test: Serialisable[model.read.Test] =
     ReadWriter.merge(
-      macroRW[read.Test.Bool],
-      macroRW[read.Test.Integer])
+      macroRW[model.read.Test.Bool],
+      macroRW[model.read.Test.Integer])
 
 
 
