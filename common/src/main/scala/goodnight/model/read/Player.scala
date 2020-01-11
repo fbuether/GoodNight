@@ -1,5 +1,5 @@
 
-package goodnight.model.play
+package goodnight.model.read
 
 
 case class Player(

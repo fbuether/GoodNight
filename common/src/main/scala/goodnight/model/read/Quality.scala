@@ -1,5 +1,5 @@
 
-package goodnight.model.play
+package goodnight.model.read
 
 
 // Qualities have a type-parameter to statically assert their sort.

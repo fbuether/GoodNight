@@ -1,5 +1,5 @@
 
-package goodnight.model.play
+package goodnight.model.read
 
 import goodnight.model.Expression.BinaryOperator
 

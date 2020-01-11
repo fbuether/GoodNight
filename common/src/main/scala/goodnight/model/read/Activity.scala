@@ -1,5 +1,5 @@
 
-package goodnight.model.play
+package goodnight.model.read
 
 
 // a log of what a player has done in a story
