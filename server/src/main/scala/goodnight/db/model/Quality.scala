@@ -3,6 +3,12 @@ package goodnight.db.model
 
 import java.util.UUID
 
+sealed trait Sort
+object Sort {
+  case object Bool extends Sort
+  case object Integer extends Sort
+}
+
 
 case class Quality (
   id: UUID,
@@ -10,7 +16,7 @@ case class Quality (
   raw: String,
   name: String,
   urlname: String,
-//  sort: Sort,
+  sort: Sort,
   image: String,
   description: String)
     extends DbModel {

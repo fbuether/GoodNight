@@ -3,23 +3,37 @@ package goodnight.db
 
 import java.util.UUID
 
-import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Table
 import goodnight.server.TableQueryBase
 
 
+
+
+
 class Quality(val tag: Tag) extends Table[model.Quality](tag, "quality") {
+
+  implicit private def sortColumnType =
+    MappedColumnType.base[model.Sort, String]({
+      case model.Sort.Bool => "bool"
+      case model.Sort.Integer => "int"
+      case _ => "unknown"
+    }, {
+      case "int" => model.Sort.Integer
+      case _ => model.Sort.Bool
+    })
+
+
   def id = column[UUID]("id", O.PrimaryKey)
   def story = column[String]("story")
   def raw = column[String]("raw")
   def name = column[String]("name")
   def urlname = column[String]("urlname")
-  // def sort = ?
+  def sort = column[model.Sort]("sort")
   def image = column[String]("image")
   def description = column[String]("description")
 
-  def * = (id, story, raw, name, urlname, //sort,
+  def * = (id, story, raw, name, urlname, lsort,
     image, description).
     mapTo[model.Quality]
 

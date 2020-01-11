@@ -22,9 +22,12 @@ class QualityParserTest extends FunSpec with Inside {
       assert(parsed("this is a simple quality") ==
         model.Quality("story",
           "this is a simple quality",
-          "this is a simple qua",
-          "this-is-a-simple-qua",
           model.Sort.Boolean,
+          false,
+          None,
+          // "this is a simple qua",
+          // "this-is-a-simple-qua",
+          // model.Sort.Boolean,
           "X.png",
           "this is a simple quality"))
     }
