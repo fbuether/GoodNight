@@ -6,9 +6,7 @@ package goodnight.model
 sealed trait Expression
 
 object Expression {
-  // refers Quality.name
-  case class Quality(quality: String) extends Expression
-
+  // for now, Text always refers to a quality name or urlname.
   case class Text(value: String) extends Expression
 
   case class Number(value: Int) extends Expression

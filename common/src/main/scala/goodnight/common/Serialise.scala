@@ -37,7 +37,6 @@ object Serialise {
 
   implicit val serialise_expression: Serialisable[model.Expression] =
     ReadWriter.merge(
-      macroRW[model.Expression.Quality],
       macroRW[model.Expression.Text],
       macroRW[model.Expression.Number],
       // macroRW[model.Expression.Random],

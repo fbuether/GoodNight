@@ -15,7 +15,7 @@ object ExpressionParser {
       map(_.trim)
 
   private def textUnquoted[_:P]: P[String] =
-    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9_-]").!).
+    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9_]").!).
       map(_.trim)
 
   private def text[_:P]: P[Expression] =

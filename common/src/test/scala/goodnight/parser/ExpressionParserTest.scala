@@ -8,7 +8,6 @@ import scala.util.{Try, Success, Failure}
 import goodnight.model.Expression
 import goodnight.model.Expression._
 
-object Single extends Tag("single")
 
 class ExpressionParserTest extends FunSpec {
   val parsed: (String => Expression) =
@@ -28,6 +27,11 @@ class ExpressionParserTest extends FunSpec {
 
   it("71") {
     assert(parsed("71") == n71)
+  }
+
+  it("\"long names with spaces in quotes\"") {
+    assert(parsed("\"long names with spaces in quotes\"") ==
+      Text("long names with spaces in quotes"))
   }
 
   describe("unary operators") {
