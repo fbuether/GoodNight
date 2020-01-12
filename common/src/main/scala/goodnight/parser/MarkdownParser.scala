@@ -1,5 +1,5 @@
 
-package goodnight.logic
+package goodnight.parser
 
 import fastparse._, NoWhitespace._
 

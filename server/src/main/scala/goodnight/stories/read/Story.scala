@@ -130,7 +130,12 @@ class Story(components: ControllerComponents,
         "Chea.png"),
         7))
 
-    def toReadChoice(scene: db.model.Scene): model.read.Choice = {
+    def toReadChoice(story: db.model.Story, dbScene: db.model.Scene):
+        model.read.Choice = {
+      val parsed = SceneView.parse(story, dbScene)
+      val requires = parsed.settings.collect({
+        case model.Setting.Require(e) => e })
+
       val tests = Seq(
         // todo: generate actual values.
           model.read.Test(model.read.Quality.Bool(scene.story,
@@ -156,7 +161,7 @@ class Story(components: ControllerComponents,
       model.read.Scene(scene.story,
         scene.urlname,
         scene.text,
-        choices.map(toReadChoice)))
+        choices.map(toReadChoice(story, _))))
   }
 
   // type PlayerState = (model.Player, model.Activity, model.SceneView)
