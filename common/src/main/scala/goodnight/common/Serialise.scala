@@ -17,8 +17,7 @@ object Serialise {
   implicit val serialise_expression_unaryoperator:
       Serialisable[model.Expression.UnaryOperator] =
     ReadWriter.merge(
-      macroRW[model.Expression.Not.type],
-      macroRW[model.Expression.PlusOne.type])
+      macroRW[model.Expression.Not.type])
 
   implicit val serialise_expression_binaryoperator:
       Serialisable[model.Expression.BinaryOperator] =
@@ -39,8 +38,9 @@ object Serialise {
   implicit val serialise_expression: Serialisable[model.Expression] =
     ReadWriter.merge(
       macroRW[model.Expression.Quality],
-      macroRW[model.Expression.Literal],
-      macroRW[model.Expression.Random],
+      macroRW[model.Expression.Text],
+      macroRW[model.Expression.Number],
+      // macroRW[model.Expression.Random],
       macroRW[model.Expression.Unary],
       macroRW[model.Expression.Binary])
 

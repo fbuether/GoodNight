@@ -110,12 +110,16 @@ class SceneParserTest extends FunSpec with Inside {
 
       it("set with quality name and value") {
         assert(parsed("$ set: quality = 17").settings(0) ==
-          model.Setting.Set("quality", model.Expression.Literal("17")))
+          model.Setting.Set("quality",
+            model.Expression.Binary(
+              model.Expression.Equal,
+              model.Expression.Text("quality"),
+              model.Expression.Number(17))))
       }
 
       it("test with condition") {
         assert(parsed("$ test: in good light").settings(0) ==
-          model.Setting.Test(model.Expression.Literal("in good light")))
+          model.Setting.Test(model.Expression.Text("in good light")))
       }
 
       it("success with new setting") {
@@ -124,15 +128,18 @@ class SceneParserTest extends FunSpec with Inside {
       }
 
       it("failure with new setting") {
-        assert(parsed("$ failure: set: doomed").settings(0) ==
+        assert(parsed("$ failure: set: doomed = true").settings(0) ==
           model.Setting.Success(model.Setting.Set("doomed",
-            model.Expression.Literal(""))))
+            model.Expression.Text("true"))))
       }
 
       it("require with condition") {
-        assert(parsed("$ require: doomed").settings(0) ==
+        assert(parsed("$ require: doomed = true").settings(0) ==
           model.Setting.Require(
-            model.Expression.Quality("doomed")))
+            model.Expression.Binary(
+              model.Expression.Equal,
+              model.Expression.Text("doomed"),
+              model.Expression.Text("true"))))
       }
 
       it("showAlways") {
@@ -157,12 +164,13 @@ class SceneParserTest extends FunSpec with Inside {
     }
 
     describe("complex tests") {
-      it("for random values") {
-        assert(parsed("$ test: power > random(0,16)").settings(0) ==
+      it("for comparsion to numeric value") {
+        assert(parsed("$ test: power > 5").settings(0) ==
           model.Setting.Test(
-            model.Expression.Binary(model.Expression.Greater,
-              model.Expression.Quality("power"),
-              model.Expression.Random(0, 16))))
+            model.Expression.Binary(
+              model.Expression.Greater,
+              model.Expression.Text("power"),
+              model.Expression.Number(5))))
       }
     }
   }

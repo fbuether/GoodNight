@@ -6,26 +6,22 @@ package goodnight.model
 sealed trait Expression
 
 object Expression {
-  case class Quality(
-    quality: String) // refers Quality.name
-      extends Expression
+  // refers Quality.name
+  case class Quality(quality: String) extends Expression
 
+  case class Text(value: String) extends Expression
 
-  case class Literal(
-    value: String) // this may be a number in string representation
-      extends Expression
-
+  case class Number(value: Int) extends Expression
 
   // generates a random number in [min,max], including both limits.
   // useful to compare with qualities, or to have extrordinary results
-  case class Random(
-    min: Int, max: Int)
-      extends Expression
+  // case class Random(
+  //   min: Int, max: Int)
+  //     extends Expression
 
 
   sealed trait UnaryOperator
   case object Not extends UnaryOperator // Boolean
-  case object PlusOne extends UnaryOperator // Integer
 
   case class Unary(
     operator: UnaryOperator,

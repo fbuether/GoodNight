@@ -4,17 +4,11 @@ package goodnight.logic
 import fastparse._, NoWhitespace._
 import scala.util.{Try, Success, Failure}
 
-
 import goodnight.model
 import goodnight.model.text._
 
 
 object SceneParser {
-  // expressions
-  private def expression[_:P]: P[model.Expression] =
-    P(BaseParser.name).
-      map(model.Expression.Literal.apply)
-
   // todo: settings embedded into lines
   private def content[_:P]: P[Either[String, model.Setting]] =
     P(!"$" ~/ CharsWhile(_ != '\n', 0).!).
@@ -38,12 +32,12 @@ object SceneParser {
   private def setSetting[_:P]: P[model.Setting] =
     P("set" ~/ BaseParser.whitespace ~ ":" ~
       BaseParser.whitespace ~ BaseParser.name ~ BaseParser.whitespace ~ "=" ~
-      BaseParser.whitespace ~ expression).
+      BaseParser.whitespace ~ ExpressionParser.expression).
       map(model.Setting.Set.tupled)
 
   private def testSetting[_:P]: P[model.Setting] =
     P("test" ~/ BaseParser.whitespace ~ ":" ~
-      BaseParser.whitespace ~ expression).
+      BaseParser.whitespace ~ ExpressionParser.expression).
       map(model.Setting.Test.apply)
 
   private def successSetting[_:P]: P[model.Setting] =
@@ -58,7 +52,7 @@ object SceneParser {
 
   private def requireSetting[_:P]: P[model.Setting] =
     P("require" ~/ BaseParser.whitespace ~ ":" ~
-      BaseParser.whitespace ~ expression).
+      BaseParser.whitespace ~ ExpressionParser.expression).
       map(model.Setting.Require.apply)
 
   private def showAlwaysSetting[_:P]: P[model.Setting] =
