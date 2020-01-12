@@ -1,5 +1,5 @@
 
-package goodnight.logic
+package goodnight.parser
 
 import fastparse._
 import org.scalatest._
@@ -7,7 +7,7 @@ import scala.util.{Try, Success, Failure}
 
 import goodnight.model
 import goodnight.model.text._
-import goodnight.logic.SceneParser._
+import goodnight.parser.SceneParser._
 
 
 class QualityParserTest extends FunSpec with Inside {

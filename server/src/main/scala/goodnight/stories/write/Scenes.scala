@@ -13,7 +13,7 @@ import goodnight.db
 import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
-import goodnight.logic.SceneParser
+import goodnight.parser.SceneParser
 
 
 class Scenes(components: ControllerComponents,

@@ -10,7 +10,7 @@ import play.api.mvc.Result
 import goodnight.api.authentication.AuthService
 import goodnight.common.Serialise._
 import goodnight.db
-import goodnight.logic.SceneParser
+import goodnight.parser.SceneParser
 import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database

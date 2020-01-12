@@ -7,7 +7,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import goodnight.model.text._
 import goodnight.model.text.{ Markdown => TMarkdown }
 import goodnight.client.pages
-import goodnight.logic.MarkdownParser
+import goodnight.parser.MarkdownParser
 
 
 object Markdown {

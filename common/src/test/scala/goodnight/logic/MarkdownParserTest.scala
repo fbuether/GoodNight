@@ -1,5 +1,5 @@
 
-package goodnight.logic
+package goodnight.parser
 
 import fastparse._, NoWhitespace._
 import org.scalatest.{ FunSpec, EitherValues, Inside }
