@@ -48,4 +48,12 @@ object Expression {
     left: Expression,
     right: Expression)
       extends Expression
+
+  sealed trait Type
+  object Type {
+    case object Int extends Type
+    case object Bool extends Type
+  }
+
+  type Context = Map[String, Type]
 }
