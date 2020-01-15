@@ -80,6 +80,8 @@ div#matter {
 // auswahl
 
 .choices > li {
+  min-height: 2.1em;
+
   & > img:first-child {
     float: left;
     width: 5rem;
@@ -90,8 +92,8 @@ div#matter {
   & p {
     position: relative;
     padding-right: 5.5rem;
-    min-height: 2.6rem;
-    clear: right;
+    /* min-height: 2.6rem; */
+    /* clear: right; */
 
     & > button {
       position: absolute;
@@ -99,6 +101,13 @@ div#matter {
       bottom: 0;
       width: 5rem;
     }
+  }
+
+  & .markdowned > button {
+    margin-left: auto;
+    margin-right: 1em;
+    width: 5rem;
+    display: block;
   }
 }
 
@@ -110,7 +119,7 @@ button.return {
 
 .requirements {
   float: right;
-  margin-top: 0.3rem;
+  margin-top: 0.1rem;
   margin-right: 0.3rem;
 
   & > li {

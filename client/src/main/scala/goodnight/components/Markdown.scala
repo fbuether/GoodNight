@@ -60,7 +60,7 @@ object Markdown {
             blocks.init.map(ofBlock(_, props._2)).toTagMod,
             (blocks.last match {
               case Paragraph(text) => <.p(ofText(text), children)
-              case a => ofBlock(a, props._2) }))
+              case a => TagMod(ofBlock(a, props._2), children) }))
       }
 
       // // todo: actual markdown parsing and all that.
