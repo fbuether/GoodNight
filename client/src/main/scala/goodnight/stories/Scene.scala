@@ -19,7 +19,8 @@ import goodnight.service.Conversions._
 
 object Scene {
   case class Props(router: pages.Router, story: read.Story,
-    player: read.Player, state: read.States, scene: read.Scene,
+    player: read.Player, state: read.States,
+    effects: read.States, scene: read.Scene,
     goto: String => Callback)
   case class State(n: Unit)
 
@@ -52,9 +53,23 @@ object Scene {
           else
             <.span()))
 
+    def renderEffect(router: pages.Router, effect: read.State) =
+      <.li(
+        Image.render(router, effect.quality.image),
+        <.em(
+          <.strong(effect.quality.name),
+          " is now: ",
+          (effect match {
+            case read.State.Bool(_, v) =>
+              if (v) "you have this"
+              else "you do not have this"
+            case read.State.Integer(_, v) => v.toString })))
+
     def render(props: Props, state: State) =
       <.div(
         Markdown.component(props.scene.text, 1)(),
+        <.ul(^.className := "effects",
+          props.effects.map(renderEffect(props.router, _)).toTagMod),
         <.ul(^.className := "choices as-items",
           props.scene.choices.map(renderChoice(props.router, props.state,
             props.goto, _)).

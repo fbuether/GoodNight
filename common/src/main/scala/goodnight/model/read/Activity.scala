@@ -7,4 +7,4 @@ case class Activity(
   story: String, // refers Player.story
   user: String, // refers Player.user
   scene: String, // refers Scene.name
-  effects: Seq[State]) // the effects that this activity had
+  effects: States) // the effects that this activity had
