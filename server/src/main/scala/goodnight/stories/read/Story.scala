@@ -16,6 +16,7 @@ import goodnight.db
 import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
+import goodnight.printer.ExpressionPrinter
 
 
 class Story(components: ControllerComponents,
@@ -66,39 +67,63 @@ class Story(components: ControllerComponents,
       case None => DBIO.successful(None)
     }
 
-  private def toView(story: db.model.Story,
-    pa: Option[db.model.PlayerActivity]): DBIO[Option[model.SceneView]] =
-    pa match {
-      case Some(activity) =>
-        SceneView.ofScene(story, activity.scene).map(Some.apply)
-      case None => DBIO.successful(None)
+  // preparing read.Scenes.
+
+
+  def asReadState(state: db.model.State, quality: db.model.Quality):
+      model.read.State = {
+    quality.sort match {
+      case db.model.Sort.Bool =>
+        model.read.State(model.read.Quality.Bool(quality.story,
+          quality.urlname, quality.name, quality.image),
+          state.value == "true")
+      case db.model.Sort.Integer =>
+        model.read.State(model.read.Quality.Integer(quality.story,
+          quality.urlname, quality.name, quality.image),
+          Try(state.value.toInt).getOrElse(0))
+    }
+  }
+
+  val effects = Seq(
+    // todo: generate actual values.
+    model.read.State(model.read.Quality.Integer("das-schloss",
+      "gut-situiert",
+      "Gut situiert",
+      "Chea.png"),
+      7))
+
+  def toReadChoice(story: db.model.Story, dbScene: db.model.Scene):
+      model.read.Choice = {
+    val scene = SceneView.parse(story, dbScene)
+    val requires = scene.settings.collect({
+      case model.Setting.Require(e) => e })
+
+    def getFirstQuality(expr: model.Expression): Option[String] = expr match {
+      case model.Expression.Text(n) => Some(n)
+      case model.Expression.Number(_) => None
+      case model.Expression.Unary(_, e) => getFirstQuality(e)
+      case model.Expression.Binary(_, e1, e2) =>
+        getFirstQuality(e1).orElse(getFirstQuality(e2))
     }
 
+    def qualityOfName(name: String) =
+      // todo: actually load the actual quality.
+      model.read.Quality.Bool(scene.story,
+        goodnight.urlnameOf(name), name, "X.png")
 
-  def toReadPlayer(player: db.model.Player): model.read.Player =
-    model.read.Player(player.user,
-      player.story,
-      player.name)
+    val tests = scene.settings.collect({
+      case model.Setting.Require(expr) =>
+        model.read.Test(
+          qualityOfName(getFirstQuality(expr).getOrElse("")),
+          true,
+          ExpressionPrinter.print(expr)) })
 
-
-  def toReadActivity(activity: db.model.Activity) =
-    model.read.Activity(activity.story,
-      activity.user,
-      activity.scene,
-      Seq() // todo: effects
-    )
-
-  def toReadScene(scene: model.SceneView) =
-    model.read.Scene(scene.story,
-      scene.urlname,
+    model.read.Choice(scene.urlname,
       scene.text,
-      Seq() // todo: choices
+      tests.forall(_.succeeded),
+      tests
     )
-
-
-
-
-
+  }
 
 
   def asReadPlayerState(story: db.model.Story,
@@ -108,49 +133,6 @@ class Story(components: ControllerComponents,
     scene: db.model.Scene,
     choices: Seq[db.model.Scene]
   ): model.read.PlayerState = {
-
-    def asReadState(state: db.model.State, quality: db.model.Quality):
-        model.read.State = {
-      quality.sort match {
-        case db.model.Sort.Bool =>
-          model.read.State(model.read.Quality.Bool(quality.story,
-            quality.urlname, quality.name, quality.image),
-            state.value == "true")
-        case db.model.Sort.Integer =>
-          model.read.State(model.read.Quality.Integer(quality.story,
-            quality.urlname, quality.name, quality.image),
-            Try(state.value.toInt).getOrElse(0))
-      }
-    }
-
-    val effects = Seq(
-        // todo: generate actual values.
-      model.read.State(model.read.Quality.Integer("das-schloss",
-        "gut-situiert",
-        "Gut situiert",
-        "Chea.png"),
-        7))
-
-    def toReadChoice(story: db.model.Story, dbScene: db.model.Scene):
-        model.read.Choice = {
-      val parsed = SceneView.parse(story, dbScene)
-      val requires = parsed.settings.collect({
-        case model.Setting.Require(e) => e })
-
-      val tests = Seq(
-        // todo: generate actual values.
-          model.read.Test(model.read.Quality.Bool(scene.story,
-            "ab", "ab", "ab.png"),
-            true,
-            true))
-
-      model.read.Choice(scene.urlname,
-        scene.text,
-        tests.forall(_.succeeded),
-        tests
-      )
-    }
-
 
     // (player, states, activity, scene)
     (model.read.Player(player.user, player.story, player.name),

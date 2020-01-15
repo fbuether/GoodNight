@@ -112,13 +112,7 @@ object Serialise {
 
   implicit val serialise_read_story: Serialisable[model.read.Story] = macroRW
 
-  implicit val serialise_read_test_bool:
-      Serialisable[model.read.Test.Bool] = macroRW
-  implicit val serialise_read_test_integer:
-      Serialisable[model.read.Test.Integer] = macroRW
-  implicit val serialise_read_test: Serialisable[model.read.Test] =
-    ReadWriter.merge(serialise_read_test_bool,
-      serialise_read_test_integer)
+  implicit val serialise_read_test: Serialisable[model.read.Test] = macroRW
 
 
 

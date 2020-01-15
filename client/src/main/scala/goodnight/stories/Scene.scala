@@ -24,31 +24,6 @@ object Scene {
   case class State(n: Unit)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def requiredOfTest(test: read.Test) = test match {
-      case read.Test.Bool(_, _, value) =>
-        if (value) "have this" else "do not have this"
-      case read.Test.Integer(_, _, op, other) =>
-        (op match {
-          case Expression.Greater => "more than"
-          case Expression.GreaterOrEqual => "at least"
-          case Expression.Less => "less than"
-          case Expression.LessOrEqual => "at most"
-          case Expression.Equal => "exactly"
-          case Expression.NotEqual => "not" }) +
-        " " + other.toString
-    }
-
-    def haveOfTest(quality: read.Quality, state: read.States) =
-      state.filter(_.quality.urlname == quality.urlname).headOption match {
-        case Some(read.State.Bool(_, value)) =>
-          if (value) "have this" else "do not have this"
-        case Some(read.State.Integer(_, value)) => value.toString
-        case None => quality.sort match {
-          case read.Sort.Bool => "do not have this"
-          case read.Sort.Integer => "0"
-        }
-      }
-
     def renderTest(router: pages.Router, state: read.States,
       test: read.Test) =
       <.li(^.className := "tooltip-anchor" +
@@ -56,9 +31,7 @@ object Scene {
         Image.render(router, test.quality.image),
         <.div(^.className := "tooltip",
           <.strong(test.quality.name),
-          <.span("required: ", requiredOfTest(test)),
-          <.span("you have: ", haveOfTest(test.quality,
-            state))))
+          <.span("required: ", test.description)))
 
     def renderChoice(router: pages.Router, state: read.States,
       goto: String => Callback,

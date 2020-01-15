@@ -52,6 +52,9 @@ object Markdown {
             <.p("Error: ", error),
             <.p("Source:"),
             <.code(props._1))
+        case Right(TMarkdown(Seq())) =>
+          <.div(^.className := "markdowned empty",
+            <.p(children))
         case Right(TMarkdown(blocks)) =>
           <.div(^.className := "markdowned",
             blocks.init.map(ofBlock(_, props._2)).toTagMod,
