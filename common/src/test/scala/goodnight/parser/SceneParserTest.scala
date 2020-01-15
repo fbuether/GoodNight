@@ -9,6 +9,7 @@ import goodnight.model
 import goodnight.model.text._
 import goodnight.parser.SceneParser._
 
+object Single extends Tag("single")
 
 class SceneParserTest extends FunSpec with Inside {
   val parsed: (String => SceneParser.PScene) =
@@ -111,14 +112,11 @@ class SceneParserTest extends FunSpec with Inside {
       it("set with quality name and value") {
         assert(parsed("$ set: quality = 17").settings(0) ==
           model.Setting.Set("quality",
-            model.Expression.Binary(
-              model.Expression.Equal,
-              model.Expression.Text("quality"),
-              model.Expression.Number(17))))
+            model.Expression.Number(17)))
       }
 
       it("test with condition") {
-        assert(parsed("$ test: in good light").settings(0) ==
+        assert(parsed("$ test: \"in good light\"").settings(0) ==
           model.Setting.Test(model.Expression.Text("in good light")))
       }
 
@@ -129,8 +127,9 @@ class SceneParserTest extends FunSpec with Inside {
 
       it("failure with new setting") {
         assert(parsed("$ failure: set: doomed = true").settings(0) ==
-          model.Setting.Success(model.Setting.Set("doomed",
-            model.Expression.Text("true"))))
+          model.Setting.Failure(
+            model.Setting.Set("doomed",
+              model.Expression.Text("true"))))
       }
 
       it("require with condition") {
@@ -140,6 +139,15 @@ class SceneParserTest extends FunSpec with Inside {
               model.Expression.Equal,
               model.Expression.Text("doomed"),
               model.Expression.Text("true"))))
+      }
+
+      it("require with \"feige > 2\"") {
+        assert(parsed("$require: feige > 2").settings(0) ==
+          model.Setting.Require(
+            model.Expression.Binary(
+              model.Expression.Greater,
+              model.Expression.Text("feige"),
+              model.Expression.Number(2))))
       }
 
       it("showAlways") {
@@ -193,6 +201,34 @@ class SceneParserTest extends FunSpec with Inside {
                        |$ next: start-geraet
                        |$ next: start-planer""".stripMargin).settings.
         length == 5)
+    }
+
+    it("from das-labyrinth/first-scene") {
+      assert(fullParsed("""|$start
+                           |$name: First Scene
+                           |
+                           |# Am Eingang
+                           |
+                           |Und auf einmal stehst du drin, in dem Labyrinth. Nach der überraschend kurzen Orientierung, in der dir praktisch nichts mitgeteilt wurde, hat man dich durch das Eingangstor geschoben, hinter dir verriegelt, und dich mit dir selbst allein gelassen. Zugegebenermaßen, du hast es dir ja auch freiwillig ausgesucht.
+                           |
+                           |Vor dir sind befinden sich, nebeneinander, zwei steinerne Treppen: Eine führt nach oben, die andere nach unten. Beide machen bald eine Kurve, Du kannst also nicht erkennen, wo sie hin führen.
+                           |
+                           |$require: feige > 2
+                           |
+                           |
+                           |$next: treppe-nach-oben
+                           |$next: treppe-nach-unten
+                           |$next: abwarten""".stripMargin).settings ==
+        Seq(model.Setting.Start,
+          model.Setting.Name("First Scene"),
+          model.Setting.Require(
+            model.Expression.Binary(
+              model.Expression.Greater,
+              model.Expression.Text("feige"),
+              model.Expression.Number(2))),
+          model.Setting.Next("treppe-nach-oben"),
+          model.Setting.Next("treppe-nach-unten"),
+          model.Setting.Next("abwarten")))
     }
   }
 }

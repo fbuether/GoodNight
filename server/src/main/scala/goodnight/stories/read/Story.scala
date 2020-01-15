@@ -101,7 +101,8 @@ class Story(components: ControllerComponents,
 
 
 
-  def asReadState(player: db.model.Player,
+  def asReadPlayerState(story: db.model.Story,
+    player: db.model.Player,
     states: Seq[(db.model.State, db.model.Quality)],
     activity: db.model.Activity,
     scene: db.model.Scene,
@@ -175,7 +176,8 @@ class Story(components: ControllerComponents,
       scene <- DbOption(db.Scene.named(story.urlname, activity.scene));
       choices <- db.Scene.namedList(story.urlname,
         SceneView.getChoices(story, scene).toList))
-    yield Some(asReadState(player, states, activity, scene, choices))
+    yield Some(asReadPlayerState(story, player, states, activity,
+      scene, choices))
 
 
 

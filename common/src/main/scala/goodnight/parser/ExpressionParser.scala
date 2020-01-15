@@ -124,6 +124,9 @@ object ExpressionParser {
 
 
   def expression[_:P]: P[Expression] =
+    P(binaryOr)
+
+  def onlyExpression[_:P] :P[Expression] =
     P(Start ~ binaryOr ~ End)
 
   def parse(raw: String): Either[String, Expression] =
