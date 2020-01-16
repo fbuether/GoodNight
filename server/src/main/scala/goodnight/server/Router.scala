@@ -86,7 +86,7 @@ class Router(
     case CreateTemporary(story) => readPlayer.createTemporary(story)
       // model.read.PlayerState
 
-    case DoScene(story, scene) => readScene.doScene(story, scene)
+    case GoScene(story, scene) => readScene.doScene(story, scene)
       // model.read.Outcome
 
 

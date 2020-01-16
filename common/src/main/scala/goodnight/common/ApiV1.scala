@@ -70,7 +70,7 @@ object ApiV1 {
   // on success, returns the outcome as well as the new scene.
   // todo: return results of activity and changes of state.
   // type: model.read.Outcome = (model.read.Activity, model.read.Scene)
-  object DoScene extends ApiPath("POST", p, C("story/"), S, C("/do/"), S)
+  object GoScene extends ApiPath("POST", p, C("story/"), S, C("/go/"), S)
 
 
 
