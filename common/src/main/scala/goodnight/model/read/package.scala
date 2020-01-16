@@ -17,4 +17,8 @@ package object read {
   //
   // StoryData is also the type of the reply of ApiV1.Story
   type StoryState = (Story, Option[PlayerState])
+
+  // the outcome of a DoScene action, showing what happens to the player
+  // and what is next.
+  type Outcome = (Activity, Scene)
 }

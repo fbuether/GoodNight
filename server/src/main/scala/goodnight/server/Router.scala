@@ -17,6 +17,7 @@ import goodnight.stories.read
 import goodnight.stories.write
 
 import goodnight.common.ApiV1._
+import goodnight.model
 
 
 class Router(
@@ -27,7 +28,7 @@ class Router(
   authSignIn: authentication.SignIn,
   profile: Profile,
   readStory: read.Story,
-  readScenes: read.Scenes,
+  readScene: read.Scene,
   readChoices: read.Choices,
   readPlayer: read.Player,
   writeStories: write.Stories,
@@ -76,12 +77,17 @@ class Router(
     // Reading Stories
     //
     case Stories() => readStory.getAvailableStories(header.target.queryMap)
-    case Story(story) => readStory.getStory(story)
+      // Seq[model.read.Story]
+
+    case Story(story) => readStory.getStory(story) // model.read.StoryState
 
     case CreatePlayer(story) => readPlayer.createPlayer(story)
+      // model.read.PlayerState
     case CreateTemporary(story) => readPlayer.createTemporary(story)
+      // model.read.PlayerState
 
-    case DoScene(story, scene) => readScenes.doScene(story, scene)
+    case DoScene(story, scene) => readScene.doScene(story, scene)
+      // model.read.Outcome
 
 
     //
@@ -91,7 +97,7 @@ class Router(
 
     case Content(story) => writeStories.getContent(story)
 
-    case Scene(story, scene) => readScenes.getScene(story, scene)
+    case Scene(story, scene) => readScene.getScene(story, scene)
 
     case CreateScene(story) => writeScenes.createScene(story)
     case SaveScene(story, scene) => writeScenes.saveScene(story, scene)

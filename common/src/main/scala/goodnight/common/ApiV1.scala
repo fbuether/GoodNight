@@ -69,7 +69,7 @@ object ApiV1 {
   // Requires the the storyUrlname and the sceneUrlname as parameter.
   // on success, returns the outcome as well as the new scene.
   // todo: return results of activity and changes of state.
-  // type: (model.Activity, model.SceneView)
+  // type: model.read.Outcome = (model.read.Activity, model.read.Scene)
   object DoScene extends ApiPath("POST", p, C("story/"), S, C("/do/"), S)
 
 

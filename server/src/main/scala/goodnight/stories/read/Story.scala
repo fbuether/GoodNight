@@ -47,7 +47,8 @@ class Story(components: ControllerComponents,
         getStoryQuery(request.identity, query.contains("myself"),
           // send only public stories if requested or not logged in
           query.contains("publicOnly") || !request.identity.isDefined).
-          map(stories => Ok(stories.map(toReadStory)))))
+          map(stories =>
+            result[Seq[model.read.Story]](Ok, stories.map(toReadStory)))))
 
 
   def defaultActivity(story: db.model.Story, player: db.model.Player,
@@ -186,5 +187,5 @@ class Story(components: ControllerComponents,
       database.run(
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
           withOptionalPlayerState(story, request.identity, state =>
-            Ok((toReadStory(story), state))))))
+            result[model.read.StoryState](Ok, (toReadStory(story), state))))))
 }

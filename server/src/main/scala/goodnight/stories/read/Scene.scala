@@ -16,7 +16,7 @@ import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 
 
-class Scenes(components: ControllerComponents,
+class Scene(components: ControllerComponents,
   database: Database,
   player: Player,
   auth: AuthService)(
@@ -43,5 +43,6 @@ class Scenes(components: ControllerComponents,
                 SceneView.ofScene(story, scene).flatMap(sceneView =>
                   Activity.doScene(playerState.player, playerState.state,
                     scene).map(activityState =>
-                    Accepted((activityState._1.model, sceneView)))))))))
+                    result[model.read.Outcome](Accepted,
+                      (activityState._1.model, sceneView)))))))))
 }

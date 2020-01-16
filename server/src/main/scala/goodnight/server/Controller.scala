@@ -67,6 +67,12 @@ class Controller(
       }))
 
 
+  // make the return type of this result explicit
+  protected def result[A](status: Status, body: A)(
+    implicit ev: Serialisable[A]): Result =
+    status(body)
+
+
   // for writing json values, or any json-able values, directly:
   implicit def jsonWriteableA[A](implicit ev: Serialisable[A]): Writeable[A] =
     Writeable(data => ByteString(write(data)), Some("application/json"))

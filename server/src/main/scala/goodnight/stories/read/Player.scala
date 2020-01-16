@@ -56,11 +56,14 @@ class Player(components: ControllerComponents,
       GetOrNotFound(db.Scene.defaultOfStory(story.urlname)).flatMap(scene =>
         Activity.createNewPlayer(user, story, name).flatMap(pi =>
           SceneView.ofScene(story, pi._4).map(sceneView =>
-            // todo: fetch player state as given by first scene.
-            ???))))
-            // Created((pi._1.model(pi._2),
-            //   pi._3.model,
-            //   sceneView))))))
+
+            result[model.read.PlayerState](Created,
+              // todo: fetch player state as given by first scene.
+              "well"
+                // Created((pi._1.model(pi._2),
+                //   pi._3.model,
+                //   sceneView))))))
+            )))))
 
 
   case class WithName(name: String)

@@ -175,7 +175,7 @@ abstract class GoodnightRawComponents(context: Context)
   lazy val profile = new Profile(cc, database, silhouette)
 
   lazy val readStories = new read.Story(cc, database, readPlayer, silhouette)
-  lazy val readScenes = new read.Scenes(cc, database, readPlayer, silhouette)
+  lazy val readScene = new read.Scene(cc, database, readPlayer, silhouette)
   lazy val readChoices = new read.Choices(cc, database, silhouette)
   lazy val readPlayer = new read.Player(cc, database, silhouette, authSignUp)
   lazy val writeStories = new write.Stories(cc, database, silhouette)
@@ -185,6 +185,6 @@ abstract class GoodnightRawComponents(context: Context)
   // router, combines routes with controllers.
 
   lazy val router = new Router(actionBuilder, bodyParsers, frontend,
-    authSignUp, authSignIn, profile, readStories, readScenes, readChoices,
+    authSignUp, authSignIn, profile, readStories, readScene, readChoices,
     readPlayer, writeStories, writeScenes, assets)
 }
