@@ -33,7 +33,7 @@ class Scene(components: ControllerComponents,
 
 
 
-  def doScene(storyUrlname: String, sceneUrlname: String) =
+  def goScene(storyUrlname: String, sceneUrlname: String) =
     // todo: check if the player is in fact capable of doing this scene.
     auth.SecuredAction.async(request =>
       database.run(for (

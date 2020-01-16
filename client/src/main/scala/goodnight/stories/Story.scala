@@ -37,7 +37,7 @@ object Story {
         old :+ effect)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def doScene(next: String): Callback =
+    def goScene(next: String): Callback =
       bs.state.flatMap(state =>
         Request(ApiV1.GoScene, state.scene.story, next).send.
           forStatus(202).forJson[read.Outcome].
@@ -52,7 +52,7 @@ object Story {
         <.div(^.id := "centre",
           Scene.component(Scene.Props(props.router, props.story,
             props.player, props.state, props.activity.effects,
-            state.scene, doScene))),
+            state.scene, goScene))),
         <.div(^.id := "side",
           <.h3(props.player.name),
           <.p("Your current state:"),
