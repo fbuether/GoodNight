@@ -48,7 +48,6 @@ object Convert {
           quality.urlname, quality.name, quality.image) }
 
 
-
   def read(qualities: Seq[db.model.Quality],
     states: Seq[(db.model.State, db.model.Quality)],
     scene: model.Scene, activity: db.model.Activity):
@@ -60,6 +59,14 @@ object Convert {
         read(readQuality(qualities, q),
           Expression.toString(
             Expression.evaluate(states, qualities, v))) }))
+
+  def read(qualities: Seq[db.model.Quality],
+    activity: db.model.Activity, effects: Seq[db.model.State]):
+      model.read.Activity =
+    model.read.Activity(activity.story,
+      activity.user,
+      activity.scene,
+      effects.map(read(qualities, _)))
 
 
   private def getFirstQuality(expr: model.Expression): Option[String] =
