@@ -58,13 +58,13 @@ object Scene {
       <.li(
         Image.render(router, effect.quality.image),
         <.em(
-          <.strong(effect.quality.name),
-          " is now: ",
           (effect match {
             case read.State.Bool(_, v) =>
-              if (v) "you have this"
-              else "you do not have this"
-            case read.State.Integer(_, v) => v.toString })))
+              if (v) TagMod("You now have ", <.strong(effect.quality.name), ".")
+              else TagMod(<.strong(effect.quality.name), " is now gone!")
+            case read.State.Integer(_, v) =>
+              TagMod(<.strong(effect.quality.name),
+                " is now " + v.toString + ".") })))
 
     def render(props: Props, state: State) =
       <.div(

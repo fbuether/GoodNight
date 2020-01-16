@@ -20,6 +20,7 @@ object SceneView {
   def parse(story: db.model.Story, scene: db.model.Scene): model.Scene = {
     SceneParser.parseScene(story.model, scene.raw.replace("\r\n", "\n")) match {
       case Left(a) =>
+        println("*** Parsing a scene did fail:")
         println(scene.raw)
         println(a)
         scene.model
@@ -38,16 +39,7 @@ object SceneView {
   def ofScene(story: db.model.Story, dbScene: db.model.Scene)(
     implicit ec: ExecutionContext): DBIO[model.SceneView] = {
 
-    // todo: better handling of \r\n-s
-    val scene = SceneParser.parseScene(story.model,
-      dbScene.raw.replace("\r\n", "\n")
-    ) match {
-      case Left(a) =>
-        println(dbScene.raw)
-        println(a)
-        dbScene.model
-      case Right(r) => r
-    }
+    val scene = parse(story, dbScene)
 
     val includes = scene.settings.
       collect({ case model.Setting.Include(s) => s}).toList

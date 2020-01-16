@@ -78,24 +78,31 @@ class Story(components: ControllerComponents,
       model.read.Quality.Integer(quality.story,
         quality.urlname, quality.name, quality.image) }
 
-  def asReadState(state: db.model.State, quality: db.model.Quality):
-      model.read.State = quality.sort match {
-    case db.model.Sort.Bool =>
-      model.read.State(model.read.Quality.Bool(quality.story,
-        quality.urlname, quality.name, quality.image),
-        state.value == "true")
-    case db.model.Sort.Integer =>
-      model.read.State(model.read.Quality.Integer(quality.story,
-        quality.urlname, quality.name, quality.image),
-        Try(state.value.toInt).getOrElse(0)) }
+  def asReadState(quality: model.read.Quality, value: String):
+      model.read.State = quality match {
+    case quality @ model.read.Quality.Bool(_,_,_,_) =>
+      model.read.State.Bool(quality, value == "true")
+    case quality @ model.read.Quality.Integer(_,_,_,_) =>
+      model.read.State.Integer(quality, Try(value.toInt).getOrElse(0)) }
 
-  val effects = Seq(
-    // todo: generate actual values.
-    model.read.State(model.read.Quality.Integer("das-schloss",
-      "gut-situiert",
-      "Gut situiert",
-      "Chea.png"),
-      7))
+
+  def getFirstQuality(expr: model.Expression): Option[String] = expr match {
+    case model.Expression.Text(n) => Some(n)
+    case model.Expression.Number(_) => None
+    case model.Expression.Unary(_, e) => getFirstQuality(e)
+    case model.Expression.Binary(_, e1, e2) =>
+      getFirstQuality(e1).orElse(getFirstQuality(e2))
+  }
+
+  val invalidDefaultQuality =
+    model.read.Quality.Bool("invalid story",
+    "invalid quality", "invalid quality", "X.png")
+
+  def qualityOfName(qualities: Seq[db.model.Quality], name: String):
+      model.read.Quality =
+    qualities.find(_.urlname == name).map(asReadQuality).
+      // this *should* never happen, as the test text is pre-typechecked.
+      getOrElse(invalidDefaultQuality)
 
   def toReadChoice(story: db.model.Story, dbScene: db.model.Scene,
     qualities: Seq[db.model.Quality],
@@ -106,27 +113,11 @@ class Story(components: ControllerComponents,
     val requires = scene.settings.collect({
       case model.Setting.Require(e) => e })
 
-    def getFirstQuality(expr: model.Expression): Option[String] = expr match {
-      case model.Expression.Text(n) => Some(n)
-      case model.Expression.Number(_) => None
-      case model.Expression.Unary(_, e) => getFirstQuality(e)
-      case model.Expression.Binary(_, e1, e2) =>
-        getFirstQuality(e1).orElse(getFirstQuality(e2))
-    }
-
-    val invalidDefaultQuality = model.read.Quality.Bool(scene.story,
-      "invalid quality", "invalid quality", "X.png")
-
-    def qualityOfName(name: String): model.read.Quality =
-      qualities.find(_.urlname == name).map(asReadQuality).
-        // this *should* never happen, as the test text is pre-typechecked.
-        getOrElse(invalidDefaultQuality)
-
     val tests = scene.settings.collect({
       case model.Setting.Require(expr) =>
         model.read.Test(
-          qualityOfName(getFirstQuality(expr).getOrElse("")),
-          Activity.evaluateTest(state, qualities, expr) match {
+          qualityOfName(qualities, getFirstQuality(expr).getOrElse("")),
+          Expression.evaluate(state, qualities, expr) match {
             case Some(model.Expression.Value.Bool(v)) => v
             case Some(model.Expression.Value.Integer(i)) => i > 0
             case _ => false
@@ -136,8 +127,7 @@ class Story(components: ControllerComponents,
     model.read.Choice(scene.urlname,
       scene.text,
       tests.forall(_.succeeded),
-      tests
-    )
+      tests)
   }
 
 
@@ -149,14 +139,18 @@ class Story(components: ControllerComponents,
     scene: db.model.Scene,
     choices: Seq[db.model.Scene]
   ): model.read.PlayerState = {
+    val parsed = SceneView.parse(story, scene)
 
     // (player, states, activity, scene)
     (model.read.Player(player.user, player.story, player.name),
-      states.map(Function.tupled(asReadState)),
+      states.map(state => asReadState(asReadQuality(state._2), state._1.value)),
       model.read.Activity(player.story,
         player.user,
         activity.scene,
-        effects),
+        parsed.settings.collect({ case model.Setting.Set(q, v) =>
+          asReadState(qualityOfName(qualities, q),
+            Expression.toString(
+              Expression.evaluate(states, qualities, v))) })),
       model.read.Scene(scene.story,
         scene.urlname,
         scene.text,
@@ -191,9 +185,6 @@ class Story(components: ControllerComponents,
     auth.UserAwareAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(urlname)).flatMap(story =>
-          withOptionalPlayerState(story, request.identity, { state =>
-            val result: model.read.StoryState = (toReadStory(story), state)
-            println(result)
-            Ok(result)
-          }))))
+          withOptionalPlayerState(story, request.identity, state =>
+            Ok((toReadStory(story), state))))))
 }
