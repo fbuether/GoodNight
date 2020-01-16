@@ -50,25 +50,39 @@ class Player(components: ControllerComponents,
     })
 
 
+
+  def getFirstScene(story: db.model.Story):
+      DBIO[db.model.Scene] =
+    // todo: use the actual first scene, or any of them if multiple.
+    db.Scene.defaultOfStory(story.urlname)
+
+
+  private def createNewPlayer(user: String, story: String, name: String):
+      DBIO[db.model.Player] =
+    db.Player.insert(db.model.Player(UUID.randomUUID(),
+      user, story, name))
+
+
   def doCreatePlayer(user: db.model.User, storyUrlname: String, name: String):
       DBIO[Result] =
     for (
       story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
+      scene <- GetOrNotFound(getFirstScene(story.urlname));
+      player <- createNewPlayer(user.name, story, name);
       qualities <- db.Quality.allOfStory(story.urlname);
-      scene <- GetOrNotFound(db.Scene.defaultOfStory(story.urlname));
-      pi <- Activity.createNewPlayer(user, story, name);
-      sceneView <- SceneView.ofScene(story, pi._4);
-      // todo: get the states that result from the scene activity
-      states <- DBIO.successful(Seq());
+      readScene <- DBIO.successful(SceneView.parse(scene));
+
+      (activity, effects) <- Activity.go(user.name,
+        qualities, Seq(), None, readScene);
+
       choices <- db.Scene.namedList(story.urlname,
         SceneView.getChoices(story, scene).toList)
     ) yield
         // type PlayerState = (Player, States, Activity, Scene)
         result[model.read.PlayerState](Created,
-          (Convert.read(pi._1),
-            pi._2.map(Convert.read(qualities, _)),
-            Convert.read(qualities, states, SceneView.parse(scene),
-              pi._3),
+          (Convert.read(player),
+            effects.map(Convert.read(qualities, _)),
+            Convert.read(qualities, states, readScene, activity),
             Convert.read(qualities, states, scene, choices)))
 
 
