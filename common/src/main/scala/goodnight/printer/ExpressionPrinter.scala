@@ -35,18 +35,18 @@ object ExpressionPrinter {
   }
 
   private def toTest(op: BinaryOperator): String = op match {
-    case Add => "plus"
-    case Sub => "minus"
-    case Mult => "times"
-    case Div => "divided by"
+    case Add => "+"
+    case Sub => "-"
+    case Mult => "*"
+    case Div => "/"
 
-    case And => " and "
-    case Or => " or "
+    case And => "and"
+    case Or => "or"
 
-    case Greater => "more than"
-    case GreaterOrEqual => "at least"
-    case Less => "less than"
-    case LessOrEqual => "at most"
+    case Greater => "is more than"
+    case GreaterOrEqual => "is at least"
+    case Less => "is less than"
+    case LessOrEqual => "is at most"
     case Equal => "is"
     case NotEqual => "is not"
   }

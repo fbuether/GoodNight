@@ -57,4 +57,10 @@ object Expression {
   }
 
   type Context = Map[String, Type]
+
+  sealed trait Value
+  object Value {
+    case class Bool(v: Boolean) extends Value
+    case class Integer(v: Int) extends Value
+  }
 }
