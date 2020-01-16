@@ -78,7 +78,7 @@ object Scene {
         ))
   }
 
-  def component = ScalaComponent.builder[Props]("StoryRoll").
+  def component = ScalaComponent.builder[Props]("Scene").
     initialState(State(())).
     renderBackend[Backend].
     build

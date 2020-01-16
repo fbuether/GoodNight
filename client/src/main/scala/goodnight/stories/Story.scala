@@ -21,9 +21,10 @@ object Story {
   case class Props(router: pages.Router, story: read.Story,
     player: read.Player,
     state: read.States,
-    activity: read.Activity,
+    firstActivity: read.Activity,
     firstScene: read.Scene)
-  case class State(scene: read.Scene, state: read.States)
+  case class State(activity: read.Activity, scene: read.Scene,
+    state: read.States)
 
   def mergeState(old: read.States, effects: read.States) =
     // todo: wow, this is inefficient.
@@ -42,8 +43,10 @@ object Story {
         Request(ApiV1.GoScene, state.scene.story, next).send.
           forStatus(202).forJson[read.Outcome].
           body.flatMap({ case (activity, scene) =>
-            bs.modState(old => old.copy(scene = scene,
-            state = mergeState(old.state, activity.effects))).async
+            bs.modState(old => old.copy(
+              activity = activity,
+              scene = scene,
+              state = mergeState(old.state, activity.effects))).async
           }).
           toCallback)
 
@@ -51,7 +54,7 @@ object Story {
       <.div(^.id := "matter",
         <.div(^.id := "centre",
           Scene.component(Scene.Props(props.router, props.story,
-            props.player, props.state, props.activity.effects,
+            props.player, props.state, state.activity.effects,
             state.scene, goScene))),
         <.div(^.id := "side",
           <.h3(props.player.name),
@@ -61,7 +64,8 @@ object Story {
   }
 
   val component = ScalaComponent.builder[Props]("Story").
-    initialStateFromProps(props => State(props.firstScene, props.state)).
+    initialStateFromProps(props => State(props.firstActivity,
+      props.firstScene, props.state)).
     renderBackend[Backend].
     build
 

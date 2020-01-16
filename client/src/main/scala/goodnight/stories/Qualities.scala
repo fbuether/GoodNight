@@ -29,6 +29,7 @@ object Qualities {
         // todo: link to a quality scene, if one exists
         // router.link(pages.Quality(story.urlname, state.quality.urlname))(
         <.span(
+          ^.className := "quality",
           // ^.title := state.quality.description,
           Image.component(router, state.quality.image),
           <.span(state.quality.name)),
@@ -39,9 +40,11 @@ object Qualities {
 
     def render(props: Props, state: State): VdomElement =
       <.ul(^.className := "quality",
-        props.state.map(
-          renderSmallQuality(props.router, props.story, _)).
-          toTagMod)
+        props.state.filter({
+          case read.State.Bool(_, v) => v
+          case read.State.Integer(_, v) => v != 0 }).
+          map(renderSmallQuality(props.router, props.story, _)).
+        toTagMod)
 
         // <.li(^.className := "big",
         //   <.a(^.href := "#",
