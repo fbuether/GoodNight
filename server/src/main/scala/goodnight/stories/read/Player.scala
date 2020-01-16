@@ -52,18 +52,26 @@ class Player(components: ControllerComponents,
 
   def doCreatePlayer(user: db.model.User, storyUrlname: String, name: String):
       DBIO[Result] =
-    GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-      GetOrNotFound(db.Scene.defaultOfStory(story.urlname)).flatMap(scene =>
-        Activity.createNewPlayer(user, story, name).flatMap(pi =>
-          SceneView.ofScene(story, pi._4).map(sceneView =>
+    for (
+      story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
+      qualities <- db.Quality.allOfStory(story.urlname);
+      scene <- GetOrNotFound(db.Scene.defaultOfStory(story.urlname));
+      pi <- Activity.createNewPlayer(user, story, name);
+      sceneView <- SceneView.ofScene(story, pi._4);
+      // todo: get the states that result from the scene activity
+      states <- DBIO.successful(Seq());
+      choices <- db.Scene.namedList(story.urlname,
+        SceneView.getChoices(story, scene).toList)
+    ) yield
+        // type PlayerState = (Player, States, Activity, Scene)
+        result[model.read.PlayerState](Created,
+          (Convert.read(pi._1),
+            pi._2.map(Convert.read(qualities, _)),
+            Convert.read(qualities, states, SceneView.parse(scene),
+              pi._3),
+            Convert.read(qualities, states, scene, choices)))
 
-            result[model.read.PlayerState](Created,
-              // todo: fetch player state as given by first scene.
-              "well"
-                // Created((pi._1.model(pi._2),
-                //   pi._3.model,
-                //   sceneView))))))
-            )))))
+
 
 
   case class WithName(name: String)

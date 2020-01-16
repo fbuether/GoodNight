@@ -104,14 +104,14 @@ object SceneParser {
   private def titleOfContent(content: String): String =
     content.substring(0, content.length.min(20))
 
-  def parseScene(story: model.Story, raw: String):
+  def parseScene(storyUrlname: String, raw: String):
       Either[String, model.Scene] =
     parsePScene(raw, false).map({ pScene =>
       val title = pScene.settings.
         collect({ case model.Setting.Name(n) => n }).
         headOption.
         getOrElse(titleOfContent(pScene.content))
-      model.Scene(story.urlname,
+      model.Scene(storyUrlname,
         raw,
         title,
         goodnight.urlnameOf(title),

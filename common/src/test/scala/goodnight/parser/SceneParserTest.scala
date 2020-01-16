@@ -18,11 +18,8 @@ class SceneParserTest extends FunSpec with Inside {
       case Left(error) => throw new Error(error)
     }
 
-  val parserStory = model.Story("--", "storyname", "storyurlname",
-    "storyimage", "storydescription", true)
-
   val fullParsed: (String => model.Scene) =
-    SceneParser.parseScene(parserStory, _) match {
+    SceneParser.parseScene("--", _) match {
       case Right(scene) => scene
       case Left(error) => throw new Error(error)
     }

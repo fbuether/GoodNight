@@ -36,7 +36,7 @@ class Scenes(components: ControllerComponents,
     auth.SecuredAction.async(parse.text)(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
-          SceneParser.parseScene(story.model, request.body) match {
+          SceneParser.parseScene(story.urlname, request.body) match {
             case Right(scene) =>
               val dbScene = dbSceneOf(scene)
               db.Scene.insert(dbScene).map(_ =>
@@ -61,7 +61,7 @@ class Scenes(components: ControllerComponents,
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>
           GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).
             flatMap(scene =>
-              SceneParser.parseScene(story.model, request.body) match {
+              SceneParser.parseScene(story.urlname, request.body) match {
                 case Right(newScene) if newScene.urlname == scene.urlname =>
                   db.Scene().insertOrUpdate(updateScene(scene, newScene)).
                     map(_ =>

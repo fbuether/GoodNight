@@ -17,8 +17,8 @@ import goodnight.server.PostgresProfile.Database
 
 
 object SceneView {
-  def parse(story: db.model.Story, scene: db.model.Scene): model.Scene = {
-    SceneParser.parseScene(story.model, scene.raw.replace("\r\n", "\n")) match {
+  def parse(scene: db.model.Scene): model.Scene = {
+    SceneParser.parseScene(scene.story, scene.raw.replace("\r\n", "\n")) match {
       case Left(a) =>
         println("*** Parsing a scene did fail:")
         println(scene.raw)
@@ -31,7 +31,7 @@ object SceneView {
 
   // extracts all scenes refered by next and include
   def getChoices(story: db.model.Story, dbScene: db.model.Scene): Seq[String] =
-    parse(story, dbScene).settings.collect({
+    parse(dbScene).settings.collect({
       case model.Setting.Next(scene) => scene
       case model.Setting.Include(scene) => scene })
 
@@ -39,13 +39,13 @@ object SceneView {
   def ofScene(story: db.model.Story, dbScene: db.model.Scene)(
     implicit ec: ExecutionContext): DBIO[model.SceneView] = {
 
-    val scene = parse(story, dbScene)
+    val scene = parse(dbScene)
 
     val includes = scene.settings.
       collect({ case model.Setting.Include(s) => s}).toList
     db.Scene.namedList(story.urlname, includes).flatMap({ includedDbScenes =>
       val includedScenes = includedDbScenes.map(scene =>
-        SceneParser.parseScene(story.model, scene.raw.replace("\r\n", "\n"))
+        SceneParser.parseScene(scene.story, scene.raw.replace("\r\n", "\n"))
           match {
           case Left(_) => scene.model
           case Right(r) => r
