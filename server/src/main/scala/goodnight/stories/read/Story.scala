@@ -70,19 +70,24 @@ class Story(components: ControllerComponents,
   // preparing read.Scenes.
 
 
+  def asReadQuality(quality: db.model.Quality) = quality.sort match {
+    case db.model.Sort.Bool =>
+      model.read.Quality.Bool(quality.story,
+        quality.urlname, quality.name, quality.image)
+    case db.model.Sort.Integer =>
+      model.read.Quality.Integer(quality.story,
+        quality.urlname, quality.name, quality.image) }
+
   def asReadState(state: db.model.State, quality: db.model.Quality):
-      model.read.State = {
-    quality.sort match {
-      case db.model.Sort.Bool =>
-        model.read.State(model.read.Quality.Bool(quality.story,
-          quality.urlname, quality.name, quality.image),
-          state.value == "true")
-      case db.model.Sort.Integer =>
-        model.read.State(model.read.Quality.Integer(quality.story,
-          quality.urlname, quality.name, quality.image),
-          Try(state.value.toInt).getOrElse(0))
-    }
-  }
+      model.read.State = quality.sort match {
+    case db.model.Sort.Bool =>
+      model.read.State(model.read.Quality.Bool(quality.story,
+        quality.urlname, quality.name, quality.image),
+        state.value == "true")
+    case db.model.Sort.Integer =>
+      model.read.State(model.read.Quality.Integer(quality.story,
+        quality.urlname, quality.name, quality.image),
+        Try(state.value.toInt).getOrElse(0)) }
 
   val effects = Seq(
     // todo: generate actual values.
@@ -92,8 +97,11 @@ class Story(components: ControllerComponents,
       "Chea.png"),
       7))
 
-  def toReadChoice(story: db.model.Story, dbScene: db.model.Scene):
+  def toReadChoice(story: db.model.Story, dbScene: db.model.Scene,
+    qualities: Seq[db.model.Quality],
+    state: Seq[(db.model.State, db.model.Quality)]):
       model.read.Choice = {
+
     val scene = SceneView.parse(story, dbScene)
     val requires = scene.settings.collect({
       case model.Setting.Require(e) => e })
@@ -106,17 +114,24 @@ class Story(components: ControllerComponents,
         getFirstQuality(e1).orElse(getFirstQuality(e2))
     }
 
-    def qualityOfName(name: String) =
-      // todo: actually load the actual quality.
-      model.read.Quality.Bool(scene.story,
-        goodnight.urlnameOf(name), name, "X.png")
+    val invalidDefaultQuality = model.read.Quality.Bool(scene.story,
+      "invalid quality", "invalid quality", "X.png")
+
+    def qualityOfName(name: String): model.read.Quality =
+      qualities.find(_.urlname == name).map(asReadQuality).
+        // this *should* never happen, as the test text is pre-typechecked.
+        getOrElse(invalidDefaultQuality)
 
     val tests = scene.settings.collect({
       case model.Setting.Require(expr) =>
         model.read.Test(
           qualityOfName(getFirstQuality(expr).getOrElse("")),
-          true,
-          ExpressionPrinter.print(expr)) })
+          Activity.evaluateTest(state, qualities, expr) match {
+            case Some(model.Expression.Value.Bool(v)) => v
+            case Some(model.Expression.Value.Integer(i)) => i > 0
+            case _ => false
+          },
+          ExpressionPrinter.toTest(expr)) })
 
     model.read.Choice(scene.urlname,
       scene.text,
@@ -127,6 +142,7 @@ class Story(components: ControllerComponents,
 
 
   def asReadPlayerState(story: db.model.Story,
+    qualities: Seq[db.model.Quality],
     player: db.model.Player,
     states: Seq[(db.model.State, db.model.Quality)],
     activity: db.model.Activity,
@@ -144,7 +160,7 @@ class Story(components: ControllerComponents,
       model.read.Scene(scene.story,
         scene.urlname,
         scene.text,
-        choices.map(toReadChoice(story, _))))
+        choices.map(toReadChoice(story, _, qualities, states))))
   }
 
   // type PlayerState = (model.Player, model.Activity, model.SceneView)
@@ -152,13 +168,14 @@ class Story(components: ControllerComponents,
       DBIO[Option[model.read.PlayerState]] =
     for (
       player <- DbOption(db.Player.ofStory(identity.user.name, story.urlname));
+      qualities <- db.Quality.allOfStory(story.urlname);
       states <- db.State.ofPlayer(identity.user.name, story.urlname);
       activity <- DbOption(db.Activity.newest(story.urlname,
         identity.user.name));
       scene <- DbOption(db.Scene.named(story.urlname, activity.scene));
       choices <- db.Scene.namedList(story.urlname,
         SceneView.getChoices(story, scene).toList))
-    yield Some(asReadPlayerState(story, player, states, activity,
+    yield Some(asReadPlayerState(story, qualities, player, states, activity,
       scene, choices))
 
 

@@ -32,7 +32,8 @@ object Scene {
         Image.render(router, test.quality.image),
         <.div(^.className := "tooltip",
           <.strong(test.quality.name),
-          <.span("required: ", test.description)))
+          <.span("required: ", test.description),
+          (if (!test.succeeded) <.span("you do not have this.") else <.span())))
 
     def renderChoice(router: pages.Router, state: read.States,
       goto: String => Callback,
