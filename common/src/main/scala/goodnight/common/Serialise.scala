@@ -48,7 +48,7 @@ object Serialise {
   implicit val serialise_sort: Serialisable[model.Sort] =
     ReadWriter.merge(
       macroRW[model.Sort.Boolean.type],
-      macroRW[model.Sort.Enumeration],
+      // macroRW[model.Sort.Enumeration],
       macroRW[model.Sort.Integer])
 
   implicit val serialise_quality: Serialisable[model.Quality] = macroRW

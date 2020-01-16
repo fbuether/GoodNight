@@ -84,15 +84,15 @@ object QualityParser {
         val boolSort = value.settings.
           collect({ case BooleanSort => model.Sort.Boolean }).
           headOption
-        val enumValues = model.Sort.Enumeration(
-          value.settings.
-            collect({ case EnumSortValue(s) => s }))
+        // val enumValues = model.Sort.Enumeration(
+        //   value.settings.
+        //     collect({ case EnumSortValue(s) => s }))
         val imageSort = value.settings.
           collect({ case IntSort(min,max) => model.Sort.Integer(min,max) }).
           headOption
         val sort =
           if (boolSort.isDefined) boolSort.get
-          else if (!enumValues.values.isEmpty) enumValues
+          // else if (!enumValues.values.isEmpty) enumValues
           else if (imageSort.isDefined) imageSort.get
           else model.Sort.Boolean
         val image = value.settings.collect({ case Image(i) => i }).headOption.

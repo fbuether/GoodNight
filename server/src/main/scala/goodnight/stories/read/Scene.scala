@@ -32,6 +32,7 @@ class Scenes(components: ControllerComponents,
 
 
   def doScene(storyUrlname: String, sceneUrlname: String) =
+    // todo: actually perform the consequences of a choice.
     auth.SecuredAction.async(request =>
       database.run(
         GetOrNotFound(db.Story.ofUrlname(storyUrlname)).flatMap(story =>

@@ -11,7 +11,7 @@ object Sort {
 
   // Enumeration: A value from a set of names (e.g. "psychic state")
   // the value of these qualities is the one choosen from the enum.
-  case class Enumeration(values: Seq[String]) extends Sort
+  // case class Enumeration(values: Seq[String]) extends Sort
 
   // Integer: A integral value, possibly limited (e.g. "hit points")
   // the value of these qualities is the decimal rep. of the integer.
