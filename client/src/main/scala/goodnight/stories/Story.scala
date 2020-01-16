@@ -55,6 +55,7 @@ object Story {
             state.scene, doScene))),
         <.div(^.id := "side",
           <.h3(props.player.name),
+          <.p("Your current state:"),
           Qualities.component(Qualities.Props(props.router, props.story,
             state.state))))
   }

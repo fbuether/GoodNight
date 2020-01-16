@@ -29,7 +29,7 @@ object Qualities {
         // todo: link to a quality scene, if one exists
         // router.link(pages.Quality(story.urlname, state.quality.urlname))(
         <.span(
-          ^.title := quality.description,
+          // ^.title := state.quality.description,
           Image.component(router, state.quality.image),
           <.span(state.quality.name)),
         <.span(^.className := "level", (state match {
