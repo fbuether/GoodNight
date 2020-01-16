@@ -52,7 +52,7 @@ class Player(components: ControllerComponents,
 
 
   def getFirstScene(story: db.model.Story):
-      DBIO[db.model.Scene] =
+      DBIO[Option[db.model.Scene]] =
     // todo: use the actual first scene, or any of them if multiple.
     db.Scene.defaultOfStory(story.urlname)
 
@@ -67,14 +67,16 @@ class Player(components: ControllerComponents,
       DBIO[Result] =
     for (
       story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
-      scene <- GetOrNotFound(getFirstScene(story.urlname));
-      player <- createNewPlayer(user.name, story, name);
+      scene <- GetOrNotFound(getFirstScene(story));
+      player <- createNewPlayer(user.name, story.urlname, name);
       qualities <- db.Quality.allOfStory(story.urlname);
       readScene <- DBIO.successful(SceneView.parse(scene));
 
       (activity, effects) <- Activity.go(user.name,
         qualities, Seq(), None, readScene);
 
+      // todo: replace states with effects
+      states <- db.State.ofPlayer(user.name, story.urlname);
       choices <- db.Scene.namedList(story.urlname,
         SceneView.getChoices(story, scene).toList)
     ) yield
