@@ -26,8 +26,10 @@ object Qualities {
     def renderSmallQuality(router: pages.Router, story: read.Story,
       state: read.State) =
       <.li(^.className := "small",
-        router.link(pages.Story(state.quality.urlname))(
-          // ^.title := quality.description,
+        // todo: link to a quality scene, if one exists
+        // router.link(pages.Quality(story.urlname, state.quality.urlname))(
+        <.span(
+          ^.title := quality.description,
           Image.component(router, state.quality.image),
           <.span(state.quality.name)),
         <.span(^.className := "level", (state match {
