@@ -23,16 +23,28 @@ object Story {
     state: read.States,
     activity: read.Activity,
     firstScene: read.Scene)
-  case class State(scene: read.Scene)
+  case class State(scene: read.Scene, state: read.States)
+
+  def mergeState(old: read.States, effects: read.States) =
+    // todo: wow, this is inefficient.
+    effects.foldLeft(old)((old,effect) =>
+      // todo: remove this state if effect.value is 0 or false
+      if (old.exists(_.quality == effect.quality))
+        old.map(state =>
+          if (state.quality == effect.quality) effect
+          else state)
+      else
+        old :+ effect)
 
   class Backend(bs: BackendScope[Props, State]) {
     def doScene(next: String): Callback =
       bs.state.flatMap(state =>
         Request(ApiV1.DoScene, state.scene.story, next).send.
-          forStatus(202).//forJson[(read.Activity, read.Scene)].
-          body. // flatMap({ case (activity, scene) =>
-            // bs.modState(_.copy(scene = scene)).async
-          // }).
+          forStatus(202).forJson[read.Outcome].
+          body.flatMap({ case (activity, scene) =>
+            bs.modState(old => old.copy(scene = scene,
+            state = mergeState(old.state, activity.effects))).async
+          }).
           toCallback)
 
     def render(props: Props, state: State): VdomElement =
@@ -44,11 +56,11 @@ object Story {
         <.div(^.id := "side",
           <.h3(props.player.name),
           Qualities.component(Qualities.Props(props.router, props.story,
-            props.state))))
+            state.state))))
   }
 
   val component = ScalaComponent.builder[Props]("Story").
-    initialStateFromProps(props => State(props.firstScene)).
+    initialStateFromProps(props => State(props.firstScene, props.state)).
     renderBackend[Backend].
     build
 
