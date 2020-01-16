@@ -69,18 +69,19 @@ class Story(components: ControllerComponents,
     }
 
 
-  def asReadPlayerState(story: db.model.Story,
+  def asReadPlayerState(
     qualities: Seq[db.model.Quality],
-    player: db.model.Player,
     states: Seq[(db.model.State, db.model.Quality)],
+    player: db.model.Player,
     activity: db.model.Activity,
-    scene: db.model.Scene,
+    dbScene: db.model.Scene,
+    scene: model.Scene,
     choices: Seq[db.model.Scene]): model.read.PlayerState =
     (Convert.read(player),
       states.map(state => Convert.read(Convert.read(state._2), state._1.value)),
-      Convert.read(qualities, states, SceneView.parse(scene),
-        activity),
-      Convert.read(qualities, states, scene, choices))
+      Convert.read(qualities, activity,
+        Activity.effects(scene, states.map(_._1))),
+      Convert.read(qualities, states, dbScene, choices))
 
 
   def loadPlayerState(story: db.model.Story, identity: Id):
@@ -92,10 +93,11 @@ class Story(components: ControllerComponents,
       activity <- DbOption(db.Activity.newest(story.urlname,
         identity.user.name));
       scene <- DbOption(db.Scene.named(story.urlname, activity.scene));
+      readScene <- DBIO.successful(SceneView.parse(scene));
       choices <- db.Scene.namedList(story.urlname,
         SceneView.getChoices(story, scene).toList))
-    yield Some(asReadPlayerState(story, qualities, player, states, activity,
-      scene, choices))
+    yield Some(asReadPlayerState(qualities, states, player, activity,
+      scene, readScene, choices))
 
 
 

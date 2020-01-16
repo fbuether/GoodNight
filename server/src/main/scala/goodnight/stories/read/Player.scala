@@ -84,7 +84,7 @@ class Player(components: ControllerComponents,
         result[model.read.PlayerState](Created,
           (Convert.read(player),
             effects.map(Convert.read(qualities, _)),
-            Convert.read(qualities, states, readScene, activity),
+            Convert.read(qualities, activity, effects),
             Convert.read(qualities, states, scene, choices)))
 
 
