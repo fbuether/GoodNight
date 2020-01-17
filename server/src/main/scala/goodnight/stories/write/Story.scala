@@ -56,8 +56,10 @@ class Story(components: ControllerComponents,
           request.identity.user.name, request.body)));
         _ <- EmptyOrConflict(db.Story.ofUrlname(editStory.urlname));
         dbStory <- db.Story.insert(editStory);
-        _ <- db.Scene.insert(initialScene(dbStory)))
-      yield result[model.edit.Story](Created, Convert.edit(dbStory))))
+        dbScene <- db.Scene.insert(initialScene(dbStory)))
+      yield result[(model.edit.Story, model.edit.Content)](Created,
+        (Convert.edit(dbStory),
+          Convert.edit(dbStory.urlname, Seq(dbScene), Seq())))))
 
 
 
@@ -66,21 +68,6 @@ class Story(components: ControllerComponents,
       database.run(for (
         scenes <- db.Scene.allOfStory(storyUrlname);
         qualities <- db.Quality.allOfStory(storyUrlname))
-      yield Ok(
-        ???)))
-// (scenes.map(_.model), qualities.map(_.model)))))
-
-      // database.run(
-      //   db.Scene.allOfStory(storyUrlname).flatMap(scenes =>
-      //     db.Quality.allOfStory(storyUrlname).map(qualities =>
-      //       Ok((scenes.map(_.model),
-      //         qualities.map(_.model)))))))
-
-
-    // auth.SecuredAction.async(request =>
-    //   database.run(
-    //     db.Scene.allOfStory(storyUrlname).flatMap(scenes =>
-    //       db.Quality.allOfStory(storyUrlname).map(qualities =>
-    //         Ok((scenes.map(_.model),
-    //           qualities.map(_.model)))))))
+      yield result[model.edit.Content](Ok,
+        Convert.edit(storyUrlname, scenes, qualities))))
 }
