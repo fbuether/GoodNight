@@ -102,7 +102,7 @@ object SceneParser {
 
 
   private def titleOfContent(content: String): String =
-    content.substring(0, content.length.min(20))
+    content.take(20)
 
   def parseScene(storyUrlname: String, raw: String):
       Either[String, model.Scene] =

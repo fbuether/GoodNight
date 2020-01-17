@@ -10,11 +10,11 @@ import goodnight.GoodnightServerTest
 class StoryEndpointTest extends GoodnightServerTest {
   describe("ApiV1.Stories") {
     describe("for an un-authenticated user") {
-      it("replies with 200 and Seq[model.Story]") {
+      it("replies with 200 and Seq[model.read.Story]") {
         request(GET, "/api/v1/stories")({ reply =>
           assert(reply.statusCode == 200)
 
-          val stories = read[Seq[model.Story]](reply.body)
+          val stories = read[Seq[model.read.Story]](reply.body)
           assume(stories.length > 0, "No stories in reply, cannot verify.")
 
           assert(stories.head.name.length > 0)
@@ -31,23 +31,20 @@ class StoryEndpointTest extends GoodnightServerTest {
   }
 
   describe("ApiV1.Story") {
-    type Reply = (model.Story,
-      Option[(model.Player, model.Activity, model.Scene)])
-
     describe("for a valid story") {
       describe("for an un-authenticated user") {
-        it ("replies with 200 and (model.Story, None)") {
-          val storyName = request(GET, "/api/v1/stories")({ reply =>
-            val stories = read[Seq[model.Story]](reply.body)
+        it ("replies with 200 and (model.read.Story, None)") {
+          val storyUrlname = request(GET, "/api/v1/stories")({ reply =>
+            val stories = read[Seq[model.read.Story]](reply.body)
             assume(stories.length > 0)
-            stories.head.name
+            stories.head.urlname
          })
 
-          request(GET, "/api/v1/story/" + storyName)({ reply =>
+          request(GET, "/api/v1/story/" + storyUrlname)({ reply =>
             assert(reply.statusCode == 200)
 
-            val story = read[Reply](reply.body)
-            assert(story._1.name == storyName)
+            val story = read[model.read.StoryState](reply.body)
+            assert(story._1.urlname == storyUrlname)
 
             // unauthenticated users have no player.
             assert(story._2 == None)

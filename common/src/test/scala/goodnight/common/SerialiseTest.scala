@@ -61,14 +61,14 @@ class SerialiseTest extends FunSpec {
                       "Gierig",
                       "Bomb.png"),
                     true,
-                    Expression.LessOrEqual, 5),
+                    "Gierig more than 5"),
                   read.Test(
                     read.Quality.Bool("das-schloss",
                       "fleissig",
                       "Fleißig",
                       "Blue Soap.png"),
                     true,
-                    true)
+                    "Fleißig")
                 )),
               read.Choice("abwarten-hesitate",
                 "# Wirklich abwarten?\nBist Du Dir ganz sicher?",
@@ -80,11 +80,11 @@ class SerialiseTest extends FunSpec {
                       "Unerfüllbar",
                       "Tree.png"),
                     false,
-                    true)))
+                    "Unerfüllbar")))
             )))))
 
       assert(write(testData) ==
-        """[{"urlname":"das-schloss","name":"Das Schloss","creator":"fbuether","image":"Newer Looking, But Older Rocket.png"},[[{"user":"fbuether","story":"das-schloss","name":"Sir Archibald"},[{"$type":"State.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"I can help you my son, I am Paddle Paul..png"},"value":true},{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"fleissig TV","name":"Fleißig TV","image":"Plasma TV.png"},"value":11},{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gut-situiert","name":"Gut situiert","image":"Chea.png"},"value":7}],{"story":"das-schloss","user":"fbuether","scene":"abwarten","effects":[{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gut-situiert","name":"Gut situiert","image":"Chea.png"},"value":7}]},{"story":"das-schloss","urlname":"abwarten","text":"# Erstmal abwarten.\n\nIrgendetwas wird schon passieren.","choices":[{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"$type":"Test.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"op":{"$type":"goodnight.model.Expression.LessOrEqual"},"other":5},{"$type":"Test.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"value":true}]},{"urlname":"abwarten-hesitate","text":"# Wirklich abwarten?\nBist Du Dir ganz sicher?","available":false,"tests":[{"$type":"Test.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"unerfuellbar","name":"Unerfüllbar","image":"Tree.png"},"succeeded":false,"value":true}]}]}]]]""")
+        """[{"urlname":"das-schloss","name":"Das Schloss","creator":"fbuether","image":"Newer Looking, But Older Rocket.png"},[[{"user":"fbuether","story":"das-schloss","name":"Sir Archibald"},[{"$type":"State.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"I can help you my son, I am Paddle Paul..png"},"value":true},{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"fleissig TV","name":"Fleißig TV","image":"Plasma TV.png"},"value":11},{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gut-situiert","name":"Gut situiert","image":"Chea.png"},"value":7}],{"story":"das-schloss","user":"fbuether","scene":"abwarten","effects":[{"$type":"State.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gut-situiert","name":"Gut situiert","image":"Chea.png"},"value":7}]},{"story":"das-schloss","urlname":"abwarten","text":"# Erstmal abwarten.\n\nIrgendetwas wird schon passieren.","choices":[{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"description":"Gierig more than 5"},{"quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"description":"Fleißig"}]},{"urlname":"abwarten-hesitate","text":"# Wirklich abwarten?\nBist Du Dir ganz sicher?","available":false,"tests":[{"quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"unerfuellbar","name":"Unerfüllbar","image":"Tree.png"},"succeeded":false,"description":"Unerfüllbar"}]}]}]]]""")
     }
   }
 
@@ -179,8 +179,8 @@ class SerialiseTest extends FunSpec {
           "Fleißig",
           "Blue Soap.png"),
         true,
-        true)) ==
-        """{"$type":"Test.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"value":true}""")
+        "Fleißig")) ==
+        """{"quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"description":"Fleißig"}""")
     }
 
     it("can be a choice") {
@@ -194,15 +194,15 @@ class SerialiseTest extends FunSpec {
               "Gierig",
               "Bomb.png"),
             true,
-            Expression.LessOrEqual, 5),
+            "Gierig at least 5"),
           read.Test(
             read.Quality.Bool("das-schloss",
               "fleissig",
               "Fleißig",
               "Blue Soap.png"),
             true,
-            true)))) ==
-        """{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"$type":"Test.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"op":{"$type":"goodnight.model.Expression.LessOrEqual"},"other":5},{"$type":"Test.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"value":true}]}""")
+            "Fleißig")))) ==
+        """{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"description":"Gierig at least 5"},{"quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"description":"Fleißig"}]}""")
     }
 
     it("can be a scene") {
@@ -220,15 +220,15 @@ class SerialiseTest extends FunSpec {
                   "Gierig",
                   "Bomb.png"),
                 true,
-                Expression.LessOrEqual, 5),
+                "Gierig at least 5"),
               read.Test(
                 read.Quality.Bool("das-schloss",
                   "fleissig",
                   "Fleißig",
                   "Blue Soap.png"),
                 true,
-                true)))))) ==
-        """{"story":"das-schloss","urlname":"abwarten","text":"# Erstmal abwarten.\n\nIrgendetwas wird schon passieren.","choices":[{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"$type":"Test.Integer","quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"op":{"$type":"goodnight.model.Expression.LessOrEqual"},"other":5},{"$type":"Test.Bool","quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"value":true}]}]}""")
+                "Fleißig")))))) ==
+        """{"story":"das-schloss","urlname":"abwarten","text":"# Erstmal abwarten.\n\nIrgendetwas wird schon passieren.","choices":[{"urlname":"abwarten-continue","text":"Mal sehen, yes?","available":true,"tests":[{"quality":{"$type":"Quality.Integer","story":"das-schloss","urlname":"gierig","name":"Gierig","image":"Bomb.png"},"succeeded":true,"description":"Gierig at least 5"},{"quality":{"$type":"Quality.Bool","story":"das-schloss","urlname":"fleissig","name":"Fleißig","image":"Blue Soap.png"},"succeeded":true,"description":"Fleißig"}]}]}""")
     }
   }
 }

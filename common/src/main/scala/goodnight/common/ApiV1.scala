@@ -35,11 +35,11 @@ object ApiV1 {
   // all available (to the user or publicly) stories.
   // may be filtered by header parameters:
   // - "myself" => stories written by the requester
-  // returns Ok(Seq[model.play.Story]) on success.
+  // returns Ok(Seq[model.read.Story]) on success.
   object Stories extends ApiPath("GET", p, C("stories"))
 
 
-  // type: PlayerActivity = model.Player, model.Activity
+  // type: PlayerActivity = model.reader, model.Activity
 
   // Story returns a specific story, and, if it exists, the state of the
   // current player in this story.
