@@ -115,6 +115,27 @@ object Serialise {
   implicit val serialise_read_test: Serialisable[model.read.Test] = macroRW
 
 
+  // serialise model.edit
+
+  implicit val serialise_edit_Content: Serialisable[model.edit.Content] =
+    macroRW
+
+  implicit val serialise_edit_QualityHeader:
+      Serialisable[model.edit.QualityHeader] = macroRW
+
+  implicit val serialise_edit_Quality: Serialisable[model.edit.Quality] =
+    macroRW
+
+  implicit val serialise_edit_SceneHeader:
+      Serialisable[model.edit.SceneHeader] = macroRW
+
+  implicit val serialise_edit_Scene: Serialisable[model.edit.Scene] = macroRW
+
+  implicit val serialise_edit_Story: Serialisable[model.edit.Story] = macroRW
+
+
+
+
 
   def write[A](a: A)(implicit rw: Serialisable[A]): String =
     default.write(a)

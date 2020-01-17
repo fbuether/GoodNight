@@ -80,9 +80,10 @@ object ApiV1 {
 
   // creates a new story.
   // expects the new name as the body.
-  // returns 201 (Created) on success with the new story as body.
+  // returns 201 (Created) on success with the new model.edit.Story and
+  // the initial content as body.
   // returns 409 (Conflict) on error.
-  object CreateStory extends ApiPath("POST", p, C("createStory"))
+  object CreateStory extends ApiPath("POST", p, C("create-story"))
 
   // load all scenes as well as qualities of a story.
   // type: (Seq[model.Scene], Seq[model.Quality])
