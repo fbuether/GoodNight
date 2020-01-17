@@ -11,24 +11,25 @@ import goodnight.api.authentication.AuthService
 import goodnight.common.Serialise._
 import goodnight.db
 import goodnight.model
+import goodnight.server.DbOption
 import goodnight.server.Controller
+import goodnight.server.EmptyOrConflict
 import goodnight.server.PostgresProfile.Database
 
 
-class Stories(components: ControllerComponents,
+class Story(components: ControllerComponents,
   database: Database,
   auth: AuthService)(
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-  private def newStoryOfName(user: String, name: String) =
-    db.model.Story(UUID.randomUUID(),
-      user,
-      name,
-      goodnight.urlnameOf(name),
-      "Moon.png",
-      "",
-      false)
+  private def newStoryOfName(user: String, name: String)(
+    implicit ec: ExecutionContext):
+      Option[db.model.Story] =
+    if (name.trim.length <= 0) None
+    else Some(db.model.Story(UUID.randomUUID(),
+      user, name.trim, goodnight.urlnameOf(name.trim),
+      "Moon.png", "", false))
 
   private def initialScene(story: db.model.Story) =
     db.model.Scene(UUID.randomUUID(),
@@ -46,13 +47,18 @@ class Stories(components: ControllerComponents,
          |and create scenes as you like. Be aware though, that you always
          |need one starting scene! (as given by $start).""".stripMargin)
 
+
   def createStory =
     auth.SecuredAction.async(parse.text)(request =>
-      database.run(
-        db.Story.insert(newStoryOfName(request.identity.user.name,
-          request.body)).flatMap(story =>
-          db.Scene.insert(initialScene(story)).map(_ =>
-            Created(story.model)))))
+      // todo: check if the user is allowed to create stories.
+      database.run(for (
+        editStory <- GetOr(BadRequest)(DBIO.successful(newStoryOfName(
+          request.identity.user.name, request.body)));
+        _ <- EmptyOrConflict(db.Story.ofUrlname(editStory.urlname));
+        dbStory <- db.Story.insert(editStory);
+        _ <- db.Scene.insert(initialScene(dbStory)))
+      yield result[model.edit.Story](Created, Convert.edit(dbStory))))
+
 
 
   def getContent(storyUrlname: String) =

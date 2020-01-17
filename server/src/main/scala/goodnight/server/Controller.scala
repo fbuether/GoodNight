@@ -9,8 +9,8 @@ import play.api.mvc.ControllerComponents
 import play.api.mvc.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import slick.jdbc.PostgresProfile.api._
 
+import goodnight.server.PostgresProfile.api._
 import goodnight.common.Serialise._
 
 
@@ -95,21 +95,24 @@ class Controller(
     def flatMap(cont: T => DBIO[Result]): DBIO[Result] =
       query.flatMap({
         case Some(element) => cont(element)
-        case None => DBIO.successful(NotFound(error(
-          "The requested element does not exist.")))
+        case None => DBIO.successful(NotFound(
+          "The requested element does not exist."))
       })
 
     def map(cont: T => Result): DBIO[Result] =
       flatMap(t => DBIO.successful(cont(t)))
   }
 
-  protected case class EmptyOrConflict[T](query: DBIO[Option[T]]) {
-    def andThen(cont: => DBIO[Result]): DBIO[Result] =
+  // extract option results from database queries
+  protected case class GetOr[T](error: Result)(query: DBIO[Option[T]]) {
+    def flatMap(cont: T => DBIO[Result]): DBIO[Result] =
       query.flatMap({
-        case None => cont
-        case Some(_) => DBIO.successful(Conflict(error(
-        "The element to save already exists.")))
+        case Some(element) => cont(element)
+        case None => DBIO.successful(error)
       })
+
+    def map(cont: T => Result): DBIO[Result] =
+      flatMap(t => DBIO.successful(cont(t)))
   }
 }
 

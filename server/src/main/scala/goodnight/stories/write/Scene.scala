@@ -16,7 +16,7 @@ import goodnight.server.PostgresProfile.Database
 import goodnight.parser.SceneParser
 
 
-class Scenes(components: ControllerComponents,
+class Scene(components: ControllerComponents,
   database: Database,
   auth: AuthService)(
   implicit ec: ExecutionContext)

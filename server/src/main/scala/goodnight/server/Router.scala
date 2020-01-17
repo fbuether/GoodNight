@@ -31,8 +31,8 @@ class Router(
   readScene: read.Scene,
   readChoices: read.Choices,
   readPlayer: read.Player,
-  writeStories: write.Stories,
-  writeScenes: write.Scenes,
+  writeStory: write.Story,
+  writeScene: write.Scene,
   assets: Assets)
     extends SimpleRouter {
 
@@ -76,30 +76,46 @@ class Router(
     //
     // Reading Stories
     //
+
+    // returns: Seq[model.read.Story]
     case Stories() => readStory.getAvailableStories(header.target.queryMap)
-      // Seq[model.read.Story]
 
-    case Story(story) => readStory.getStory(story) // model.read.StoryState
+    // returns: model.read.StoryState
+    case Story(story) => readStory.getStory(story)
 
+    // returns: model.read.PlayerState
     case CreatePlayer(story) => readPlayer.createPlayer(story)
-      // model.read.PlayerState
+    // returns: model.read.PlayerState
     case CreateTemporary(story) => readPlayer.createTemporary(story)
-      // model.read.PlayerState
 
+    // returns: model.read.Outcome
     case GoScene(story, scene) => readScene.goScene(story, scene)
-      // model.read.Outcome
 
 
     //
     // Editing Stories
     //
-    case CreateStory() => writeStories.createStory
 
-    case Content(story) => writeStories.getContent(story)
+    // expects: String (the story name)
+    // returns: (model.edit.Story, model.edit.Content)
+    case CreateStory() => writeStory.createStory
 
+    // returns: model.edit.Content
+    case Content(story) => writeStory.getContent(story)
+
+    // returns: model.edit.Scene
     case Scene(story, scene) => readScene.getScene(story, scene)
 
-    case CreateScene(story) => writeScenes.createScene(story)
-    case SaveScene(story, scene) => writeScenes.saveScene(story, scene)
+    // expects: String (the raw scene content)
+    // returns: model.edit.Scene
+    case CreateScene(story) => writeScene.createScene(story)
+    case SaveScene(story, scene) => writeScene.saveScene(story, scene)
+
+/*
+    // expects: String (the raw quality content)
+    // returns: model.edit.Quality
+    case CreateQuality(story) => writeQuality.createQuality(story)
+    case SaveQuality(story, quality) => writeQuality.saveQuality(story, quality)
+ */
   }
 }
