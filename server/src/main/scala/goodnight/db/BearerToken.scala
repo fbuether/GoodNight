@@ -6,7 +6,6 @@ import java.util.UUID
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Table
-import goodnight.server.TableQueryBase
 
 
 class BearerToken(tag: Tag) extends Table[model.BearerToken](

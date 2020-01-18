@@ -6,10 +6,12 @@ import java.util.UUID
 import goodnight.server.PostgresProfile._
 import goodnight.server.PostgresProfile.api._
 import goodnight.server.PostgresProfile.Table
+import goodnight.server.TableBase
 import goodnight.server.TableQueryBase
 
 
-class Activity(val tag: Tag) extends Table[model.Activity](tag, "activity") {
+class Activity(val tag: Tag) extends TableBase[model.Activity](
+  tag, "activity") {
   def id = column[UUID]("id", O.PrimaryKey)
   def story = column[String]("story")
   def user = column[String]("user")
