@@ -19,6 +19,7 @@ import goodnight.server.GetOrEither
 import goodnight.server.PostgresProfile.Database
 import goodnight.stories.read.SceneView
 
+
 class Scene(components: ControllerComponents,
   database: Database,
   auth: AuthService)(
@@ -48,7 +49,7 @@ class Scene(components: ControllerComponents,
           DBIO.successful(newSceneOfRaw(storyUrlname, request.body)));
         _ <- EmptyOrConflict(db.Scene.named(storyUrlname, newScene.urlname));
         dbScene <- db.Scene.insert(newScene))
-      yield result[model.edit.Scene](Ok, Convert.edit(dbScene))))
+      yield result[model.edit.Scene](Accepted, Convert.edit(dbScene))))
 
 
   def sceneOf(oldScene: db.model.Scene, raw: String):
@@ -69,5 +70,5 @@ class Scene(components: ControllerComponents,
         newScene <- GetOrEither(BadRequest.apply: String => Result)(
           DBIO.successful(sceneOf(oldScene, request.body)));
         _ <- db.Scene.update(newScene))
-      yield result[model.edit.Scene](Ok, Convert.edit(newScene))))
+      yield result[model.edit.Scene](Accepted, Convert.edit(newScene))))
 }

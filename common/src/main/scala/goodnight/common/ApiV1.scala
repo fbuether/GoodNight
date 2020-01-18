@@ -87,27 +87,25 @@ object ApiV1 {
 
   // load all scenes as well as qualities of a story.
   // type: (Seq[model.Scene], Seq[model.Quality])
-  object Content extends ApiPath("GET", p, C("write/story/"), S, C("/content"))
+  object Content extends ApiPath("GET", p, C("write/"), S, C("/content"))
 
   // load all info about a scene.
   // type: model.edit.Scene
-  object Scene extends ApiPath("GET", p, C("write/story/"), S, C("/scene/"), S)
+  object Scene extends ApiPath("GET", p, C("write/"), S, C("/scene/"), S)
 
   // create or update a story.
   // both actions require a body with the scene text.
   // replies 202 (Accepted) on success, and 409 (Conflict) if anything is
   // wrong.
   object CreateScene extends ApiPath("POST", p,
-    C("write/story/"), S, C("/create-scene"))
-  object SaveScene extends ApiPath("POST", p,
-    C("write/story/"), S, C("/scene/"), S)
+    C("write/"), S, C("/create-scene"))
+  object SaveScene extends ApiPath("POST", p, C("write/"), S, C("/scene/"), S)
 
-  // reading and changing qualities.
-  object Quality extends ApiPath("GET", p,
-    C("write/story/"), S, C("/quality/"), S)
+  // reading and changing qualities. types analogue to scenes.
+  object Quality extends ApiPath("GET", p, C("write/"), S, C("/quality/"), S)
   object CreateQuality extends ApiPath("POST", p,
-    C("write/story/"), S, C("/create-quality"))
+    C("write/"), S, C("/create-quality"))
   object SaveQuality extends ApiPath("POST", p,
-    C("write/story/"), S, C("/quality/"), S)
+    C("write/"), S, C("/quality/"), S)
 
 }
