@@ -14,7 +14,7 @@ class Quality(val tag: Tag) extends TableBase[model.Quality](tag, "quality") {
     MappedColumnType.base[model.Sort, String]({
       case model.Sort.Bool => "bool"
       case model.Sort.Integer => "int"
-      case _ => "unknown"
+      case _ => "unknown" // this, of course, should not happen.
     }, {
       case "int" => model.Sort.Integer
       case _ => model.Sort.Bool
@@ -45,4 +45,12 @@ object Quality extends TableQueryBase[model.Quality, Quality](new Quality(_)) {
       filter(_.story === story))
   def allOfStory(story: String): DBIO[Seq[model.Quality]] =
     allOfStoryQuery(story).result
+
+  private val namedQuery = Compiled((story: Rep[String],
+    urlname: Rep[String]) =>
+    apply().
+      filter(quality => quality.story === story && quality.urlname === urlname).
+      take(1))
+  def named(story: String, quality: String): DBIO[Option[model.Quality]] =
+    namedQuery(story, quality).result.headOption
 }

@@ -21,13 +21,13 @@ object Sort {
 
 case class Quality(
   story: String, // refers Story.urlname
-  name: String,
+  urlname: String,
 
+  raw: String,
+
+  name: String,
   sort: Sort,
   hidden: Boolean,
   scene: Option[String], // refers Scene.urlname
   image: String,
-  description: String) {
-
-  def urlname = goodnight.urlnameOf(name)
-}
+  description: String)

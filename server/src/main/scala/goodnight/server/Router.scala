@@ -33,6 +33,7 @@ class Router(
   readPlayer: read.Player,
   writeStory: write.Story,
   writeScene: write.Scene,
+  writeQuality: write.Quality,
   assets: Assets)
     extends SimpleRouter {
 
@@ -111,11 +112,12 @@ class Router(
     case CreateScene(story) => writeScene.createScene(story)
     case SaveScene(story, scene) => writeScene.saveScene(story, scene)
 
-/*
+    // returns: model.edit.Quality
+    case Quality(story, quality) => writeQuality.getQuality(story, quality)
+
     // expects: String (the raw quality content)
     // returns: model.edit.Quality
     case CreateQuality(story) => writeQuality.createQuality(story)
     case SaveQuality(story, quality) => writeQuality.saveQuality(story, quality)
- */
   }
 }

@@ -98,7 +98,8 @@ object QualityParser {
         val image = value.settings.collect({ case Image(i) => i }).headOption.
             getOrElse("X.png")
 
-        Right(model.Quality(storyUrlname, name,
+        Right(model.Quality(storyUrlname, goodnight.urlnameOf(name),
+          raw, name,
           sort, false, None, image, value.text))
     }
 }

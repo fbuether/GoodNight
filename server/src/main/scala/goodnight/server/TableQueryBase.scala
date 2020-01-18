@@ -11,9 +11,6 @@ import goodnight.db.model
 import scala.reflect._
 
 
-
-
-
 class TableQueryBase[M <: model.DbModel, T <: TableBase[M]](cons: Tag => T) {
   def apply(): TableQuery[T] = TableQuery[T](cons)
 
@@ -32,5 +29,3 @@ class TableQueryBase[M <: model.DbModel, T <: TableBase[M]](cons: Tag => T) {
       filter(_.id === obj.id).
       update(obj)
 }
-
-

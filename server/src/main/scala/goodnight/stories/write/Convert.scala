@@ -12,10 +12,6 @@ object Convert {
       story.image,
       story.public)
 
-  // def edit(): model.edit.Scene =
-  //   model.edit.Scene(story,
-  //     urlname,
-  //     text)
 
   def edit(storyUrlname: String,
     scenes: Seq[db.model.Scene],
@@ -41,4 +37,11 @@ object Convert {
       scene.urlname,
       scene.name,
       scene.raw)
+
+
+  def edit(quality: db.model.Quality): model.edit.Quality =
+    model.edit.Quality(quality.story,
+      quality.urlname,
+      quality.name,
+      quality.raw)
 }
