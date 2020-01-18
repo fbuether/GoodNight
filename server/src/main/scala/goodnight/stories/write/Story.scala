@@ -13,6 +13,7 @@ import goodnight.db
 import goodnight.model
 import goodnight.server.DbOption
 import goodnight.server.Controller
+import goodnight.server.GetOr
 import goodnight.server.EmptyOrConflict
 import goodnight.server.PostgresProfile.Database
 

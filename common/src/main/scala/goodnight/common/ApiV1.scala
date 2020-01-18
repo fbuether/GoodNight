@@ -90,20 +90,21 @@ object ApiV1 {
   object Content extends ApiPath("GET", p, C("story/"), S, C("/content"))
 
   // load all info about a scene.
-  // type: model.Scene
+  // type: model.edit.Scene
   object Scene extends ApiPath("GET", p, C("story/"), S, C("/scene/"), S)
 
   // create or update a story.
   // both actions require a body with the scene text.
   // replies 202 (Accepted) on success, and 409 (Conflict) if anything is
   // wrong.
-  object CreateScene extends ApiPath("POST", p, C("story/"), S, C("/scenes"))
+  object CreateScene extends ApiPath("POST", p,
+    C("story/"), S, C("/create-scene"))
   object SaveScene extends ApiPath("POST", p, C("story/"), S, C("/scene/"), S)
 
   // reading and changing qualities.
   object Quality extends ApiPath("GET", p, C("story/"), S, C("/quality/"), S)
   object CreateQuality extends ApiPath("POST", p,
-    C("story/"), S, C("/qualitys"))
+    C("story/"), S, C("/create-quality"))
   object SaveQuality extends ApiPath("POST", p, C("story/"), S, C("/quality/"), S)
 
 }

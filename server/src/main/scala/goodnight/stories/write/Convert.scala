@@ -25,12 +25,20 @@ object Convert {
       scenes.map(scene => model.edit.SceneHeader(
         scene.urlname,
         scene.name,
-        scene.text.take(80) + (if (scene.text.length > 80) "..." else ""),
+        scene.text.take(80).trim + (if (scene.text.length > 80) "..." else ""),
         scene.text.contains("\n$ start") ||
         scene.text.contains("\n$start"))),
       qualities.map(quality => model.edit.QualityHeader(
         quality.urlname,
         quality.name,
-        quality.description.take(80) +
+        quality.description.take(80).trim +
           (if (quality.description.length > 80) "..." else ""))))
+
+
+  def edit(scene: db.model.Scene): model.edit.Scene =
+    model.edit.Scene(
+      scene.story,
+      scene.urlname,
+      scene.name,
+      scene.raw)
 }

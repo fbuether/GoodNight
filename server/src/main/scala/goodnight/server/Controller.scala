@@ -103,16 +103,5 @@ class Controller(
       flatMap(t => DBIO.successful(cont(t)))
   }
 
-  // extract option results from database queries
-  protected case class GetOr[T](error: Result)(query: DBIO[Option[T]]) {
-    def flatMap(cont: T => DBIO[Result]): DBIO[Result] =
-      query.flatMap({
-        case Some(element) => cont(element)
-        case None => DBIO.successful(error)
-      })
-
-    def map(cont: T => Result): DBIO[Result] =
-      flatMap(t => DBIO.successful(cont(t)))
-  }
 }
 

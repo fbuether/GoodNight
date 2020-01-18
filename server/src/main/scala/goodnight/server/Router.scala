@@ -104,7 +104,7 @@ class Router(
     case Content(story) => writeStory.getContent(story)
 
     // returns: model.edit.Scene
-    case Scene(story, scene) => readScene.getScene(story, scene)
+    case Scene(story, scene) => writeScene.getScene(story, scene)
 
     // expects: String (the raw scene content)
     // returns: model.edit.Scene
