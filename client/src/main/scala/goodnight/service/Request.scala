@@ -98,9 +98,11 @@ object Conversions {
       reply.flatMap({ reply =>
         if (reply.statusCode == code)
           AsyncCallback.pure(reply)
-        else
+        else {
+          Callback.log("unexpected status code: " + reply.statusCode + " instead of " + code + ".").async >>
           AsyncCallback.throwException(new Error(
             "unexpected status code: " + reply.statusCode))
+        }
       })
 
     def forJson[A](implicit ev: Serialisable[A]): AsyncCallback[Reply[A]] =
