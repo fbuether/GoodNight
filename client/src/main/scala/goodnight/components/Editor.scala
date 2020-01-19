@@ -15,20 +15,13 @@ import scala.math.floor
 // -- not anymore, defaulted back to textarea.
 
 object Editor {
-  case class Props(content: String, onFirstChange: Callback = Callback.empty)
-  case class State(sentFirstChange: Boolean)
-
+  case class Props(content: String, onChange: Callback = Callback.empty)
 
   // val suppressContentEditableWarning =
   //   new Generic("suppressContentEditableWarning")
 
-  class Backend(bs: BackendScope[Props, State]) {
+  class Backend(bs: BackendScope[Props, Unit]) {
     val contentRef = Ref[html.TextArea]
-
-    // def execute(e: ReactEventFromInput): Callback = Callback({
-    //   document.execCommand("bold")
-    //   print("actioned: " + e)
-    // })
 
     def get: CallbackTo[String] = contentRef.get.
       map(_.value).getOrElse("")
@@ -41,14 +34,7 @@ object Editor {
         ta.style.height = targetHeight + "px"
       })
 
-    def onFirstChange: Callback =
-      bs.state.flatMap({ state =>
-        if (state.sentFirstChange) Callback.empty
-        else (bs.modState(_.copy(sentFirstChange = true)) >>
-          bs.props.flatMap(_.onFirstChange))
-      })
-
-    def render(props: Props, state: State) = {
+    def render(props: Props) = {
       <.div(^.className := "editor",
         // <.div(^.className := "tools",
         //   <.button("undo",
@@ -78,7 +64,7 @@ object Editor {
           ^.acceptCharset := "UTF-8",
           // ^.contentEditable := "true",
           // suppressContentEditableWarning := "true",
-          ^.onInput --> (onFirstChange >> fitTextarea),
+          ^.onInput --> (props.onChange >> fitTextarea),
           ^.defaultValue := props.content
         ))
 
@@ -92,7 +78,7 @@ object Editor {
   }
 
   val component = ScalaComponent.builder[Props]("Editor").
-    initialState[State](State(false)).
+    stateless.
     renderBackend[Backend].
     componentDidMount(_.backend.fitTextarea).
     build
