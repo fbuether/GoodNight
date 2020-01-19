@@ -16,7 +16,8 @@ import goodnight.stories.WithStory
 
 
 object CreateStory {
-  case class State(loading: Boolean)
+  case class State(loading: Boolean,
+    content: Option[(model.edit.Story, model.edit.Content)])
 
   class Backend(bs: BackendScope[pages.Router, State]) {
     private val nameRef = Input.componentRef
@@ -25,33 +26,29 @@ object CreateStory {
       bs.modState(_.copy(loading = true)) >>
       Input.withValue(nameRef, name =>
         Request(ApiV1.CreateStory).withPlainBody(name).send.
-          forStatus(201).forJson[model.Story].
-          body.flatMap(story =>
-            bs.props.flatMap(_.set(
-              pages.EditStory(story.urlname))).async).toCallback)
+          forStatus(201).forJson[(model.edit.Story, model.edit.Content)].
+          body.flatMap(storyContent =>
+            bs.props.flatMap(_.set(pages.EditStory(storyContent._1.urlname))).
+              async).toCallback)
 
     def render(router: pages.Router, state: State): VdomElement =
       <.div(
         <.h2("A Name for your story"),
-        <.p("Every great story starts somewhere. Yours starts with a name."),
-        <.div(^.className := "simple inset",
+        <.p("Every great story starts somewhere.",
+          "Yours starts with a name."),
+        <.form(^.className := "simple centered half inset",
+          ^.onSubmit ==> (_.preventDefaultCB >> doCreateStory),
           <.h2(
             <.i(^.className := "fas fa-tag label"),
             "Name your story"),
           nameRef.component(Input.Props("Name", "name",
             List(^.autoFocus := true, ^.required := true))),
-          <.button(^.tpe := "submit",
-            ^.onClick --> doCreateStory,
-            ^.className := (if (state.loading) "loading" else ""),
-            ^.disabled := state.loading,
-            <.i(^.className :=
-              (if (state.loading) "far fa-spin fa-compass label"
-              else "fa fa-check-square label")),
-            "Create your story")))
+          SavingButton.render("small atRight", "far fa-check-square",
+            true, state.loading)("Create your story!")))
   }
 
   val component = ScalaComponent.builder[pages.Router]("CreateStory").
-    initialState(State(false)).
+    initialState(State(false, None)).
     renderBackend[Backend].
     build
 

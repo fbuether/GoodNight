@@ -38,12 +38,16 @@ object CreatePlayer {
         <.p("""To read or play this story, you will need a name first.
           Please tell us how you will be addressed henceforth in this world.
           """),
-        <.div(^.className := "simple centered half inset",
+        <.form(^.className := "simple centered half inset",
+          ^.onSubmit ==> (_.preventDefaultCB >> doSave(props)),
+          <.h2(
+            <.i(^.className := "fas fa-tag label"),
+            "Enter your name:"),
           playerNameRef.component(Input.Props(
             "Name", "playerName",
             List(^.autoFocus := true, ^.required := true))),
           SavingButton.render("small atRight", "far fa-check-square",
-            true, saving, doSave(props))("Begin the adventure!")))
+            true, saving)("Begin the adventure!")))
 
     def render(props: Props, state: State) = state match {
       case State(None, saving) => renderForm(props, saving)

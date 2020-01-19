@@ -25,16 +25,26 @@ object SavingButton {
         children)).
     build
 
-  def render(enabled: Boolean, saving: Boolean, action: Callback)(
-    children: VdomNode) =
-    component(Props("", "fa fa-check-square", enabled, saving, action))(
-      children)
-
-  def render(icon: String,
-    enabled: Boolean, saving: Boolean, action: Callback)(children: VdomNode) =
-    component(Props("", icon, enabled, saving, action))(children)
-
   def render(className: String, icon: String,
     enabled: Boolean, saving: Boolean, action: Callback)(children: VdomNode) =
     component(Props(className, icon, enabled, saving, action))(children)
+
+  def render(className: String, icon: String, enabled: Boolean,
+    saving: Boolean): (VdomNode => VdomElement) =
+    render(className, icon, enabled, saving, Callback.empty)
+
+  def render(enabled: Boolean, saving: Boolean, action: Callback):
+      (VdomNode => VdomElement) =
+    render("", "fa fa-check-square", enabled, saving, action)
+
+  def render(enabled: Boolean, saving: Boolean): (VdomNode => VdomElement) =
+    render(enabled, saving, Callback.empty)
+
+  def render(icon: String, enabled: Boolean, saving: Boolean,
+    action: Callback): (VdomNode => VdomElement) =
+    render(icon, enabled, saving, action)
+
+  def render(icon: String, enabled: Boolean, saving: Boolean):
+      (VdomNode => VdomElement) =
+    render(icon, enabled, saving, Callback.empty)
 }
