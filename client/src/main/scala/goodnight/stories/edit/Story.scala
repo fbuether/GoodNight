@@ -85,13 +85,18 @@ object Story {
         <.p(quality.textHead))
 
 
+    def renderElements(router: pages.Router, content: edit.Content) = {
+      val scenes = content.scenes.map(scene =>
+        (scene.urlname, renderScene(router, content.story, scene)))
+      val quals = content.qualities.map(qual =>
+        (qual.urlname, renderQuality(router, content.story, qual)))
+      (scenes ++ quals).sortBy(_._1).map(_._2)
+    }
+
     def render(props: Props, state: State): VdomElement =
       <.div(
         <.div(^.className := "edit-canvas",
-          state.content.scenes.map(renderScene(props.router,
-            state.content.story, _)).toTagMod,
-          state.content.qualities.map(renderQuality(props.router,
-            state.content.story, _)).toTagMod),
+          renderElements(props.router, state.content).toTagMod),
         <.p(
           <.button(
             props.router.setOnClick(
