@@ -97,7 +97,7 @@ object Story {
       <.div(
         <.div(^.className := "edit-canvas",
           renderElements(props.router, state.content).toTagMod),
-        <.p(
+        <.div(^.className := "as-p buttons",
           <.button(
             props.router.setOnClick(
               pages.AddScene(state.content.story.urlname)),
