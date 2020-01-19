@@ -118,10 +118,6 @@ object ExpressionParser {
         rep(sep = BaseParser.whitespace)).
       map(ofInfixT)
 
-  // def compare[_:P]: P[Expression] =
-  //   P(binaryOperatorEqual).
-  //     map(_ => Text("COMARE?"))
-
 
   def expression[_:P]: P[Expression] =
     P(binaryOr)
