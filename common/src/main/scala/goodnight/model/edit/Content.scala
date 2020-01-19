@@ -3,6 +3,6 @@ package goodnight.model.edit
 
 
 case class Content(
-  story: String, // refers story.urlname
+  story: Story,
   scenes: Seq[SceneHeader],
   qualities: Seq[QualityHeader])

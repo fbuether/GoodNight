@@ -13,11 +13,11 @@ object Convert {
       story.public)
 
 
-  def edit(storyUrlname: String,
+  def edit(story: db.model.Story,
     scenes: Seq[db.model.Scene],
     qualities: Seq[db.model.Quality]): model.edit.Content =
     model.edit.Content(
-      storyUrlname,
+      edit(story),
       scenes.map(scene => model.edit.SceneHeader(
         scene.urlname,
         scene.name,

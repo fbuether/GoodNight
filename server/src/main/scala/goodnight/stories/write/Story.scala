@@ -58,17 +58,17 @@ class Story(components: ControllerComponents,
         _ <- EmptyOrConflict(db.Story.ofUrlname(editStory.urlname));
         dbStory <- db.Story.insert(editStory);
         dbScene <- db.Scene.insert(initialScene(dbStory)))
-      yield result[(model.edit.Story, model.edit.Content)](Created,
-        (Convert.edit(dbStory),
-          Convert.edit(dbStory.urlname, Seq(dbScene), Seq())))))
+      yield result[model.edit.Content](Created,
+        Convert.edit(dbStory, Seq(dbScene), Seq()))))
 
 
 
   def getContent(storyUrlname: String) =
     auth.SecuredAction.async(request =>
       database.run(for (
+        story <- GetOrNotFound(db.Story.ofUrlname(storyUrlname));
         scenes <- db.Scene.allOfStory(storyUrlname);
         qualities <- db.Quality.allOfStory(storyUrlname))
       yield result[model.edit.Content](Ok,
-        Convert.edit(storyUrlname, scenes, qualities))))
+        Convert.edit(story, scenes, qualities))))
 }

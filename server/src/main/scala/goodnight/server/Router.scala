@@ -98,7 +98,7 @@ class Router(
     //
 
     // expects: String (the story name)
-    // returns: (model.edit.Story, model.edit.Content)
+    // returns: model.edit.Content
     case CreateStory() => writeStory.createStory
 
     // returns: model.edit.Content
