@@ -9,28 +9,29 @@ import goodnight.client.pages
 import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
-import goodnight.model
+import goodnight.model.edit
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }
 import goodnight.stories.WithStory
 
 
 object Quality {
-  case class Props(router: pages.Router, story: model.Story,
+  case class Props(router: pages.Router, story: edit.Story,
     qualityUrlname: Option[String])
-  case class State(quality: Option[model.Quality], changed: Boolean,
-    saving: Boolean)
+  case class State(quality: Option[edit.Quality], changed: Boolean,
+    saving: Boolean, loading: Boolean)
 
   class Backend(bs: BackendScope[Props, State]) {
     def loadQuality: Callback =
       bs.props.flatMap(props => props.qualityUrlname match {
-          case None => Callback.empty
+          case None => bs.modState(_.copy(loading = false))
           case Some(qualityUrlname) =>
             Request(ApiV1.Quality, props.story.urlname, qualityUrlname).send.
-              forStatus(200).forJson[model.Quality].
+              forStatus(200).forJson[edit.Quality].
               body.flatMap(quality =>
-                bs.modState(_.copy(quality = Some(quality))).async).
-              toCallback
+                bs.modState(_.copy(
+                  quality = Some(quality),
+                  loading = false)).async).toCallback
         })
 
     def cancel: Callback =
@@ -39,71 +40,61 @@ object Quality {
         props.router.set(pages.EditStory(props.story.urlname)))
 
     def save: Callback =
+      // todo: check for intermediate changes, e.g. with a revision number
       bs.modState(_.copy(saving = true)) >>
       bs.props.zip(bs.state).flatMap({ case (props, state) =>
         editorRef.get.flatMapCB(_.backend.get).flatMap({ rawText =>
-          val request = props.qualityUrlname match {
+          val request = state.quality match {
             case None => Request(ApiV1.CreateQuality, props.story.urlname)
             case Some(quality) => Request(ApiV1.SaveQuality, props.story.urlname,
-              quality)
+              quality.urlname)
           }
 
-          (request.withPlainBody(rawText).send.forStatus(202) >>
-            bs.modState(_.copy(saving = false, changed = false)).async).
-            toCallback
+          (request.withPlainBody(rawText).send.
+            forStatus(202).forJson[edit.Quality].
+            body.flatMap(quality =>
+              bs.modState(_.copy(
+                quality = Some(quality),
+                saving = false,
+                changed = false)).async).toCallback)
       })
     })
 
-
-    def setChanged =
-      bs.modState(_.copy(changed = true)).void
-
     val editorRef = Editor.componentRef
+    def setChanged = bs.modState(_.copy(changed = true)).void
 
-    val newQuality = ("Write a new Quality", "# New Quality")
-    def ofQuality(quality: model.Quality) = ("Edit: " + quality.name, quality.description)
 
-    def renderEditor(props: Props, state: State, text: (String, String)) = {
-      val (title, content) = text
+    def renderEditor(props: Props, state: State, quality: Option[edit.Quality]) = {
+      val title = quality.map(_.name).getOrElse("A new Quality")
+      val content = quality.map(_.raw).getOrElse("$ name: new quality")
       val canSave = !state.saving && state.changed
 
       <.div(
-        <.h3(title),
+        <.h3("Writing: ", title),
         editorRef.component(Editor.Props(content, setChanged)),
         <.div(^.className := "as-columns for-buttons",
           <.div(
             <.button(
               ^.onClick --> cancel,
-              <.i(^.className := "fas fa-ban label"),
-              "Discard")),
+              <.i(^.className := "label " +
+                (if (state.changed) "far fa-trash-alt"
+                else "far fa-arrow-alt-circle-left")),
+              (if (state.changed) "Discard" else "Return"))),
           <.div(
-            <.button(
-              ^.onClick --> save,
-              ^.className :=
-                (if (state.saving) " loading" else "") +
-                (if (!canSave) " locked" else ""),
-              (^.disabled := true).when(!canSave),
-              <.i(^.className :=
-                (if (state.saving) "far fa-spin fa-compass label"
-                else "fa fa-check-square label")),
-              (if (state.saving) "Saving…"
-              else "Save")))))
+            SavingButton.render(canSave, state.saving, save)(
+              if (state.saving) "Saving…" else "Save"))))
     }
 
     def render(props: Props, state: State): VdomElement =
-      (props.qualityUrlname, state.quality) match {
-        case (None, None) => renderEditor(props, state, newQuality)
-        case (Some(_), Some(quality)) =>
-          renderEditor(props, state, ofQuality(quality))
-        case _ => Loading.component(props.router)
-      }
+      if (state.loading) Loading.component(props.router)
+      else renderEditor(props, state, state.quality)
   }
 
 
   val component = ScalaComponent.builder[Props]("edit.Quality").
     initialStateFromProps(props =>
       // if we create a new quality, we can save immediately.
-      (State(None, props.qualityUrlname.isEmpty, false))).
+      (State(None, props.qualityUrlname.isEmpty, false, true))).
     renderBackend[Backend].
     componentDidMount(_.backend.loadQuality).
     build
@@ -111,9 +102,8 @@ object Quality {
 
   def render(router: pages.Router, story: String, quality: Option[String]) =
     Shell.component(router)(
-      WithStory.component(WithStory.Props(router, story, false, storyData =>
-        component(Props(router, ???// storyData._1
-          , quality)))))
+      WithEditStory.component(WithEditStory.Props(router, story,
+        content => component(Props(router, content.story, quality)))))
 
   def renderEdit(page: pages.EditQuality, router: pages.Router) =
     render(router, page.story, Some(page.quality))
