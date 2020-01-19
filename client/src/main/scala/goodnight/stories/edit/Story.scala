@@ -10,25 +10,23 @@ import goodnight.common.ApiV1
 import goodnight.common.Serialise._
 import goodnight.components._
 import goodnight.model
-import goodnight.model.read
+import goodnight.model.edit
 import goodnight.service.Conversions._
 import goodnight.service.{ Request, Reply }
-import goodnight.stories.WithStory
 
 
 object Story {
-  type Content = (Seq[model.Scene], Seq[model.Quality])
-  case class Props(router: pages.Router, story: model.Story)
-  case class State(content: Option[Content])
+  case class Props(router: pages.Router, content: edit.Content)
+  case class State(content: edit.Content)
 
   class Backend(bs: BackendScope[Props, State]) {
-    def loadScenes: Callback =
-      bs.props.flatMap(props =>
-        Request(ApiV1.Content, props.story.urlname).send.
-          forStatus(200).forJson[Content].
-          body.flatMap(content =>
-            bs.modState(_.copy(content = Some(content))).async).
-          toCallback)
+    // def loadScenes: Callback =
+    //   bs.props.flatMap(props =>
+    //     Request(ApiV1.Content, props.story.urlname).send.
+    //       forStatus(200).forJson[Content].
+    //       body.flatMap(content =>
+    //         bs.modState(_.copy(content = Some(content))).async).
+    //       toCallback)
 
     def copyScene(urlname: String): Callback = Callback {
       println("copying " + urlname)
@@ -46,14 +44,14 @@ object Story {
       println("deleteing " + urlname)
     }
 
-    private def renderScene(props: Props, scene: model.Scene) =
+    private def renderScene(router: pages.Router, story: edit.Story,
+      scene: edit.SceneHeader) =
       <.div(^.className := "scene",
         <.div(
           <.i(^.className := "fas fa-scroll" +
-            (if (scene.isStart) " start" else "")),
+            (if (scene.start) " start" else "")),
           <.span(scene.name),
-          props.router.link(pages.EditScene(props.story.urlname,
-            scene.urlname))(
+          router.link(pages.EditScene(story.urlname, scene.urlname))(
             ^.title := "Edit this scene",
               <.i(^.className := "fas fa-pen-fancy")),
           <.a(^.className := "clickable",
@@ -64,14 +62,15 @@ object Story {
             ^.onClick --> deleteScene(scene.urlname),
             ^.title := "Delete this scene",
             <.i(^.className := "far fa-trash-alt"))),
-        <.p(scene.text))
+        <.p(scene.textHead))
 
-    private def renderQuality(props: Props, quality: model.Quality) =
+    private def renderQuality(router: pages.Router, story: edit.Story,
+      quality: edit.QualityHeader) =
       <.div(^.className := "quality",
         <.div(
           <.i(^.className := "fas fa-hammer"),
           <.span(quality.name),
-          props.router.link(pages.EditQuality(props.story.urlname,
+          router.link(pages.EditQuality(story.urlname,
             quality.urlname))(
             ^.title := "Edit this quality",
               <.i(^.className := "fas fa-pen-fancy")),
@@ -83,38 +82,38 @@ object Story {
             ^.onClick --> deleteQuality(quality.urlname),
             ^.title := "Delete this quality",
             <.i(^.className := "far fa-trash-alt"))),
-        <.p(quality.description))
+        <.p(quality.textHead))
 
 
-    def render(props: Props, state: State): VdomElement = state.content match {
-      case None => Loading.component(props.router)
-      case Some(content) =>
-        <.div(
-          <.div(^.className := "edit-canvas",
-            content._1.map(renderScene(props, _)).toTagMod,
-            content._2.map(renderQuality(props, _)).toTagMod),
-          <.p(
-            <.button(
-              props.router.setOnClick(pages.AddScene(props.story.urlname)),
-              <.i(^.className := "fas fa-plus-circle"),
-              "New Scene")))
-    }
+    def render(props: Props, state: State): VdomElement =
+      <.div(
+        <.div(^.className := "edit-canvas",
+          state.content.scenes.map(renderScene(props.router,
+            state.content.story, _)).toTagMod,
+          state.content.qualities.map(renderQuality(props.router,
+            state.content.story, _)).toTagMod),
+        <.p(
+          <.button(
+            props.router.setOnClick(
+              pages.AddScene(state.content.story.urlname)),
+            <.i(^.className := "fas fa-plus-circle"),
+            "New Scene"),
+          <.button(
+            props.router.setOnClick(
+              pages.AddQuality(state.content.story.urlname)),
+            <.i(^.className := "fas fa-plus-circle"),
+            "New Quality")))
   }
 
 
   val component = ScalaComponent.builder[Props]("edit.Story").
-    initialState(State(None)).
+    initialStateFromProps(props => State(props.content)).
     renderBackend[Backend].
-    componentDidMount(_.backend.loadScenes).
     build
 
 
-  def withStory(router: pages.Router, storyData: read.StoryState) =
-    component(Props(router, ???// storyData._1
-    ))
-
   def render(page: pages.EditStory, router: pages.Router) =
     Shell.component(router)(
-      WithStory.component(WithStory.Props(router, page.story, false,
-        withStory(router, _))))
+      WithEditStory.component(WithEditStory.Props(router, page.story,
+        content => component(Props(router, content)))))
 }
