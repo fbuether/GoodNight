@@ -14,6 +14,7 @@ import goodnight.common.Serialise._
 import goodnight.db
 import goodnight.model
 import goodnight.server.Controller
+import goodnight.server.DbOption
 import goodnight.server.PostgresProfile.Database
 
 
@@ -70,23 +71,21 @@ class Player(components: ControllerComponents,
       scene <- GetOrNotFound(getFirstScene(story));
       player <- createNewPlayer(user.name, story.urlname, name);
       qualities <- db.Quality.allOfStory(story.urlname);
-      readScene <- DBIO.successful(SceneView.parse(scene));
+      parsedScene <- DBIO.successful(SceneView.parse(scene));
 
       (activity, effects) <- Activity.go(user.name,
-        qualities, Seq(), None, readScene);
+        qualities, Seq(), None, parsedScene);
 
       // todo: replace states with effects
       states <- db.State.ofPlayer(user.name, story.urlname);
-      choices <- db.Scene.namedList(story.urlname,
-        SceneView.getChoices(story, scene).toList)
-    ) yield
-        // type PlayerState = (Player, States, Activity, Scene)
+      readScene <- SceneView.loadReadScene(
+        qualities, states, story.urlname, scene.urlname))
+    yield
         result[model.read.PlayerState](Created,
           (Convert.read(player),
             effects.map(Convert.read(qualities, _)),
             Convert.read(qualities, activity, effects),
-            Convert.read(qualities, states, scene, choices)))
-
+            readScene))
 
 
 

@@ -43,17 +43,17 @@ class Scene(components: ControllerComponents,
         states <- db.State.ofPlayer(request.identity.user.name, story.urlname);
         lastActivity <- db.Activity.newest(storyUrlname,
           request.identity.user.name);
-        readScene <- DBIO.successful(SceneView.parse(scene));
+        parsedScene <- DBIO.successful(SceneView.parse(scene));
+        // todo: include effects of the included scenes?
 
         (activity, effects) <- Activity.go(request.identity.user.name,
-          qualities, states, lastActivity, readScene);
+          qualities, states, lastActivity, parsedScene);
 
         // todo: optimise: compute these out of states and effects
         newStates <- db.State.ofPlayer(request.identity.user.name,
           story.urlname);
-        choices <- db.Scene.namedList(story.urlname,
-          SceneView.getChoices(story, scene).toList))
+      readScene <- SceneView.loadReadScene(qualities, states,
+        story.urlname, scene.urlname))
       yield result[model.read.Outcome](Accepted,
-        (Convert.read(qualities, activity, effects),
-          Convert.read(qualities, newStates, scene, choices)))))
+        (Convert.read(qualities, activity, effects), readScene))))
 }

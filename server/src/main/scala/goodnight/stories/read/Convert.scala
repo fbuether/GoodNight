@@ -78,32 +78,4 @@ object Convert {
         case _ => false
       },
       ExpressionPrinter.toTest(expr))
-
-
-  def read(qualities: Seq[db.model.Quality],
-    state: Seq[(db.model.State, db.model.Quality)], dbScene: db.model.Scene):
-      model.read.Choice = {
-
-    val scene = SceneView.parse(dbScene)
-    val requires = scene.settings.collect({
-      case model.Setting.Require(e) => e })
-
-    val tests = scene.settings.collect({
-      case model.Setting.Require(expr) => read(qualities, state, expr) })
-
-    model.read.Choice(scene.urlname,
-      scene.text,
-      tests.forall(_.succeeded),
-      tests)
-  }
-
-
-  def read(qualities: Seq[db.model.Quality],
-    states: Seq[(db.model.State, db.model.Quality)],
-    scene: db.model.Scene, choices: Seq[db.model.Scene]):
-      model.read.Scene =
-    model.read.Scene(scene.story,
-      scene.urlname,
-      scene.text,
-      choices.map(read(qualities, states, _)))
 }
