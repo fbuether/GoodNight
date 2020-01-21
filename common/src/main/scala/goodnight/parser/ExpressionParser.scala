@@ -10,16 +10,8 @@ import goodnight.model.Expression._
 
 object ExpressionParser {
 
-  private def textInQuotes[_:P]: P[String] =
-    P("\"" ~/ CharsWhile(_ != '\"').! ~ "\"").
-      map(_.trim)
-
-  private def textUnquoted[_:P]: P[String] =
-    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9_]").!).
-      map(_.trim)
-
-  private def text[_:P]: P[Expression] =
-    P(textInQuotes | textUnquoted).
+  def text[_:P]: P[Expression] =
+    P(BaseParser.name).
       map(Text.apply)
 
   private def number[_:P]: P[Expression] =

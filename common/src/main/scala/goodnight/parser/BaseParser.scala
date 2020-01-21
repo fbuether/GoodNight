@@ -15,9 +15,17 @@ object BaseParser {
     P(CharsWhile(_ != '\n', 0).!).
       map(_.trim)
 
-  private[parser] def name[_:P]: P[String] =
-    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9 ]").!).
+
+  private def nameInQuotes[_:P]: P[String] =
+    P("\"" ~/ CharsWhile(_ != '\"').! ~ "\"").
       map(_.trim)
+
+  private def nameUnquoted[_:P]: P[String] =
+    P(CharsWhileIn("[a-zA-ZöäüÖÄÜß0-9_]").!).
+      map(_.trim)
+
+  def name[_:P]: P[String] =
+    P(nameInQuotes | nameUnquoted)
 
 
 

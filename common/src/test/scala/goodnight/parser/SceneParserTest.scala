@@ -112,6 +112,12 @@ class SceneParserTest extends FunSpec with Inside {
             model.Expression.Number(17)))
       }
 
+      it("set with quoted quality name") {
+        assert(parsed("$ set: \"ein-langer-name\" = true").settings(0) ==
+          model.Setting.Set("ein-langer-name",
+            model.Expression.Text("true")))
+      }
+
       it("test with condition") {
         assert(parsed("$ test: \"in good light\"").settings(0) ==
           model.Setting.Test(model.Expression.Text("in good light")))
