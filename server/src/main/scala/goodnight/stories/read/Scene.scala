@@ -55,5 +55,5 @@ class Scene(components: ControllerComponents,
       readScene <- SceneView.loadReadScene(qualities, states,
         story.urlname, scene.urlname))
       yield result[model.read.Outcome](Accepted,
-        (Convert.read(qualities, activity, effects), readScene))))
+        (Convert.readActivity(qualities, activity, effects), readScene))))
 }

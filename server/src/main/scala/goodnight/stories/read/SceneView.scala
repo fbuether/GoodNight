@@ -37,7 +37,7 @@ object SceneView {
       case model.Setting.Require(e) => e })
     val tests = scene.settings.collect({
       case model.Setting.Require(expr) =>
-        Convert.read(qualities, state, expr) })
+        Convert.readTest(qualities, state, expr) })
 
     model.read.Choice(scene.urlname,
       scene.text,

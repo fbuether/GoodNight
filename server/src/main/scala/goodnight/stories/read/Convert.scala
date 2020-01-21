@@ -14,11 +14,11 @@ object Convert {
     "invalid quality", "invalid quality", "X.png")
 
 
-  def read(player: db.model.Player): model.read.Player =
+  def readPlayer(player: db.model.Player): model.read.Player =
     model.read.Player(player.user, player.story, player.name)
 
 
-  def read(quality: model.read.Quality, value: String):
+  def readState(quality: model.read.Quality, value: String):
       model.read.State =
     quality match {
       case quality @ model.read.Quality.Bool(_,_,_,_) =>
@@ -26,19 +26,19 @@ object Convert {
       case quality @ model.read.Quality.Integer(_,_,_,_) =>
         model.read.State.Integer(quality, Try(value.toInt).getOrElse(0)) }
 
-  def read(qualities: Seq[db.model.Quality], state: db.model.State):
+  def readState(qualities: Seq[db.model.Quality], state: db.model.State):
       model.read.State =
-    qualities.find(_.urlname == state.quality).map(read) match {
-      case Some(quality) => read(quality, state.value)
+    qualities.find(_.urlname == state.quality).map(readQuality) match {
+      case Some(quality) => readState(quality, state.value)
       case None => model.read.State(invalidDefaultQuality, false) }
 
   private def readQuality(qualities: Seq[db.model.Quality],
     qualityName: String): model.read.Quality =
-    qualities.find(_.urlname == qualityName).map(read).
+    qualities.find(_.urlname == qualityName).map(readQuality).
       getOrElse(invalidDefaultQuality)
 
 
-  def read(quality: db.model.Quality): model.read.Quality =
+  def readQuality(quality: db.model.Quality): model.read.Quality =
     quality.sort match {
       case db.model.Sort.Bool =>
         model.read.Quality.Bool(quality.story,
@@ -48,13 +48,13 @@ object Convert {
           quality.urlname, quality.name, quality.image) }
 
 
-  def read(qualities: Seq[db.model.Quality],
+  def readActivity(qualities: Seq[db.model.Quality],
     activity: db.model.Activity, effects: Seq[db.model.State]):
       model.read.Activity =
     model.read.Activity(activity.story,
       activity.user,
       activity.scene,
-      effects.map(read(qualities, _)))
+      effects.map(readState(qualities, _)))
 
 
   private def getFirstQuality(expr: model.Expression): Option[String] =
@@ -67,7 +67,7 @@ object Convert {
     }
 
 
-  def read(qualities: Seq[db.model.Quality],
+  def readTest(qualities: Seq[db.model.Quality],
     state: Seq[(db.model.State, db.model.Quality)],
     expr: model.Expression): model.read.Test =
     model.read.Test(

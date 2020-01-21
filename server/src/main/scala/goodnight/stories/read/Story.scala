@@ -83,10 +83,10 @@ class Story(components: ControllerComponents,
         story.urlname, activity.scene))
     yield
       Some(
-        (Convert.read(player),
-          states.map(state => Convert.read(Convert.read(state._2),
+        (Convert.readPlayer(player),
+          states.map(state => Convert.readState(Convert.readQuality(state._2),
             state._1.value)),
-          Convert.read(qualities, activity,
+          Convert.readActivity(qualities, activity,
             Activity.effects(parsedScene, states.map(_._1))),
           readScene))
 

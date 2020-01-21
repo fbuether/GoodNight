@@ -82,9 +82,9 @@ class Player(components: ControllerComponents,
         qualities, states, story.urlname, scene.urlname))
     yield
         result[model.read.PlayerState](Created,
-          (Convert.read(player),
-            effects.map(Convert.read(qualities, _)),
-            Convert.read(qualities, activity, effects),
+          (Convert.readPlayer(player),
+            effects.map(Convert.readState(qualities, _)),
+            Convert.readActivity(qualities, activity, effects),
             readScene))
 
 
