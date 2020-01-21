@@ -56,10 +56,10 @@ object ExpressionPrinter {
         val name = qualities.get(urlname).getOrElse(urlname)
         if (name.contains(' ')) "(" + name + ")" else name
       case Number(num) => num.toString
-      case Unary(Not, e) => "not " + toTest(e)
+      case Unary(Not, e) => "not " + toTest(qualities, e)
       case Binary(op, left, right) =>
-        val lr = toTest(left)
-        val rr = toTest(right)
+        val lr = toTest(qualities, left)
+        val rr = toTest(qualities, right)
         val l = if (lr.contains(" ")) ("(" + lr + ")") else lr
         val r = if (rr.contains(" ")) ("(" + rr + ")") else rr
         l + " " + toTest(op) + " " + r }

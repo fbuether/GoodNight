@@ -77,5 +77,7 @@ object Convert {
         case Some(model.Expression.Value.Integer(i)) => i > 0
         case _ => false
       },
-      ExpressionPrinter.toTest(expr))
+      ExpressionPrinter.toTest(
+        qualities.map(q => (q.urlname, q.name)).toMap,
+        expr))
 }

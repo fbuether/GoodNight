@@ -3,6 +3,7 @@ package goodnight.stories.read
 
 import goodnight.db
 import goodnight.model
+import goodnight.printer.ExpressionPrinter
 
 
 object Expression {
