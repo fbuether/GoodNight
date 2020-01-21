@@ -70,14 +70,14 @@ class Controller(
   // make the return type of this result explicit
   protected def result[A](status: Status, body: A)(
     implicit ev: Serialisable[A]): Result =
-    status(body)
+    status(body)(asJsonA).as(JSON)
 
 
   // for writing json values, or any json-able values, directly:
-  implicit def jsonWriteableA[A](implicit ev: Serialisable[A]): Writeable[A] =
+  def asJsonA[A](implicit ev: Serialisable[A]): Writeable[A] =
     Writeable(data => ByteString(write(data)), Some("application/json"))
 
-  implicit val jsonWriteable: Writeable[ujson.Value] =
+  val asJson: Writeable[ujson.Value] =
     Writeable(data => ByteString(ujson.write(data)), Some("application/json"))
 
 
@@ -87,7 +87,7 @@ class Controller(
       "error" -> ujson.Str(message))
 
   def notFound(message: String): Future[Result] =
-    Future.successful(NotFound(error(message)))
+    Future.successful(NotFound(message))
 
 
   // extract option results from database queries

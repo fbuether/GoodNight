@@ -70,6 +70,7 @@ class Router(
     case ConfirmPasswordReset(token) => ???
 
     // Profile data
+    // returns model.User
     case Profile(user) => profile.show(user)
     case Self() => profile.showSelf
 

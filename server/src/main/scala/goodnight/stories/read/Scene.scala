@@ -24,15 +24,6 @@ class Scene(components: ControllerComponents,
   implicit ec: ExecutionContext)
     extends Controller(components) {
 
-
-  def getScene(storyUrlname: String, sceneUrlname: String) =
-    auth.SecuredAction.async(request =>
-      database.run(
-        GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)).map(scene =>
-          Ok(scene.model))))
-
-
-
   def goScene(storyUrlname: String, sceneUrlname: String) =
     // todo: check if the player is in fact capable of doing this scene.
     auth.SecuredAction.async(request =>

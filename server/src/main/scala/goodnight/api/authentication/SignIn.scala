@@ -59,7 +59,7 @@ class SignIn(components: ControllerComponents,
           // case authenticator => authenticator
 
               authServ.init(authenticator)(request) }).flatMap({ ident =>
-                val reply = Accepted(user.user.model)
+                val reply = result[model.User](Accepted, user.user.model)
                 authServ.embed(ident, reply)(request)
               })
           case None =>
@@ -68,7 +68,7 @@ class SignIn(components: ControllerComponents,
       }).recoverWith({ case (e: SilhouetteException) =>
         Future.successful(Unauthorized(ujson.Obj(
           "success" -> false,
-          "error" -> e.getMessage())))
+          "error" -> e.getMessage()))(asJson))
       })
     })
 

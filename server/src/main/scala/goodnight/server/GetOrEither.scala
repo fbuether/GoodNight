@@ -20,8 +20,11 @@ case class GetOrEither[L,R](errorCont: L => Result)(
     implicit ec: ExecutionContext):
       DBIO[Result] =
     query.flatMap({
-      case Right(element) => cont(element)
-      case Left(error) => DBIO.successful(errorCont(error))
+      case Right(element) =>
+        cont(element)
+      case Left(error) =>
+        println("getoreither: " + error)
+        DBIO.successful(errorCont(error))
     })
 
   def map(cont: R => Result)(

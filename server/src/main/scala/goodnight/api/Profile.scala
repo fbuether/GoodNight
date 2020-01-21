@@ -12,7 +12,7 @@ import goodnight.api.authentication.AuthService
 import goodnight.api.authentication.UserService
 import goodnight.common.Serialise._
 import goodnight.db
-import goodnight.db.model
+import goodnight.model
 import goodnight.server.Controller
 import goodnight.server.PostgresProfile.Database
 import goodnight.server.Router
@@ -27,12 +27,12 @@ class Profile(
 
   def show(userName: String) =
     auth.UserAwareAction.async(request =>
-      database.run(
-        db.User.ofName(userName).
-          map(_.map(user => Ok(user.model)).
-            getOrElse(NotFound))))
+      database.run(for (
+        user <- GetOrNotFound(db.User.ofName(userName)))
+      yield result[model.User](Ok,
+        model.User(user.name))))
 
   def showSelf =
     auth.SecuredAction(request =>
-      Ok(request.identity.user.model))
+      result[model.User](Ok, request.identity.user.model))
 }
