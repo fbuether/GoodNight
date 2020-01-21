@@ -30,12 +30,19 @@ object Convert {
       model.read.State =
     qualities.find(_.urlname == state.quality).map(readQuality) match {
       case Some(quality) => readState(quality, state.value)
-      case None => model.read.State(invalidDefaultQuality, false) }
+      case None =>
+        println("found invalid quality: " + state.quality)
+        model.read.State(invalidDefaultQuality, false) }
 
   private def readQuality(qualities: Seq[db.model.Quality],
-    qualityName: String): model.read.Quality =
+    qualityName: String): model.read.Quality = {
+
     qualities.find(_.urlname == qualityName).map(readQuality).
-      getOrElse(invalidDefaultQuality)
+      getOrElse({
+        println("found invalid quality: " + qualityName)
+        invalidDefaultQuality
+      })
+  }
 
 
   def readQuality(quality: db.model.Quality): model.read.Quality =
@@ -55,6 +62,19 @@ object Convert {
       activity.user,
       activity.scene,
       effects.map(readState(qualities, _)))
+
+
+  def readActivity(qualities: Seq[db.model.Quality],
+    state: Seq[(db.model.State, db.model.Quality)],
+    activity: db.model.Activity, effects: Seq[String]):
+      model.read.Activity =
+    model.read.Activity(activity.story,
+      activity.user,
+      activity.scene,
+      qualities.filter(quality => effects.contains(quality.urlname)).
+        map(quality => readState(readQuality(quality),
+          state.find(_._2.urlname == quality.urlname).
+            map(_._1.value).getOrElse("0"))))
 
 
   private def getFirstQuality(expr: model.Expression): Option[String] =

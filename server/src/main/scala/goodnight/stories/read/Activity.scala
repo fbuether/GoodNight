@@ -40,13 +40,4 @@ object Activity {
       activity <- db.Activity.insert(newActivity))
     yield (activity, effects)
   }
-
-
-  // extracts the effects of this scene and returns them
-  def effects(scene: model.Scene,
-    states: Seq[db.model.State]): db.model.States =
-    scene.settings.collect({ case model.Setting.Set(q, _) =>
-      states.find(_.quality == q).
-        getOrElse(db.model.State(UUID.randomUUID(), "invalid",
-          "invalid story", "invalid quality", "0")) })
 }

@@ -86,8 +86,9 @@ class Story(components: ControllerComponents,
         (Convert.readPlayer(player),
           states.map(state => Convert.readState(Convert.readQuality(state._2),
             state._1.value)),
-          Convert.readActivity(qualities, activity,
-            Activity.effects(parsedScene, states.map(_._1))),
+          Convert.readActivity(qualities, states, activity,
+            parsedScene.settings.collect({
+              case model.Setting.Set(q, v) => q })),
           readScene))
 
 

@@ -63,7 +63,8 @@ object Scene {
               if (v) TagMod("You now have ", <.strong(effect.quality.name), ".")
               else TagMod(<.strong(effect.quality.name), " is now gone!")
             case read.State.Integer(_, v) =>
-              TagMod(<.strong(effect.quality.name),
+              if (v == 0) TagMod(<.strong(effect.quality.name), " is now gone!")
+              else TagMod(<.strong(effect.quality.name),
                 " is now " + v.toString + ".") })))
 
     def render(props: Props, state: State) =
