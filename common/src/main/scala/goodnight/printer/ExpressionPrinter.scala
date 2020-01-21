@@ -27,6 +27,7 @@ object ExpressionPrinter {
     case Text(name) =>
       if (name.contains(" ")) "\"" + name + "\""
       else name
+    case Bool(b) => if (b) "true" else "false"
     case Number(num) => num.toString
     case Unary(Not, e) => "!(" + print(e) + ")"
     case Binary(op, left, right) =>
@@ -55,6 +56,7 @@ object ExpressionPrinter {
       case Text(urlname) =>
         val name = qualities.get(urlname).getOrElse(urlname)
         if (name.contains(' ')) "(" + name + ")" else name
+      case Bool(b) => if (b) "true" else "false"
       case Number(num) => num.toString
       case Unary(Not, e) => "not " + toTest(qualities, e)
       case Binary(op, left, right) =>

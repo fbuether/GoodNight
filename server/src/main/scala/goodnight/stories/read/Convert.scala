@@ -60,6 +60,7 @@ object Convert {
   private def getFirstQuality(expr: model.Expression): Option[String] =
     expr match {
       case model.Expression.Text(n) => Some(n)
+      case model.Expression.Bool(_) => None
       case model.Expression.Number(_) => None
       case model.Expression.Unary(_, e) => getFirstQuality(e)
       case model.Expression.Binary(_, e1, e2) =>

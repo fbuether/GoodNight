@@ -10,6 +10,8 @@ object Expression {
   // for complexity of lookup.
   case class Text(value: String) extends Expression
 
+  // Literals.
+  case class Bool(value: Boolean) extends Expression
   case class Number(value: Int) extends Expression
 
   // generates a random number in [min,max], including both limits.

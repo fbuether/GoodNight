@@ -14,6 +14,17 @@ object ExpressionParser {
     P(BaseParser.name).
       map(Text.apply)
 
+  private def trueLiteral[_:P]: P[Expression] =
+    P("true").
+      map(_ => Bool(true))
+
+  private def falseLiteral[_:P]: P[Expression] =
+    P("false").
+      map(_ => Bool(false))
+
+  private def boolean[_:P]: P[Expression] =
+    P(trueLiteral | falseLiteral)
+
   private def number[_:P]: P[Expression] =
     P(CharIn("0-9").rep(1).!).
       map(num => Number(num.toInt))
@@ -68,7 +79,7 @@ object ExpressionParser {
     P("(" ~/ binaryOr ~ ")")
 
   def single[_:P]: P[Expression] =
-    P(number | text | unary | parens)
+    P(number | boolean | text | unary | parens)
 
 
   private def ofInfix(e1: Expression, ops: Seq[(BinaryOperator, Expression)]) =

@@ -47,7 +47,8 @@ object ExpressionTypechecker {
       case Text(name) =>
         if (c.contains(name)) Right(c(name))
         else Left("Quality \"" + name + "\" does not exist.")
-      case Number(num) => Right(Type.Int)
+      case Bool(_) => Right(Type.Bool)
+      case Number(_) => Right(Type.Int)
       case Unary(op, e1) =>
         val requires = op match { case Not => Type.Bool }
         val e1ty = expression(c, e1)
