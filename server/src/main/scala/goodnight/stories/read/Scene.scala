@@ -52,8 +52,8 @@ class Scene(components: ControllerComponents,
         // todo: optimise: compute these out of states and effects
         newStates <- db.State.ofPlayer(request.identity.user.name,
           story.urlname);
-      readScene <- SceneView.loadReadScene(qualities, states,
-        story.urlname, scene.urlname))
+        readScene <- SceneView.loadReadScene(qualities, newStates,
+          story.urlname, scene.urlname))
       yield result[model.read.Outcome](Accepted,
         (Convert.readActivity(qualities, activity, effects), readScene))))
 }
