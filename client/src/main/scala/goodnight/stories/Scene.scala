@@ -38,10 +38,10 @@ object Scene {
     def renderChoice(router: pages.Router, state: read.States,
       goto: String => Callback,
       choice: read.Choice) =
-      <.li(^.className := (if (choice.available) "" else "disabled"),
-        ^.title :=
-          (if (choice.available) ""
-          else "You do not meet the requirements for this choice."),
+      <.li(
+        (^.className := "disabled").when(!choice.available),
+        (^.title := "You do not meet the requirements for this choice.").
+          when(!choice.available),
         <.ul(^.className := "requirements as-icons",
           choice.tests.map(renderTest(router, state, _)).
             toTagMod),
