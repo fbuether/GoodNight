@@ -18,8 +18,11 @@ import goodnight.stories.WithStory
 object Quality {
   case class Props(router: pages.Router, story: edit.Story,
     qualityUrlname: Option[String])
-  case class State(quality: Option[edit.Quality], changed: Boolean,
-    saving: Boolean, loading: Boolean)
+  case class State(quality: Option[edit.Quality],
+    changed: Boolean,
+    saving: Boolean,
+    loading: Boolean,
+    error: Option[String])
 
   class Backend(bs: BackendScope[Props, State]) {
     def loadQuality: Callback =
@@ -50,13 +53,19 @@ object Quality {
               quality.urlname)
           }
 
-          (request.withPlainBody(rawText).send.
-            forStatus(202).forJson[edit.Quality].
-            body.flatMap(quality =>
+          (request.withPlainBody(rawText).send.flatMap({
+            case Reply(202, quality) =>
               bs.modState(_.copy(
-                quality = Some(quality),
+                quality = Some(read[edit.Quality](quality)),
                 saving = false,
-                changed = false)).async).toCallback)
+                error = None,
+                changed = false)).async
+            case Reply(_, err) =>
+              bs.modState(_.copy(
+                saving = false,
+                error = Some(err),
+                changed = true)).async
+          }).toCallback)
       })
     })
 
@@ -72,6 +81,12 @@ object Quality {
       <.div(
         <.h3("Writing: ", title),
         editorRef.component(Editor.Props(content, setChanged)),
+        state.error.map(err =>
+          TagMod(<.p(^.className := "error",
+            "An error occurred when trying to save: ",
+            err),
+          <.p("The scene has ", <.strong("not"), " been saved."))
+        ).getOrElse(""),
         <.div(^.className := "as-columns for-buttons",
           <.div(
             <.button(
@@ -94,7 +109,7 @@ object Quality {
   val component = ScalaComponent.builder[Props]("edit.Quality").
     initialStateFromProps(props =>
       // if we create a new quality, we can save immediately.
-      (State(None, props.qualityUrlname.isEmpty, false, true))).
+      (State(None, props.qualityUrlname.isEmpty, false, true, None))).
     renderBackend[Backend].
     componentDidMount(_.backend.loadQuality).
     build
