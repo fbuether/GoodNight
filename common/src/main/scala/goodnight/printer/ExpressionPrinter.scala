@@ -6,7 +6,6 @@ import goodnight.model.Expression._
 
 
 object ExpressionPrinter {
-
   private def print(op: BinaryOperator) = op match {
     case Add => "+"
     case Sub => "-"
@@ -51,13 +50,19 @@ object ExpressionPrinter {
     case NotEqual => "is not"
   }
 
-  def toTest(e: Expression): String = e match {
-    case Text(_) | Number(_) => print(e)
-    case Unary(Not, e) => "not " + toTest(e)
-    case Binary(op, left, right) =>
-      val lr = toTest(left)
-      val rr = toTest(right)
-      val l = if (lr.contains(" ")) ("(" + lr + ")") else lr
-      val r = if (rr.contains(" ")) ("(" + rr + ")") else rr
-      l + " " + toTest(op) + " " + r }
+  def toTest(qualities: Map[String, String], e: Expression): String =
+    e match {
+      case Text(urlname) =>
+        val name = qualities.get(urlname).getOrElse(urlname)
+        if (name.contains(' ')) "(" + name + ")" else name
+      case Number(num) => num.toString
+      case Unary(Not, e) => "not " + toTest(e)
+      case Binary(op, left, right) =>
+        val lr = toTest(left)
+        val rr = toTest(right)
+        val l = if (lr.contains(" ")) ("(" + lr + ")") else lr
+        val r = if (rr.contains(" ")) ("(" + rr + ")") else rr
+        l + " " + toTest(op) + " " + r }
+
+  def toTest(e: Expression): String = toTest(Map(), e)
 }
