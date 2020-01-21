@@ -18,8 +18,11 @@ import goodnight.stories.WithStory
 object Scene {
   case class Props(router: pages.Router, story: edit.Story,
     sceneUrlname: Option[String])
-  case class State(scene: Option[edit.Scene], changed: Boolean,
-    saving: Boolean, loading: Boolean)
+  case class State(scene: Option[edit.Scene],
+    changed: Boolean,
+    saving: Boolean,
+    loading: Boolean,
+    error: Option[String])
 
   class Backend(bs: BackendScope[Props, State]) {
     def loadScene: Callback =
@@ -50,13 +53,19 @@ object Scene {
               scene.urlname)
           }
 
-          (request.withPlainBody(rawText).send.
-            forStatus(202).forJson[edit.Scene].
-            body.flatMap(scene =>
+          (request.withPlainBody(rawText).send.flatMap({
+            case Reply(202, scene) =>
               bs.modState(_.copy(
-                scene = Some(scene),
+                scene = Some(read[edit.Scene](scene)),
                 saving = false,
-                changed = false)).async).toCallback)
+                error = None,
+                changed = false)).async
+            case Reply(_, err) =>
+              bs.modState(_.copy(
+                saving = false,
+                error = Some(err),
+                changed = true)).async
+          }).toCallback)
       })
     })
 
@@ -72,6 +81,12 @@ object Scene {
       <.div(
         <.h3("Writing: ", title),
         editorRef.component(Editor.Props(content, setChanged)),
+        state.error.map(err =>
+          TagMod(<.p(^.className := "error",
+            "An error occurred when trying to save: ",
+            err),
+          <.p("The scene has ", <.strong("not"), " been saved."))
+        ).getOrElse(""),
         <.div(^.className := "as-columns for-buttons",
           <.div(
             <.button(
@@ -93,7 +108,7 @@ object Scene {
   val component = ScalaComponent.builder[Props]("edit.Scene").
     initialStateFromProps(props =>
       // if we create a new scene, we can save immediately.
-      (State(None, props.sceneUrlname.isEmpty, false, true))).
+      (State(None, props.sceneUrlname.isEmpty, false, true, None))).
     renderBackend[Backend].
     componentDidMount(_.backend.loadScene).
     build
