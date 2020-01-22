@@ -5,6 +5,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.util.{ Try, Success, Failure }
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentWillUpdate
+import org.scalajs.dom.html
 
 import goodnight.client.pages
 import goodnight.common.ApiV1
@@ -38,8 +39,10 @@ object Story {
         old :+ effect)
 
   class Backend(bs: BackendScope[Props, State]) {
+    private val centreRef = Ref[html.Div]
+
     def goScene(next: String): Callback =
-      bs.state.flatMap(state =>
+      (bs.state.flatMap(state =>
         Request(ApiV1.GoScene, state.scene.story, next).send.
           forStatus(202).forJson[read.Outcome].
           body.flatMap({ case (activity, scene) =>
@@ -48,11 +51,12 @@ object Story {
               scene = scene,
               state = mergeState(old.state, activity.effects))).async
           }).
-          toCallback)
+          toCallback) >>
+        centreRef.foreach(_.scrollIntoView(true)))
 
     def render(props: Props, state: State): VdomElement =
       <.div(^.id := "matter",
-        <.div(^.id := "centre",
+        <.div.withRef(centreRef)(^.id := "centre",
           Scene.component(Scene.Props(props.router, props.story,
             props.player, props.state, state.activity.effects,
             state.scene, goScene))),
