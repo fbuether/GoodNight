@@ -95,19 +95,19 @@ object Story {
 
     def render(props: Props, state: State): VdomElement =
       <.div(
-        <.div(^.className := "edit-canvas",
-          renderElements(props.router, state.content).toTagMod),
-        <.div(^.className := "as-p buttons",
-          <.button(
-            props.router.setOnClick(
-              pages.AddScene(state.content.story.urlname)),
+        <.div(^.className := "buttons",
+          props.router.link(pages.AddScene((state.content.story.urlname)))(
+            ^.className := "button",
             <.i(^.className := "fas fa-plus-circle"),
             "New Scene"),
-          <.button(
-            props.router.setOnClick(
-              pages.AddQuality(state.content.story.urlname)),
+          props.router.link(pages.AddQuality((state.content.story.urlname)))(
+            ^.className := "button",
+            // props.router.setOnClick(
+            //   pages.AddQuality(state.content.story.urlname)),
             <.i(^.className := "fas fa-plus-circle"),
-            "New Quality")))
+            "New Quality")),
+        <.div(^.className := "edit-canvas",
+          renderElements(props.router, state.content).toTagMod))
   }
 
 

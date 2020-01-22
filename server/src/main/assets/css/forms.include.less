@@ -19,12 +19,13 @@ textarea {
 }
 
 
-button {
+button, a.button {
   border: @line-width solid darken(@action-background, 72);
   border-radius: 0.3rem;
 
   background: @action-background;
   color: white;
+  text-decoration: none;
   padding: 0.4rem 0.65rem;
   outline: 0;
 
@@ -103,14 +104,13 @@ button {
 .buttons {
   text-align: center;
 
-  & > button {
+  & > button, & > a.button {
     margin-right: 1.2em;
 
     &:last-child {
       margin-right: 0;
     }
   }
-
 }
 
 
