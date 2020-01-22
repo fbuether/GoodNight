@@ -60,7 +60,8 @@ object Story {
           <.h3(props.player.name),
           <.p("Your current state:"),
           Qualities.component(Qualities.Props(props.router, props.story,
-            state.state))))
+            state.state)),
+          <.hr(^.id := "subside")))
   }
 
   val component = ScalaComponent.builder[Props]("Story").

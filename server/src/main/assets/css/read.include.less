@@ -27,10 +27,29 @@ div#matter {
       margin: (@font-size * 0.8) (@font-size * 0.4);
       text-indent: 0;
     }
+
+    & > hr#subside {
+      visibility: collapsed;
+      display: none;
+    }
   }
 
   & > div > :first-child {
     margin-top: @font-size;
+  }
+
+  @media (max-width: (@gn-width * 0.7)) {
+    flex-direction: column-reverse;
+
+    div#side {
+      & > hr#subside {
+        display: block;
+        visibility: visible;
+        margin: 1.0em 10% 1.4em 10%;
+        border-top: solid 0.09em hsv(0, 0, 0.6);
+        box-shadow: 0.05em 0.1em 0.05em hsv(0, 0, 0.9);
+      }
+    }
   }
 }
 
