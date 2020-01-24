@@ -36,6 +36,7 @@ package pages {
   case class EditStory(story: String) extends Page
 
   case class AddScene(story: String) extends Page
+  case class AddSceneNamed(story: String, name: String) extends Page
   case class EditScene(story: String, scene: String) extends Page
   // case class CopyScene(story: String, scene: String) extends Page
   // case class DeleteScene(story: String, scene: String) extends Page

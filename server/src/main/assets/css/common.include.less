@@ -149,7 +149,7 @@ i.fas.label, i.far.label, i.fa.label {
 }
 
 // tiles in columns are only two per row.
-.as-columns .as-tiles {
+.as-columns.as-tiles {
   & > * {
     width: calc(100%/2 - 0.6rem);
   }
@@ -293,6 +293,14 @@ i.fas.label, i.far.label, i.fa.label {
 
   & > * {
     flex: 1 1 0;
+  }
+
+  & > .two-columns {
+    flex: 2 1 0;
+  }
+
+  & > .three-columns {
+    flex: 3 1 0;
   }
 }
 
