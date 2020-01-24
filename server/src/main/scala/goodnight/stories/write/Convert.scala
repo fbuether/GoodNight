@@ -33,7 +33,8 @@ object Convert {
           (if (quality.description.length > 80) "..." else ""))))
 
 
-  def editScene(scene: db.model.Scene, prev: Seq[String], next: Seq[String]):
+  def editScene(scene: db.model.Scene, prev: Seq[String],
+    next: Seq[(String, Boolean)]):
       model.edit.Scene =
     model.edit.Scene(
       scene.story,

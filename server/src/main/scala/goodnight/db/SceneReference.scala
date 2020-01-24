@@ -54,7 +54,7 @@ object SceneReference {
   private val prevAsStringsQuery = Compiled((story: Rep[String],
     scene: Rep[String]) =>
     apply().
-      filter(ref => ref.story === story && ref.kind === 0 && ref.to === scene).
+      filter(ref => ref.story === story && ref.to === scene).
       map(_.from))
   def prevAsStrings(storyUrlname: String, sceneUrlname: String):
       DBIO[Seq[String]] =
@@ -63,11 +63,11 @@ object SceneReference {
   private val nextAsStringsQuery = Compiled((story: Rep[String],
     scene: Rep[String]) =>
     apply().
-      filter(ref => ref.story === story && ref.kind === 0 &&
-        ref.from === scene).
-      map(_.to))
+      filter(ref => ref.story === story && ref.from === scene).
+      joinLeft(Scene()).on(_.to === _.urlname).
+      map({ case(s,r) => (s.to, r.isDefined) }))
   def nextAsStrings(storyUrlname: String, sceneUrlname: String):
-      DBIO[Seq[String]] =
+      DBIO[Seq[(String, Boolean)]] =
     nextAsStringsQuery(storyUrlname, sceneUrlname).result
 
 

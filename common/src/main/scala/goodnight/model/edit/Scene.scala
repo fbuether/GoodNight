@@ -7,5 +7,7 @@ case class Scene(
   urlname: String, // refers Scene.urlname
   name: String,
   raw: String,
-  refers: Seq[String], // which scenes refer to this scene
-  nexts: Seq[String]) // which scenes does this refer to
+
+  prevs: Seq[String], // which scenes refer to this scene
+  // which scenes does this scene refer to, and do they already exist
+  nexts: Seq[(String, Boolean)])
