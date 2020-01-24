@@ -33,26 +33,39 @@ class Scene(components: ControllerComponents,
   def getScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(request =>
       database.run(for (
-        scene <- GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname)))
-      yield result[model.edit.Scene](Ok, Convert.edit(scene))))
+        scene <- GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname));
+        prev <- db.SceneReference.prevAsStrings(storyUrlname, sceneUrlname);
+        next <- db.SceneReference.nextAsStrings(storyUrlname, sceneUrlname))
+      yield result[model.edit.Scene](Ok, Convert.editScene(scene, prev, next))))
 
 
-  def newSceneOfRaw(storyUrlname: String, raw: String):
-      Either[String, db.model.Scene] =
+  def parseScene(qualities: Seq[db.model.Quality],
+    storyUrlname: String, raw: String):
+      Either[String, model.Scene] =
     SceneParser.parseScene(storyUrlname, raw.replace("\r\n", "\n")).
-      map(scene =>
-        db.model.Scene(UUID.randomUUID(), scene.story, scene.raw,
-          scene.name, scene.urlname, scene.text))
+      flatMap(typecheckScene(qualities, _))
 
+
+
+  def getReferencesOfScene(scene: model.Scene): Seq[(String, String)] =
+    scene.settings.collect({
+      case model.Setting.Next(scene) => ("next", scene)
+      case model.Setting.Include(scene) => ("include", scene) })
 
   def createScene(storyUrlname: String) =
     auth.SecuredAction.async(parse.text)(request =>
       database.run(for (
+        qualities <- db.Quality.allOfStory(storyUrlname);
         newScene <- GetOrEither(BadRequest.apply : String => Result)(
-          DBIO.successful(newSceneOfRaw(storyUrlname, request.body)));
+          DBIO.successful(parseScene(qualities, storyUrlname, request.body)));
         _ <- EmptyOrConflict(db.Scene.named(storyUrlname, newScene.urlname));
-        dbScene <- db.Scene.insert(newScene))
-      yield result[model.edit.Scene](Accepted, Convert.edit(dbScene))))
+        dbScene <- db.Scene.insert(Convert.dbScene(newScene));
+        _ <- db.SceneReference.write(storyUrlname, newScene.urlname,
+          getReferencesOfScene(newScene));
+        prev <- db.SceneReference.prevAsStrings(storyUrlname, newScene.urlname);
+        next <- db.SceneReference.nextAsStrings(storyUrlname, newScene.urlname))
+      yield result[model.edit.Scene](Accepted, Convert.editScene(dbScene,
+        prev, next))))
 
 
   def typecheckScene(qualities: Seq[db.model.Quality], scene: model.Scene):
@@ -90,26 +103,29 @@ class Scene(components: ControllerComponents,
       e.flatMap(_ => s))
   }
 
-  def sceneOf(qualities: Seq[db.model.Quality], oldScene: db.model.Scene,
-    raw: String):
+  def updateWith(oldScene: db.model.Scene, newScene: model.Scene):
       Either[String, db.model.Scene] =
-    SceneParser.parseScene(oldScene.story, raw.replace("\r\n", "\n")).
-      flatMap(typecheckScene(qualities, _)).
-      flatMap(scene =>
-        if (scene.urlname != oldScene.urlname)
-          Left("The name of the scene must not be changed.")
-        else
-          Right(oldScene.copy(
-            raw = scene.raw,
-            text = scene.text)))
+    if (newScene.urlname != oldScene.urlname)
+      Left("The name of the scene must not be changed.")
+    else
+      Right(oldScene.copy(
+        raw = newScene.raw,
+        text = newScene.text))
 
   def saveScene(storyUrlname: String, sceneUrlname: String) =
     auth.SecuredAction.async(parse.text)(request =>
       database.run(for (
         qualities <- db.Quality.allOfStory(storyUrlname);
+        parsedScene <- GetOrEither(BadRequest.apply : String => Result)(
+          DBIO.successful(parseScene(qualities, storyUrlname, request.body)));
         oldScene <- GetOrNotFound(db.Scene.named(storyUrlname, sceneUrlname));
-        newScene <- GetOrEither(BadRequest.apply: String => Result)(
-          DBIO.successful(sceneOf(qualities, oldScene, request.body)));
-        _ <- db.Scene.update(newScene))
-      yield result[model.edit.Scene](Accepted, Convert.edit(newScene))))
+        newScene <- GetOrEither(BadRequest.apply : String => Result)(
+          DBIO.successful(updateWith(oldScene, parsedScene)));
+        _ <- db.Scene.update(newScene);
+        _ <- db.SceneReference.write(storyUrlname, newScene.urlname,
+          getReferencesOfScene(parsedScene));
+        prev <- db.SceneReference.prevAsStrings(storyUrlname, newScene.urlname);
+        next <- db.SceneReference.nextAsStrings(storyUrlname, newScene.urlname))
+      yield result[model.edit.Scene](Accepted, Convert.editScene(newScene,
+        prev, next))))
 }

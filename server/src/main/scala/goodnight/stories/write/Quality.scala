@@ -31,7 +31,7 @@ class Quality(components: ControllerComponents,
       database.run(for (
         quality <- GetOrNotFound(db.Quality.named(storyUrlname,
           qualityUrlname)))
-      yield result[model.edit.Quality](Ok, Convert.edit(quality))))
+      yield result[model.edit.Quality](Ok, Convert.editQuality(quality))))
 
 
   def ofSort(sort: model.Sort): db.model.Sort = sort match {
@@ -55,7 +55,8 @@ class Quality(components: ControllerComponents,
         _ <- EmptyOrConflict(db.Quality.named(storyUrlname,
           newQuality.urlname));
         dbQuality <- db.Quality.insert(newQuality : db.model.Quality))
-      yield result[model.edit.Quality](Accepted, Convert.edit(dbQuality))))
+      yield result[model.edit.Quality](Accepted,
+        Convert.editQuality(dbQuality))))
 
 
   def qualityOf(oldQuality: db.model.Quality, raw: String):
@@ -77,5 +78,6 @@ class Quality(components: ControllerComponents,
         newQuality <- GetOrEither(BadRequest.apply: String => Result)(
           DBIO.successful(qualityOf(oldQuality, request.body)));
         _ <- db.Quality.update(newQuality))
-      yield result[model.edit.Quality](Accepted, Convert.edit(newQuality))))
+      yield result[model.edit.Quality](Accepted,
+        Convert.editQuality(newQuality))))
 }

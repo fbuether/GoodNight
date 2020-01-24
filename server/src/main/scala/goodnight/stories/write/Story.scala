@@ -59,7 +59,7 @@ class Story(components: ControllerComponents,
         dbStory <- db.Story.insert(editStory);
         dbScene <- db.Scene.insert(initialScene(dbStory)))
       yield result[model.edit.Content](Created,
-        Convert.edit(dbStory, Seq(dbScene), Seq()))))
+        Convert.editContent(dbStory, Seq(dbScene), Seq()))))
 
 
 
@@ -70,5 +70,5 @@ class Story(components: ControllerComponents,
         scenes <- db.Scene.allOfStory(storyUrlname);
         qualities <- db.Quality.allOfStory(storyUrlname))
       yield result[model.edit.Content](Ok,
-        Convert.edit(story, scenes, qualities))))
+        Convert.editContent(story, scenes, qualities))))
 }

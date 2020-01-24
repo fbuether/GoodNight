@@ -19,6 +19,7 @@ import goodnight.server.PostgresProfile.Database
 
 object SceneView {
   def parse(scene: db.model.Scene): model.Scene = {
+      // todo: flatMap(typecheckScene(qualities, _))
     SceneParser.parseScene(scene.story, scene.raw.replace("\r\n", "\n")) match {
       case Left(a) =>
         println("*** Parsing a scene did fail:")

@@ -1,23 +1,25 @@
 
 package goodnight.stories.write
 
+import java.util.UUID
+
 import goodnight.db
 import goodnight.model
 
 
 object Convert {
-  def edit(story: db.model.Story): model.edit.Story =
+  def editStory(story: db.model.Story): model.edit.Story =
     model.edit.Story(story.urlname,
       story.name,
       story.image,
       story.public)
 
 
-  def edit(story: db.model.Story,
+  def editContent(story: db.model.Story,
     scenes: Seq[db.model.Scene],
     qualities: Seq[db.model.Quality]): model.edit.Content =
     model.edit.Content(
-      edit(story),
+      editStory(story),
       scenes.map(scene => model.edit.SceneHeader(
         scene.urlname,
         scene.name,
@@ -31,15 +33,23 @@ object Convert {
           (if (quality.description.length > 80) "..." else ""))))
 
 
-  def edit(scene: db.model.Scene): model.edit.Scene =
+  def editScene(scene: db.model.Scene, prev: Seq[String], next: Seq[String]):
+      model.edit.Scene =
     model.edit.Scene(
       scene.story,
       scene.urlname,
       scene.name,
-      scene.raw)
+      scene.raw,
+      prev,
+      next)
 
 
-  def edit(quality: db.model.Quality): model.edit.Quality =
+  def dbScene(scene: model.Scene) =
+    db.model.Scene(UUID.randomUUID(), scene.story, scene.raw,
+      scene.name, scene.urlname, scene.text)
+
+
+  def editQuality(quality: db.model.Quality): model.edit.Quality =
     model.edit.Quality(quality.story,
       quality.urlname,
       quality.name,
